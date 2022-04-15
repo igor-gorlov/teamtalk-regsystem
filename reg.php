@@ -41,6 +41,15 @@ if(!$socket)
 	exit("Failed to connect to server");
 }
 
+// Authorize under the system account.
+$isAuthorized = executeCommand(
+	"login username=\"$systemUsername\" password=\"$systemPassword\" nickname=\"$systemNickname\" protocol=\"5.0\""
+);
+if(!$isAuthorized)
+{
+	exit("Error: unable to log in");
+}
+
 
 // Functions.
 

@@ -8,6 +8,8 @@
 
 -   Block for Connecting to the Server ~connection
 
+-   Authorization Block ~auth
+
 -   Username Validation Function ~checkname
 
 -   Password Validation Function ~checkpass
