@@ -5,3 +5,5 @@
 -   Essential Options ~essentials
 
 -   Username Validation Function ~checkname
+
+-   Password Validation Function ~checkpass

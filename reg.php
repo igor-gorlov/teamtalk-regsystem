@@ -27,5 +27,14 @@ function isValidUsername($str)
 	}
 }
 
+// Validates a password.
+function isValidPassword($str)
+{
+	if(strlen($str)>0)
+	{
+		return true;
+	}
+}
+
 
 ?>
