@@ -11,3 +11,5 @@
 -   Username Validation Function ~checkname
 
 -   Password Validation Function ~checkpass
+
+-   Responding Text Function ~getrespondtext

@@ -62,5 +62,38 @@ function isValidPassword($str)
 	}
 }
 
+/*
+Returns true if a reply to the command pointed by the given id has already arrived; otherwise returns false.
+Writes the reply (with "begin" and "end" parts excluded) to $text argument.
+This function implies (but does not verify) that $socket global variable is set
+and represents connection between the script and the TeamTalk 5 server;
+the caller is responsible for meating that prerequisite.
+*/
+function getRespondingText($id, &$text)
+{
+	while(true)
+	{
+		global $socket;
+		$text = "";
+		$line = fgets($socket);
+		if($line==false) // the end of the stream is reached.
+		{
+			return false;
+		}
+		if($line=="begin id=$id\r\n") // the beginning of the reply is found.
+		{
+			while(true)
+			{
+				$line = fgets($socket);
+				if($line == "end id=$id\r\n") // the end of the reply is found.
+				{
+					return true;
+				}
+				$text .= $line;
+			}
+		}
+	}
+}
+
 
 ?>
