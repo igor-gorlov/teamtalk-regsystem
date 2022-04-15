@@ -4,6 +4,8 @@
 
 -   Essential Options ~essentials
 
+-   Block for Collecting Registration Data ~regdata
+
 -   Username Validation Function ~checkname
 
 -   Password Validation Function ~checkpass

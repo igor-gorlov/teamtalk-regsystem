@@ -15,6 +15,25 @@ $systemUsername = "regsystem"; /* The name of a registered admin account which w
 $systemPassword = "qwerty123456"; // The password of the system account.
 $systemNickname = "Registration System"; // The system account's nickname.
 
+// Get registration data.
+$dataIsInvalid = false;
+if(!isset($_GET["name"]) or !isValidUsername($_GET["name"]))
+{
+	echo "Error: invalid username!<br>";
+	$dataIsInvalid = true;
+}
+if(!isset($_GET["password"]) or !isValidPassword($_GET["password"]))
+{
+	echo "Error: invalid password!<br>";
+	$dataIsInvalid = true;
+}
+if($dataIsInvalid)
+{
+	exit("Operation failed.");
+}
+$newUsername = $_GET["name"];
+$newPassword = $_GET["password"];
+
 
 // Functions.
 
