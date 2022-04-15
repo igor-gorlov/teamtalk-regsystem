@@ -6,6 +6,8 @@
 
 -   Block for Collecting Registration Data ~regdata
 
+-   Block for Connecting to the Server ~connection
+
 -   Username Validation Function ~checkname
 
 -   Password Validation Function ~checkpass

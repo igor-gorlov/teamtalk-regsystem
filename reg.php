@@ -34,6 +34,13 @@ if($dataIsInvalid)
 $newUsername = $_GET["name"];
 $newPassword = $_GET["password"];
 
+// Establish connection.
+$socket = fsockopen($host, $port);
+if(!$socket)
+{
+	exit("Failed to connect to server");
+}
+
 
 // Functions.
 
