@@ -3,3 +3,5 @@
 ## Registration Script (reg.php) ~reg
 
 -   Essential Options ~essentials
+
+-   Username Validation Function ~checkname

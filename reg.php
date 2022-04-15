@@ -16,4 +16,16 @@ $systemPassword = "qwerty123456"; // The password of the system account.
 $systemNickname = "Registration System"; // The system account's nickname.
 
 
+// Functions.
+
+// Validates a username.
+function isValidUsername($str)
+{
+	if(strlen($str)>0)
+	{
+		return true;
+	}
+}
+
+
 ?>
