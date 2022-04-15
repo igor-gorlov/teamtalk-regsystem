@@ -95,5 +95,40 @@ function getRespondingText($id, &$text)
 	}
 }
 
+/*
+Sends the given command to the TeamTalk 5 server; waits for the server's reply;
+assigns the responding text to $reply argument (if provided).
+Returns true if the command succeeded, otherwise returns false.
+Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
+the function will handle those things implicitly.
+This function implies (but does not verify) that $socket global variable is set
+and represents connection between the script and the TeamTalk 5 server;
+the caller is responsible for meating that prerequisite.
+*/
+function executeCommand($cmd, &$reply=null)
+{
+	// Prepare data.
+	static $id = 0;
+	global $socket;
+	$id++;
+	$cmd .= " id=$id\r\n";
+	// Send the command.
+	fwrite($socket, $cmd);
+	// Wait for the reply; output its body if required.
+	$respondingText = "";
+	while(!getRespondingText($id, $respondingText))
+	{}
+	if($reply != null)
+	{
+		$reply = $respondingText;
+	}
+	// Determine whether the command succeeded.
+	if(preg_match("/ok\r\n/", $respondingText))
+	{
+		return true;
+	}
+	return false;
+}
+
 
 ?>

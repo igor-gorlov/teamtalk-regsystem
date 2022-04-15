@@ -13,3 +13,5 @@
 -   Password Validation Function ~checkpass
 
 -   Responding Text Function ~getrespondtext
+
+-   Command Execution Function ~execute
