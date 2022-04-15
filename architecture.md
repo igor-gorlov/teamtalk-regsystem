@@ -10,6 +10,8 @@
 
 -   Authorization Block ~auth
 
+-   Account Creation Block ~reg
+
 -   Username Validation Function ~checkname
 
 -   Password Validation Function ~checkpass

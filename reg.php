@@ -50,6 +50,17 @@ if(!$isAuthorized)
 	exit("Error: unable to log in");
 }
 
+// Create a new account.
+$isCreated = executeCommand("newaccount username=\"$newUsername\" password=\"$newPassword\" usertype=1");
+if($isCreated)
+{
+	echo("Successfully created a new account named $newUsername!");
+}
+else
+{
+	exit("Error: unable to create the account");
+}
+
 
 // Functions.
 
