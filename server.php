@@ -7,6 +7,9 @@ This file helps to communicate with the TeamTalk 5 server.
 */
 
 
+declare(strict_types=1);
+
+
 /*
 Returns true if a reply to the command pointed by the given id has already arrived; otherwise returns false.
 Writes the reply (with "begin" and "end" parts excluded) to $text argument.
