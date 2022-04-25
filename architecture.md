@@ -16,6 +16,8 @@
 
 -   Password Validation Function ~checkpass
 
+## Server Communication Toolkit (server.php) ~server
+
 -   Responding Text Function ~getrespondtext
 
 -   Command Execution Function ~execute
