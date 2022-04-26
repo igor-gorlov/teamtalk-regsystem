@@ -85,5 +85,48 @@ function executeCommand($cmd, &$reply=null)
 	return false;
 }
 
+/*
+Accepts a command in the form of a string; returns an object containing the parsed data.
+This function expects the input to be a syntactically correct TeamTalk 5 command; no validation is performed.
+*/
+function parseCommand(string $command): Command
+{
+	$result = new Command;
+	$matches = array(); // a reusable array to store preg_match results in.
+	// Extract the name.
+	preg_match("/^([a-z]+\b)(\s*)/i", $command, $matches);
+	$result->name = $matches[1];
+	$offset = strlen($matches[0]);
+	// Parse the parameters.
+	while($offset!=strlen($command))
+	{
+		// Extract the parameter name.
+		preg_match("/^([a-z]+\b)\=/i", substr($command, $offset), $matches);
+		$paramName = $matches[1];
+		$offset += strlen($matches[0]);
+		// Extract the parameter value.
+		$value = null;
+		if(preg_match("/^(true\b)(\s*)/i", substr($command, $offset), $matches))
+		{
+			$value = true;
+		}
+		elseif(preg_match("/^(false\b)(\s*)/i", substr($command, $offset), $matches))
+		{
+			$value = false;
+		}
+		elseif(preg_match("/^(\d+\b)(\s*)/i", substr($command, $offset), $matches))
+		{
+			$value = intval($matches[1]);
+		}
+		elseif(preg_match('/^\"(.*?)(\\\\)*\"\s*/i', substr($command, $offset), $matches))
+		{
+			$value = $matches[1];
+		}
+		$result->params[$paramName] = $value;
+		$offset += strlen($matches[0]);
+	}
+	return $result;
+}
+
 
 ?>
