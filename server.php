@@ -128,5 +128,25 @@ function parseCommand(string $command): Command
 	return $result;
 }
 
+/*
+Parses a server reply into an array of objects of type Command.
+The reply must be syntactically correct; this function performs no validation.
+*/
+function parseRespondingText(string $text): array
+{
+	// Prepare a container for future results.
+	$commands = array();
+	// Split the text into lines, which in fact are equivalent to commands.
+	$text = rtrim($text);
+	$lines = explode("\r\n", $text);
+	// Build the resulting array.
+	foreach($lines as &$line)
+	{
+		$command = parseCommand($line);
+		$commands[] = $command;
+	}
+	return $commands;
+}
+
 
 ?>

@@ -25,3 +25,5 @@
 -   Command Execution Function ~execute
 
 -   Command Parsing Function ~cmdparse
+
+-   Function for Parsing Server Replies ~resp-parse
