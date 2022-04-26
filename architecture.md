@@ -18,6 +18,8 @@
 
 ## Server Communication Toolkit (server.php) ~server
 
+-   Command Class ~command
+
 -   Responding Text Function ~getrespondtext
 
 -   Command Execution Function ~execute
