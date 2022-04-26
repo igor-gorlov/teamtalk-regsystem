@@ -7,6 +7,9 @@ This script accepts registration data and creates a new TeamTalk 5 account from 
 */
 
 
+require "server.php";
+
+
 // Configure the essential options.
 $host = "localhost"; // TeamTalk 5 server address.
 $port = "10333"; // TeamTalk 5 TCP port.
