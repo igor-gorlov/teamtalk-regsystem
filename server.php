@@ -26,10 +26,10 @@ the caller is responsible for meating that prerequisite.
 */
 function getRespondingText($id, &$text)
 {
+	global $socket;
+	$text = "";
 	while(true)
 	{
-		global $socket;
-		$text = "";
 		$line = fgets($socket);
 		if($line==false) // the end of the stream is reached.
 		{
