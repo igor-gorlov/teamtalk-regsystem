@@ -17,6 +17,22 @@ class Command
 	public array $params;
 }
 
+// Is thrown when a command yields an error.
+class CommandFailedException extends RuntimeException
+{
+	function __construct(string $command, array|null $reply)
+	{
+		$message = "The following command failed:\n\t$command";
+		if($reply != null)
+		{
+			$errorCode = $reply[array_key_last($reply)]->params["number"];
+			$serverMessage = $reply[array_key_last($reply)]->params["message"];
+			$message .= "The server returned error code $errorCode and said:\n\t$serverMessage\n";
+		}
+		parent::__construct($message);
+	}
+}
+
 /*
 Returns true if a reply to the command pointed by the given id has already arrived; otherwise returns false.
 Writes the reply (with "begin" and "end" parts excluded) to $text argument.
@@ -126,15 +142,15 @@ function parseRespondingText(string $text): array
 
 /*
 Sends the given command to the TeamTalk 5 server; waits for the server's reply;
-outputs the result as an array of commands to $reply argument if the latter is provided.
-Returns true if the command succeeded, otherwise returns false.
+returns that reply as an array of objects of type Command.
+Throws CommandFailedException if the server returns an error.
 Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 the function will handle those things implicitly.
 This function implies (but does not verify) that $socket global variable is set
 and represents connection between the script and the TeamTalk 5 server;
 the caller is responsible for meating that prerequisite.
 */
-function executeCommand(string $cmd, array|null &$reply=null): bool
+function executeCommand(string $cmd): array
 {
 	// Prepare data.
 	static $id = 0;
@@ -148,16 +164,12 @@ function executeCommand(string $cmd, array|null &$reply=null): bool
 	while(!getRespondingText($id, $respondingText))
 	{}
 	$respondingCommands = parseRespondingText($respondingText);
-	if($reply != null)
-	{
-		$reply = $respondingCommands;
-	}
 	// Determine whether the command succeeded.
-	if($respondingCommands[array_key_last($respondingCommands)]->name == "ok")
+	if($respondingCommands[array_key_last($respondingCommands)]->name == "error")
 	{
-		return true;
+		throw new CommandFailedException($cmd, $respondingCommands);
 	}
-	return false;
+	return $respondingCommands;
 }
 
 
