@@ -79,7 +79,7 @@ function executeCommand($cmd, &$reply=null)
 		$reply = $respondingCommands;
 	}
 	// Determine whether the command succeeded.
-	if(preg_match("/ok\r\n/", $respondingText))
+	if($respondingCommands[array_key_last($respondingCommands)]->name == "ok")
 	{
 		return true;
 	}
