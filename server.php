@@ -142,7 +142,7 @@ function parseRespondingText(string $text): array
 
 /*
 Sends the given command to the TeamTalk 5 server; waits for the server's reply;
-outputs the result as an array of commands to $reply argument if the latter is provided.
+returns that reply as an array of objects of type Command.
 Throws CommandFailedException if the server returns an error.
 Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 the function will handle those things implicitly.
@@ -150,7 +150,7 @@ This function implies (but does not verify) that $socket global variable is set
 and represents connection between the script and the TeamTalk 5 server;
 the caller is responsible for meating that prerequisite.
 */
-function executeCommand(string $cmd, array|null &$reply=null): void
+function executeCommand(string $cmd): array
 {
 	// Prepare data.
 	static $id = 0;
@@ -164,15 +164,12 @@ function executeCommand(string $cmd, array|null &$reply=null): void
 	while(!getRespondingText($id, $respondingText))
 	{}
 	$respondingCommands = parseRespondingText($respondingText);
-	if($reply != null)
-	{
-		$reply = $respondingCommands;
-	}
 	// Determine whether the command succeeded.
 	if($respondingCommands[array_key_last($respondingCommands)]->name == "error")
 	{
 		throw new CommandFailedException($cmd, $respondingCommands);
 	}
+	return $respondingCommands;
 }
 
 
