@@ -24,7 +24,7 @@ This function implies (but does not verify) that $socket global variable is set
 and represents connection between the script and the TeamTalk 5 server;
 the caller is responsible for meating that prerequisite.
 */
-function getRespondingText($id, &$text)
+function getRespondingText(int $id, string &$text): bool
 {
 	global $socket;
 	$text = "";
@@ -134,7 +134,7 @@ This function implies (but does not verify) that $socket global variable is set
 and represents connection between the script and the TeamTalk 5 server;
 the caller is responsible for meating that prerequisite.
 */
-function executeCommand($cmd, &$reply=null)
+function executeCommand(string $cmd, array|null &$reply=null): bool
 {
 	// Prepare data.
 	static $id = 0;
