@@ -20,6 +20,8 @@
 
 -   Command Class ~command
 
+-   Command Failed Exception ~cmdfailed
+
 -   Responding Text Function ~getrespondtext
 
 -   Command Parsing Function ~cmdparse

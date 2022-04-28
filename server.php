@@ -17,6 +17,22 @@ class Command
 	public array $params;
 }
 
+// Is thrown when a command yields an error.
+class CommandFailedException extends RuntimeException
+{
+	function __construct(string $command, array|null $reply)
+	{
+		$message = "The following command failed:\n\t$command";
+		if($reply != null)
+		{
+			$errorCode = $reply[array_key_last($reply)]->params["number"];
+			$serverMessage = $reply[array_key_last($reply)]->params["message"];
+			$message .= "The server returned error code $errorCode and said:\n\t$serverMessage\n";
+		}
+		parent::__construct($message);
+	}
+}
+
 /*
 Returns true if a reply to the command pointed by the given id has already arrived; otherwise returns false.
 Writes the reply (with "begin" and "end" parts excluded) to $text argument.
