@@ -52,7 +52,7 @@ function getRespondingText($id, &$text)
 
 /*
 Sends the given command to the TeamTalk 5 server; waits for the server's reply;
-assigns the responding text to $reply argument (if provided).
+outputs the result as an array of commands to $reply argument if the latter is provided.
 Returns true if the command succeeded, otherwise returns false.
 Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 the function will handle those things implicitly.
@@ -73,9 +73,10 @@ function executeCommand($cmd, &$reply=null)
 	$respondingText = "";
 	while(!getRespondingText($id, $respondingText))
 	{}
+	$respondingCommands = parseRespondingText($respondingText);
 	if($reply != null)
 	{
-		$reply = $respondingText;
+		$reply = $respondingCommands;
 	}
 	// Determine whether the command succeeded.
 	if(preg_match("/ok\r\n/", $respondingText))
