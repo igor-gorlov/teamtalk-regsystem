@@ -71,13 +71,16 @@ function parseCommand(string $command): Command
 		$offset += strlen($matches[0]);
 		// Extract the parameter value.
 		$value = null;
-		if(preg_match("/^(true\b)(\s*)/i", substr($command, $offset), $matches)) // boolean true
+		if(preg_match("/^(true\b|false\b)(\s*)/i", substr($command, $offset), $matches)) // boolean
 		{
-			$value = true;
-		}
-		elseif(preg_match("/^(false\b)(\s*)/i", substr($command, $offset), $matches)) // boolean false
-		{
-			$value = false;
+			if($matches[1] == "true")
+			{
+				$value = true;
+			}
+			else
+			{
+				$value = false;
+			}
 		}
 		elseif(preg_match("/^(\d+\b)(\s*)/i", substr($command, $offset), $matches)) // integer
 		{
