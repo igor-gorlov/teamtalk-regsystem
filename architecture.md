@@ -22,8 +22,8 @@
 
 -   Responding Text Function ~getrespondtext
 
--   Command Execution Function ~execute
-
 -   Command Parsing Function ~cmdparse
 
 -   Function for Parsing Server Replies ~resp-parse
+
+-   Command Execution Function ~execute

@@ -51,42 +51,6 @@ function getRespondingText($id, &$text)
 }
 
 /*
-Sends the given command to the TeamTalk 5 server; waits for the server's reply;
-outputs the result as an array of commands to $reply argument if the latter is provided.
-Returns true if the command succeeded, otherwise returns false.
-Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
-the function will handle those things implicitly.
-This function implies (but does not verify) that $socket global variable is set
-and represents connection between the script and the TeamTalk 5 server;
-the caller is responsible for meating that prerequisite.
-*/
-function executeCommand($cmd, &$reply=null)
-{
-	// Prepare data.
-	static $id = 0;
-	global $socket;
-	$id++;
-	$cmd .= " id=$id\r\n";
-	// Send the command.
-	fwrite($socket, $cmd);
-	// Wait for the reply; output its body if required.
-	$respondingText = "";
-	while(!getRespondingText($id, $respondingText))
-	{}
-	$respondingCommands = parseRespondingText($respondingText);
-	if($reply != null)
-	{
-		$reply = $respondingCommands;
-	}
-	// Determine whether the command succeeded.
-	if($respondingCommands[array_key_last($respondingCommands)]->name == "ok")
-	{
-		return true;
-	}
-	return false;
-}
-
-/*
 Accepts a command in the form of a string; returns an object containing the parsed data.
 This function expects the input to be a syntactically correct TeamTalk 5 command; no validation is performed.
 */
@@ -155,6 +119,42 @@ function parseRespondingText(string $text): array
 		$commands[] = $command;
 	}
 	return $commands;
+}
+
+/*
+Sends the given command to the TeamTalk 5 server; waits for the server's reply;
+outputs the result as an array of commands to $reply argument if the latter is provided.
+Returns true if the command succeeded, otherwise returns false.
+Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
+the function will handle those things implicitly.
+This function implies (but does not verify) that $socket global variable is set
+and represents connection between the script and the TeamTalk 5 server;
+the caller is responsible for meating that prerequisite.
+*/
+function executeCommand($cmd, &$reply=null)
+{
+	// Prepare data.
+	static $id = 0;
+	global $socket;
+	$id++;
+	$cmd .= " id=$id\r\n";
+	// Send the command.
+	fwrite($socket, $cmd);
+	// Wait for the reply; output its body if required.
+	$respondingText = "";
+	while(!getRespondingText($id, $respondingText))
+	{}
+	$respondingCommands = parseRespondingText($respondingText);
+	if($reply != null)
+	{
+		$reply = $respondingCommands;
+	}
+	// Determine whether the command succeeded.
+	if($respondingCommands[array_key_last($respondingCommands)]->name == "ok")
+	{
+		return true;
+	}
+	return false;
 }
 
 
