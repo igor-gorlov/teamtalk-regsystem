@@ -34,28 +34,30 @@ class CommandFailedException extends RuntimeException
 }
 
 /*
-Returns true if a reply to the command pointed by the given id has already arrived; otherwise returns false.
-Writes the reply (with "begin" and "end" parts excluded) to $text argument.
+Waits for the server to process the command with the given id;
+returns the server's reply (with "begin" and "end" parts excluded).
 This function implies (but does not verify) that $socket global variable is set
 and represents connection between the script and the TeamTalk 5 server;
 the caller is responsible for meating that prerequisite.
 */
-function getRespondingText(int $id, string &$text): bool
+function getRespondingText(int $id): string
 {
 	global $socket;
 	$text = "";
-	while($line = fgets($socket))
+	while(true) // scan the communication history again and again until the reply is found.
 	{
-		if($line=="begin id=$id\r\n") // the beginning of the reply is found.
+		while($line = fgets($socket))
 		{
-			for($respondingLine = fgets($socket); $respondingLine != "end id=$id\r\n"; $respondingLine = fgets($socket))
+			if($line=="begin id=$id\r\n") // the beginning of the reply is found.
 			{
-				$text .= $respondingLine;
+				for($respondingLine = fgets($socket); $respondingLine != "end id=$id\r\n"; $respondingLine = fgets($socket))
+				{
+					$text .= $respondingLine;
+				}
+				return $text;
 			}
-			return true;
 		}
 	}
-	return false;
 }
 
 /*
@@ -152,9 +154,7 @@ function executeCommand(string $cmd): array
 	// Send the command.
 	fwrite($socket, $cmd);
 	// Wait for the reply.
-	$respondingText = "";
-	while(!getRespondingText($id, $respondingText))
-	{}
+	$respondingText = getRespondingText($id);
 	$respondingCommands = parseRespondingText($respondingText);
 	// Check for errors and return.
 	if($respondingCommands[array_key_last($respondingCommands)]->name == "error")
