@@ -144,22 +144,22 @@ This function implies (but does not verify) that $socket global variable is set
 and represents connection between the script and the TeamTalk 5 server;
 the caller is responsible for meating that prerequisite.
 */
-function executeCommand(string $cmd): array
+function executeCommand(string $command): array
 {
 	// Prepare data.
 	static $id = 0;
 	global $socket;
 	$id++;
-	$cmd .= " id=$id\r\n";
+	$command .= " id=$id\r\n";
 	// Send the command.
-	fwrite($socket, $cmd);
+	fwrite($socket, $command);
 	// Wait for the reply.
 	$respondingText = getRespondingText($id);
 	$respondingCommands = parseRespondingText($respondingText);
 	// Check for errors and return.
 	if($respondingCommands[array_key_last($respondingCommands)]->name == "error")
 	{
-		throw new CommandFailedException($cmd, $respondingCommands);
+		throw new CommandFailedException($command, $respondingCommands);
 	}
 	return $respondingCommands;
 }
