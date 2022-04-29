@@ -44,26 +44,18 @@ function getRespondingText(int $id, string &$text): bool
 {
 	global $socket;
 	$text = "";
-	while(true)
+	while($line = fgets($socket))
 	{
-		$line = fgets($socket);
-		if($line==false) // the end of the stream is reached.
-		{
-			return false;
-		}
 		if($line=="begin id=$id\r\n") // the beginning of the reply is found.
 		{
-			while(true)
+			for($respondingLine = fgets($socket); $respondingLine != "end id=$id\r\n"; $respondingLine = fgets($socket))
 			{
-				$line = fgets($socket);
-				if($line == "end id=$id\r\n") // the end of the reply is found.
-				{
-					return true;
-				}
-				$text .= $line;
+				$text .= $respondingLine;
 			}
+			return true;
 		}
 	}
+	return false;
 }
 
 /*
