@@ -159,12 +159,12 @@ function executeCommand(string $cmd): array
 	$cmd .= " id=$id\r\n";
 	// Send the command.
 	fwrite($socket, $cmd);
-	// Wait for the reply; output its body if required.
+	// Wait for the reply.
 	$respondingText = "";
 	while(!getRespondingText($id, $respondingText))
 	{}
 	$respondingCommands = parseRespondingText($respondingText);
-	// Determine whether the command succeeded.
+	// Check for errors and return.
 	if($respondingCommands[array_key_last($respondingCommands)]->name == "error")
 	{
 		throw new CommandFailedException($cmd, $respondingCommands);
