@@ -10,6 +10,10 @@ This file helps to communicate with the TeamTalk 5 server.
 declare(strict_types=1);
 
 
+// Constants.
+const COMMAND_REPLY_AS_TEXT = 1;
+const COMMAND_REPLY_AS_ARRAY = 2;
+
 // Represents a single command.
 class Command
 {
@@ -155,27 +159,41 @@ function sendCommand(string $command): int
 }
 
 /*
-Sends the given command to the TeamTalk 5 server; waits for the server's reply;
-returns that reply as an array of objects of type Command.
-Throws CommandFailedException if the server returns an error.
+Sends the given command to the TeamTalk 5 server and waits for the server's reply.
+
+The return value type depends on the optional argument $outputMode. You can choose between 2 modes:
+	* COMMAND_REPLY_AS_TEXT: a plain text string is returned;
+	* COMMAND_REPLY_AS_ARRAY [default]: an array of objects of type Command is returned.
+
+If the server returns an error, and the output mode is COMMAND_REPLY_AS_ARRAY,
+this function throws CommandFailedException; no exceptions is thrown in text mode even if an error occurs.
+
 Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 the function will handle those things implicitly.
+
 This function implies (but does not verify) that $socket global variable is set
 and represents connection between the script and the TeamTalk 5 server;
 the caller is responsible for meating that prerequisite.
 */
-function executeCommand(string $command): array
+function executeCommand(string $command, int $outputMode = COMMAND_REPLY_AS_ARRAY): string|array
 {
 	$id = sendCommand($command);
 	// Wait for the reply.
 	$respondingText = getRespondingText($id);
 	$respondingCommands = parseRespondingText($respondingText);
-	// Check for errors and return.
-	if($respondingCommands[array_key_last($respondingCommands)]->name == "error")
+	// Check for errors.
+	if($respondingCommands[array_key_last($respondingCommands)]->name == "error" and $outputMode == COMMAND_REPLY_AS_ARRAY)
 	{
 		throw new CommandFailedException($command, $respondingCommands);
 	}
-	return $respondingCommands;
+	// Return the required result.
+	switch($outputMode)
+	{
+		case COMMAND_REPLY_AS_TEXT:
+			return $respondingText;
+		case COMMAND_REPLY_AS_ARRAY:
+			return $respondingCommands;
+	}
 }
 
 

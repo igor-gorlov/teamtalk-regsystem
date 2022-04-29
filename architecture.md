@@ -18,6 +18,8 @@
 
 ## Server Communication Toolkit (server.php) ~server
 
+-   Constants ~const
+
 -   Command Class ~command
 
 -   Command Failed Exception ~cmdfailed
