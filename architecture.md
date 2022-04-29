@@ -28,4 +28,6 @@
 
 -   Function for Parsing Server Replies ~resp-parse
 
+-   Command Sending Function ~send
+
 -   Command Execution Function ~execute

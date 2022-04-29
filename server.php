@@ -135,6 +135,26 @@ function parseRespondingText(string $text): array
 }
 
 /*
+Sends the given command to the TeamTalk 5 server and transfers control back immediately;
+returns the ID assigned to this command.
+The result of command execution can be obtained later with getRespondingText() function.
+Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
+the function will handle those things implicitly.
+This function implies (but does not verify) that $socket global variable is set
+and represents connection between the script and the TeamTalk 5 server;
+the caller is responsible for meating that prerequisite.
+*/
+function sendCommand(string $command): int
+{
+	static $id = 0;
+	global $socket;
+	$id++;
+	$command .= " id=$id\r\n";
+	fwrite($socket, $command);
+	return $id;
+}
+
+/*
 Sends the given command to the TeamTalk 5 server; waits for the server's reply;
 returns that reply as an array of objects of type Command.
 Throws CommandFailedException if the server returns an error.
@@ -146,13 +166,7 @@ the caller is responsible for meating that prerequisite.
 */
 function executeCommand(string $command): array
 {
-	// Prepare data.
-	static $id = 0;
-	global $socket;
-	$id++;
-	$command .= " id=$id\r\n";
-	// Send the command.
-	fwrite($socket, $command);
+	$id = sendCommand($command);
 	// Wait for the reply.
 	$respondingText = getRespondingText($id);
 	$respondingCommands = parseRespondingText($respondingText);
