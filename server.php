@@ -37,6 +37,15 @@ class CommandFailedException extends RuntimeException
 	}
 }
 
+// Is thrown when attempting to register an account that already exists.
+class AccountAlreadyExistsException extends RuntimeException
+{
+	function __construct(string $username)
+	{
+		parent::__construct("Unable to create account named $username because this username is already taken");
+	}
+}
+
 /*
 Waits for the server to process the command with the given id;
 returns the server's reply (with "begin" and "end" parts excluded).
