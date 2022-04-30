@@ -10,6 +10,9 @@ This file helps to communicate with the TeamTalk 5 server.
 declare(strict_types=1);
 
 
+require "validator.php";
+
+
 // Constants.
 const COMMAND_REPLY_AS_TEXT = 1;
 const COMMAND_REPLY_AS_ARRAY = 2;
