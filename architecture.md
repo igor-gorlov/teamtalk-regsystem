@@ -33,3 +33,5 @@
 -   Command Sending Function ~send
 
 -   Command Execution Function ~execute
+
+-   Function for Checking Account Existence ~exists

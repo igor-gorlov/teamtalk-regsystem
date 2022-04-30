@@ -196,5 +196,22 @@ function executeCommand(string $command, int $outputMode = COMMAND_REPLY_AS_ARRA
 	}
 }
 
+/*
+Returns true if an account with the given name exists; otherwise returns false.
+*/
+function accountExists(string $name): bool
+{
+	$reply = executeCommand("listaccounts");
+	for($i = 0; $reply[$i]->name == "useraccount"; $i++)
+	{
+		$username = $reply[$i]->params["username"];
+		if($username == $name)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 
 ?>
