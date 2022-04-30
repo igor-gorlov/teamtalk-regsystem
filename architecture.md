@@ -12,10 +12,6 @@
 
 -   Account Creation Block ~reg
 
--   Username Validation Function ~checkname
-
--   Password Validation Function ~checkpass
-
 ## Server Communication Toolkit (server.php) ~server
 
 -   Constants ~const
@@ -39,3 +35,9 @@
 -   Function for Checking Account Existence ~exists
 
 -   Account Creation Function ~newacc
+
+## User Input Validation Toolkit (validator.php) ~validator
+
+-   Username Validation Function ~username
+
+-   Password Validation Function ~userpass
