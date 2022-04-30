@@ -4,8 +4,6 @@
 
 -   Essential Options ~essentials
 
--   Block for Collecting Registration Data ~regdata
-
 -   Block for Connecting to the Server ~connection
 
 -   Authorization Block ~auth

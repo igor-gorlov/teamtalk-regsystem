@@ -21,25 +21,6 @@ try
 	$systemPassword = "qwerty123456"; // The password of the system account.
 	$systemNickname = "Registration System"; // The system account's nickname.
 
-	// Get registration data.
-	$dataIsInvalid = false;
-	if(!isset($_GET["name"]) or !isValidUsername($_GET["name"]))
-	{
-		echo "Error: invalid username!<br>";
-		$dataIsInvalid = true;
-	}
-	if(!isset($_GET["password"]) or !isValidPassword($_GET["password"]))
-	{
-		echo "Error: invalid password!<br>";
-		$dataIsInvalid = true;
-	}
-	if($dataIsInvalid)
-	{
-		exit("Operation failed.");
-	}
-	$newUsername = $_GET["name"];
-	$newPassword = $_GET["password"];
-
 	// Establish connection.
 	$socket = fsockopen($host, $port);
 	if(!$socket)
@@ -53,7 +34,7 @@ try
 	);
 
 	// Create a new account.
-	createAccount($newUsername, $newPassword);
+	createAccount($_GET["name"], $_GET["password"]);
 	echo("Successfully created a new account named $newUsername!");
 
 }
