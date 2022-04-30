@@ -37,6 +37,15 @@ class CommandFailedException extends RuntimeException
 	}
 }
 
+// Is thrown when attempting to register an account that already exists.
+class AccountAlreadyExistsException extends RuntimeException
+{
+	function __construct(string $username)
+	{
+		parent::__construct("Unable to create account named $username because this username is already taken");
+	}
+}
+
 /*
 Waits for the server to process the command with the given id;
 returns the server's reply (with "begin" and "end" parts excluded).
@@ -194,6 +203,37 @@ function executeCommand(string $command, int $outputMode = COMMAND_REPLY_AS_ARRA
 		case COMMAND_REPLY_AS_ARRAY:
 			return $respondingCommands;
 	}
+}
+
+/*
+Returns true if an account with the given name exists; otherwise returns false.
+*/
+function accountExists(string $name): bool
+{
+	$reply = executeCommand("listaccounts");
+	for($i = 0; $reply[$i]->name == "useraccount"; $i++)
+	{
+		$username = $reply[$i]->params["username"];
+		if($username == $name)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+Creates a new account of "default" type with the given name and password.
+Throws AccountAlreadyExistsException if the name had previously been allocated on the server.
+Also may throw CommandFailedException in case of other problems.
+*/
+function createAccount(string $username, string $password): void
+{
+	if(accountExists($username))
+	{
+		throw new AccountAlreadyExistsException($username);
+	}
+	executeCommand("newaccount username=\"$username\" password=\"$password\" usertype=1");
 }
 
 

@@ -24,6 +24,8 @@
 
 -   Command Failed Exception ~cmdfailed
 
+-   Account Already Exists Exception ~already-exists
+
 -   Responding Text Function ~getrespondtext
 
 -   Command Parsing Function ~cmdparse
@@ -33,3 +35,7 @@
 -   Command Sending Function ~send
 
 -   Command Execution Function ~execute
+
+-   Function for Checking Account Existence ~exists
+
+-   Account Creation Function ~newacc

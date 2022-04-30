@@ -53,7 +53,7 @@ try
 	);
 
 	// Create a new account.
-	executeCommand("newaccount username=\"$newUsername\" password=\"$newPassword\" usertype=1");
+	createAccount($newUsername, $newPassword);
 	echo("Successfully created a new account named $newUsername!");
 
 }
