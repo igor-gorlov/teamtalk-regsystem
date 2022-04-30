@@ -37,3 +37,5 @@
 -   Command Execution Function ~execute
 
 -   Function for Checking Account Existence ~exists
+
+-   Account Creation Function ~newacc
