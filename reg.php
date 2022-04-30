@@ -59,7 +59,7 @@ try
 }
 catch(Exception $e)
 {
-	echo("<pre>".$e->getMessage()."</pre>");
+	echo("<pre>Error: ".$e->getMessage()."</pre>");
 }
 
 
