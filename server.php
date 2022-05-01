@@ -49,6 +49,15 @@ class AccountAlreadyExistsException extends RuntimeException
 	}
 }
 
+// Is thrown when an attempt to establish connection with the TeamTalk 5 server fails.
+class ServerUnavailableException extends RuntimeException
+{
+	function __construct(string $address, int $port)
+	{
+		parent::__construct("Unable to connect to $address:$port");
+	}
+}
+
 /*
 Waits for the server to process the command with the given id;
 returns the server's reply (with "begin" and "end" parts excluded).

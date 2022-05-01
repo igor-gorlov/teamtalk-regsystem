@@ -20,6 +20,8 @@
 
 -   Account Already Exists Exception ~already-exists
 
+-   Server Unavailable Exception ~unavailable
+
 -   Responding Text Function ~getrespondtext
 
 -   Command Parsing Function ~cmdparse
