@@ -24,19 +24,19 @@
 
 -   TeamTalk Server Connection Class ~connection
 
--   Responding Text Function ~getrespondtext
+    -   Responding Text Function ~getrespondtext
 
--   Command Parsing Function ~cmdparse
+    -   Command Parsing Function ~cmdparse
 
--   Function for Parsing Server Replies ~resp-parse
+    -   Function for Parsing Server Replies ~resp-parse
 
--   Command Sending Function ~send
+    -   Command Sending Function ~send
 
--   Command Execution Function ~execute
+    -   Command Execution Function ~execute
 
--   Function for Checking Account Existence ~exists
+    -   Function for Checking Account Existence ~exists
 
--   Account Creation Function ~newacc
+    -   Account Creation Function ~newacc
 
 ## User Input Validation Toolkit (validator.php) ~validator
 
