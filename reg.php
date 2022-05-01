@@ -22,21 +22,17 @@ try
 	$systemNickname = "Registration System"; // The system account's nickname.
 
 	// Establish connection.
-	$socket = fsockopen($host, $port);
-	if(!$socket)
-	{
-		exit("Failed to connect to server");
-	}
+	$connection = new TtServerConnection($host, $port);
 
 	// Authorize under the system account.
-	executeCommand(
+	$connection->executeCommand(
 		"login username=\"$systemUsername\" password=\"$systemPassword\" nickname=\"$systemNickname\" protocol=\"5.0\""
 	);
 
 	// Create a new account.
 	$newUsername = $_GET["name"];
 	$newPassword = $_GET["password"];
-	createAccount($newUsername, $newPassword);
+	$connection->createAccount($newUsername, $newPassword);
 	echo("Successfully created a new account named $newUsername!");
 
 }
