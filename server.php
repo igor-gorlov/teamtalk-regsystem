@@ -247,7 +247,7 @@ function createAccount(string $username, string $password): void
 	{
 		throw new InvalidArgumentException("Invalid username");
 	}
-	else
+	elseif(!$passwordIsValid)
 	{
 		throw new InvalidArgumentException("Invalid password");
 	}
