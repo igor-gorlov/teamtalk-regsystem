@@ -10,6 +10,9 @@ This file helps to communicate with the TeamTalk 5 server.
 declare(strict_types=1);
 
 
+require "validator.php";
+
+
 // Constants.
 const COMMAND_REPLY_AS_TEXT = 1;
 const COMMAND_REPLY_AS_ARRAY = 2;
@@ -224,14 +227,29 @@ function accountExists(string $name): bool
 
 /*
 Creates a new account of "default" type with the given name and password.
-Throws AccountAlreadyExistsException if the name had previously been allocated on the server.
-Also may throw CommandFailedException in case of other problems.
+Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
+throws InvalidArgumentException if registration data is incorrect;
+also may throw CommandFailedException in case of other problems.
 */
 function createAccount(string $username, string $password): void
 {
 	if(accountExists($username))
 	{
 		throw new AccountAlreadyExistsException($username);
+	}
+	$usernameIsValid = isValidUsername($username);
+	$passwordIsValid = isValidPassword($password);
+	if(!$usernameIsValid and !$passwordIsValid)
+	{
+		throw new InvalidArgumentException("Both username and password are invalid");
+	}
+	elseif(!$usernameIsValid)
+	{
+		throw new InvalidArgumentException("Invalid username");
+	}
+	else
+	{
+		throw new InvalidArgumentException("Invalid password");
 	}
 	executeCommand("newaccount username=\"$username\" password=\"$password\" usertype=1");
 }

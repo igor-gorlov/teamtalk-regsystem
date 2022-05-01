@@ -4,17 +4,11 @@
 
 -   Essential Options ~essentials
 
--   Block for Collecting Registration Data ~regdata
-
 -   Block for Connecting to the Server ~connection
 
 -   Authorization Block ~auth
 
 -   Account Creation Block ~reg
-
--   Username Validation Function ~checkname
-
--   Password Validation Function ~checkpass
 
 ## Server Communication Toolkit (server.php) ~server
 
@@ -39,3 +33,9 @@
 -   Function for Checking Account Existence ~exists
 
 -   Account Creation Function ~newacc
+
+## User Input Validation Toolkit (validator.php) ~validator
+
+-   Username Validation Function ~username
+
+-   Password Validation Function ~userpass
