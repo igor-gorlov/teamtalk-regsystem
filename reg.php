@@ -34,7 +34,9 @@ try
 	);
 
 	// Create a new account.
-	createAccount($_GET["name"], $_GET["password"]);
+	$newUsername = $_GET["name"];
+	$newPassword = $_GET["password"];
+	createAccount($newUsername, $newPassword);
 	echo("Successfully created a new account named $newUsername!");
 
 }
