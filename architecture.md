@@ -22,6 +22,8 @@
 
 -   Server Unavailable Exception ~unavailable
 
+-   TeamTalk Server Connection Class ~connection
+
 -   Responding Text Function ~getrespondtext
 
 -   Command Parsing Function ~cmdparse

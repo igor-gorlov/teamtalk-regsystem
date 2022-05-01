@@ -58,6 +58,42 @@ class ServerUnavailableException extends RuntimeException
 	}
 }
 
+// Represents a single connection with a TeamTalk 5 server.
+class TtServerConnection
+{
+
+	private $mSocket; // the actual underlying connection.
+	private int $mLastId; // a counter used to compute command identifiers.
+
+	/*
+	The constructor does not establish connection:
+	this operation may take a lot of time and thus should be delayed while possible.
+	*/
+	function __construct(public readonly string $address, public readonly int $port)
+	{
+		$this->mLastId = 0;
+		$this->mSocket = null;
+	}
+
+	/*
+	Establishes connection if it has not been already established.
+	Throws ServerUnavailableException if cannot connect.
+	*/
+	private function ensureConnection(): void
+	{
+		if($this->mSocket === null)
+		{
+			$this->mSocket = fsockopen($this->address, $this->port);
+			if($this->mSocket === false)
+			{
+				$this->mSocket = null;
+				throw new ServerUnavailableException($this->address, $this->port);
+			}
+		}
+	}
+
+}
+
 /*
 Waits for the server to process the command with the given id;
 returns the server's reply (with "begin" and "end" parts excluded).
