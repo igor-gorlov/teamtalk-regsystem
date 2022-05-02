@@ -285,6 +285,18 @@ class TtServerConnection
 		$this->executeCommand("newaccount username=\"$username\" password=\"$password\" usertype=1");
 	}
 
+	/*
+	Performs authorization with the given username, password and nickname.
+	Throws CommandFailedException on error.
+	*/
+	function login(string $username, string $password, string $nickname): void
+	{
+		$this->executeCommand
+		(
+			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
+		);
+	}
+
 }
 
 

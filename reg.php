@@ -25,9 +25,7 @@ try
 	$connection = new TtServerConnection($host, $port);
 
 	// Authorize under the system account.
-	$connection->executeCommand(
-		"login username=\"$systemUsername\" password=\"$systemPassword\" nickname=\"$systemNickname\" protocol=\"5.0\""
-	);
+	$connection->login($systemUsername, $systemPassword, $systemNickname);
 
 	// Create a new account.
 	$newUsername = $_GET["name"];

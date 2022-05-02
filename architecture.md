@@ -38,6 +38,8 @@
 
     -   Account Creation Function ~newacc
 
+    -   Authorization Function ~login
+
 ## User Input Validation Toolkit (validator.php) ~validator
 
 -   Username Validation Function ~username
