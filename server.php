@@ -49,209 +49,242 @@ class AccountAlreadyExistsException extends RuntimeException
 	}
 }
 
-/*
-Waits for the server to process the command with the given id;
-returns the server's reply (with "begin" and "end" parts excluded).
-This function implies (but does not verify) that $socket global variable is set
-and represents connection between the script and the TeamTalk 5 server;
-the caller is responsible for meating that prerequisite.
-*/
-function getRespondingText(int $id): string
+// Is thrown when an attempt to establish connection with the TeamTalk 5 server fails.
+class ServerUnavailableException extends RuntimeException
 {
-	global $socket;
-	$text = "";
-	while(true) // scan the communication history again and again until the reply is found.
+	function __construct(string $address, int $port)
 	{
-		while($line = fgets($socket))
+		parent::__construct("Unable to connect to $address:$port");
+	}
+}
+
+// Represents a single connection with a TeamTalk 5 server.
+class TtServerConnection
+{
+
+	private $mSocket; // the actual underlying connection.
+	private int $mLastId; // a counter used to compute command identifiers.
+
+	/*
+	The constructor does not establish connection:
+	this operation may take a lot of time and thus should be delayed while possible.
+	*/
+	function __construct(public readonly string $address, public readonly int $port)
+	{
+		$this->mLastId = 0;
+		$this->mSocket = null;
+	}
+
+	/*
+	Establishes connection if it has not been already established.
+	Throws ServerUnavailableException if cannot connect.
+	*/
+	private function ensureConnection(): void
+	{
+		if($this->mSocket === null)
 		{
-			if($line=="begin id=$id\r\n") // the beginning of the reply is found.
+			$this->mSocket = fsockopen($this->address, $this->port);
+			if($this->mSocket === false)
 			{
-				for($respondingLine = fgets($socket); $respondingLine != "end id=$id\r\n"; $respondingLine = fgets($socket))
+				$this->mSocket = null;
+				throw new ServerUnavailableException($this->address, $this->port);
+			}
+		}
+	}
+
+	/*
+	Waits for the server to process the command with the given id;
+	returns the server's reply (with "begin" and "end" parts excluded).
+	*/
+	function getRespondingText(int $id): string
+	{
+		$text = "";
+		while(true) // scan the communication history again and again until the reply is found.
+		{
+			while($line = fgets($this->mSocket))
+			{
+				if($line=="begin id=$id\r\n") // the beginning of the reply is found.
 				{
-					$text .= $respondingLine;
+					for($respondingLine = fgets($this->mSocket); $respondingLine != "end id=$id\r\n"; $respondingLine = fgets($this->mSocket))
+					{
+						$text .= $respondingLine;
+					}
+					return $text;
 				}
-				return $text;
 			}
 		}
 	}
-}
 
-/*
-Accepts a command in the form of a string; returns an object containing the parsed data.
-This function expects the input to be a syntactically correct TeamTalk 5 command; no validation is performed.
-*/
-function parseCommand(string $command): Command
-{
-	$result = new Command;
-	$matches = array(); // a reusable array to store preg_match results in.
-	// Extract the name.
-	preg_match("/^([a-z]+\b)(\s*)/i", $command, $matches);
-	$result->name = $matches[1];
-	$offset = strlen($matches[0]);
-	// Parse the parameters.
-	while($offset!=strlen($command))
+	/*
+	Accepts a command in the form of a string; returns an object containing the parsed data.
+	This function expects the input to be a syntactically correct TeamTalk 5 command; no validation is performed.
+	*/
+	static function parseCommand(string $command): Command
 	{
-		// Extract the parameter name.
-		preg_match("/^([a-z]+\b)\=/i", substr($command, $offset), $matches);
-		$paramName = $matches[1];
-		$offset += strlen($matches[0]);
-		// Extract the parameter value.
-		$value = null;
-		if(preg_match("/^(true\b|false\b)(\s*)/i", substr($command, $offset), $matches)) // boolean
+		$result = new Command;
+		$matches = array(); // a reusable array to store preg_match results in.
+		// Extract the name.
+		preg_match("/^([a-z]+\b)(\s*)/i", $command, $matches);
+		$result->name = $matches[1];
+		$offset = strlen($matches[0]);
+		// Parse the parameters.
+		while($offset!=strlen($command))
 		{
-			if($matches[1] == "true")
+			// Extract the parameter name.
+			preg_match("/^([a-z]+\b)\=/i", substr($command, $offset), $matches);
+			$paramName = $matches[1];
+			$offset += strlen($matches[0]);
+			// Extract the parameter value.
+			$value = null;
+			if(preg_match("/^(true\b|false\b)(\s*)/i", substr($command, $offset), $matches)) // boolean
 			{
-				$value = true;
+				if($matches[1] == "true")
+				{
+					$value = true;
+				}
+				else
+				{
+					$value = false;
+				}
 			}
-			else
+			elseif(preg_match("/^(\d+\b)(\s*)/i", substr($command, $offset), $matches)) // integer
 			{
-				$value = false;
+				$value = intval($matches[1]);
 			}
-		}
-		elseif(preg_match("/^(\d+\b)(\s*)/i", substr($command, $offset), $matches)) // integer
-		{
-			$value = intval($matches[1]);
-		}
-		elseif(preg_match("/^\[(((\d+,)*\d+)?)\]\s*/i", substr($command, $offset), $matches)) // array of integers
-		{
-			$value = explode(",", $matches[1]);
-			foreach($value as &$elem)
+			elseif(preg_match("/^\[(((\d+,)*\d+)?)\]\s*/i", substr($command, $offset), $matches)) // array of integers
 			{
-				$elem = intval($elem);
+				$value = explode(",", $matches[1]);
+				foreach($value as &$elem)
+				{
+					$elem = intval($elem);
+				}
+			}
+			elseif(preg_match('/^\"(.*?)(\\\\)*\"\s*/i', substr($command, $offset), $matches)) // string
+			{
+				$value = $matches[1];
+			}
+			$result->params[$paramName] = $value;
+			$offset += strlen($matches[0]);
+		}
+		return $result;
+	}
+
+	/*
+	Parses a server reply into an array of objects of type Command.
+	The reply must be syntactically correct; this function performs no validation.
+	*/
+	static function parseRespondingText(string $text): array
+	{
+		// Prepare a container for future results.
+		$commands = array();
+		// Split the text into lines, which in fact are equivalent to commands.
+		$text = rtrim($text);
+		$lines = explode("\r\n", $text);
+		// Build the resulting array.
+		foreach($lines as &$line)
+		{
+			$command = TtServerConnection::parseCommand($line);
+			$commands[] = $command;
+		}
+		return $commands;
+	}
+
+	/*
+	Sends the given command to the TeamTalk 5 server and transfers control back immediately;
+	returns the ID assigned to this command.
+	The result of command execution can be obtained later with getRespondingText() method.
+	Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
+	the function will handle those things implicitly.
+	*/
+	function sendCommand(string $command): int
+	{
+		$this->ensureConnection();
+		$id = ++$this->mLastId;
+		$command .= " id=$id\r\n";
+		fwrite($this->mSocket, $command);
+		return $id;
+	}
+
+	/*
+	Sends the given command to the TeamTalk 5 server and waits for the server's reply.
+
+	The return value type depends on the optional argument $outputMode. You can choose between 2 modes:
+		* COMMAND_REPLY_AS_TEXT: a plain text string is returned;
+		* COMMAND_REPLY_AS_ARRAY [default]: an array of objects of type Command is returned.
+
+	If the server returns an error, and the output mode is COMMAND_REPLY_AS_ARRAY,
+	this function throws CommandFailedException; no exceptions is thrown in text mode even if an error occurs.
+
+	Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
+	the function will handle those things implicitly.
+	*/
+	function executeCommand(string $command, int $outputMode = COMMAND_REPLY_AS_ARRAY): string|array
+	{
+		$id = $this->sendCommand($command);
+		// Wait for the reply.
+		$respondingText = $this->getRespondingText($id);
+		$respondingCommands = TtServerConnection::parseRespondingText($respondingText);
+		// Check for errors.
+		if($respondingCommands[array_key_last($respondingCommands)]->name == "error" and $outputMode == COMMAND_REPLY_AS_ARRAY)
+		{
+			throw new CommandFailedException($command, $respondingCommands);
+		}
+		// Return the required result.
+		switch($outputMode)
+		{
+			case COMMAND_REPLY_AS_TEXT:
+				return $respondingText;
+			case COMMAND_REPLY_AS_ARRAY:
+				return $respondingCommands;
+		}
+	}
+
+	/*
+	Returns true if an account with the given name exists; otherwise returns false.
+	*/
+	function accountExists(string $name): bool
+	{
+		$reply = $this->executeCommand("listaccounts");
+		for($i = 0; $reply[$i]->name == "useraccount"; $i++)
+		{
+			$username = $reply[$i]->params["username"];
+			if($username == $name)
+			{
+				return true;
 			}
 		}
-		elseif(preg_match('/^\"(.*?)(\\\\)*\"\s*/i', substr($command, $offset), $matches)) // string
+		return false;
+	}
+
+	/*
+	Creates a new account of "default" type with the given name and password.
+	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
+	throws InvalidArgumentException if registration data is incorrect;
+	also may throw CommandFailedException in case of other problems.
+	*/
+	function createAccount(string $username, string $password): void
+	{
+		if($this->accountExists($username))
 		{
-			$value = $matches[1];
+			throw new AccountAlreadyExistsException($username);
 		}
-		$result->params[$paramName] = $value;
-		$offset += strlen($matches[0]);
-	}
-	return $result;
-}
-
-/*
-Parses a server reply into an array of objects of type Command.
-The reply must be syntactically correct; this function performs no validation.
-*/
-function parseRespondingText(string $text): array
-{
-	// Prepare a container for future results.
-	$commands = array();
-	// Split the text into lines, which in fact are equivalent to commands.
-	$text = rtrim($text);
-	$lines = explode("\r\n", $text);
-	// Build the resulting array.
-	foreach($lines as &$line)
-	{
-		$command = parseCommand($line);
-		$commands[] = $command;
-	}
-	return $commands;
-}
-
-/*
-Sends the given command to the TeamTalk 5 server and transfers control back immediately;
-returns the ID assigned to this command.
-The result of command execution can be obtained later with getRespondingText() function.
-Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
-the function will handle those things implicitly.
-This function implies (but does not verify) that $socket global variable is set
-and represents connection between the script and the TeamTalk 5 server;
-the caller is responsible for meating that prerequisite.
-*/
-function sendCommand(string $command): int
-{
-	static $id = 0;
-	global $socket;
-	$id++;
-	$command .= " id=$id\r\n";
-	fwrite($socket, $command);
-	return $id;
-}
-
-/*
-Sends the given command to the TeamTalk 5 server and waits for the server's reply.
-
-The return value type depends on the optional argument $outputMode. You can choose between 2 modes:
-	* COMMAND_REPLY_AS_TEXT: a plain text string is returned;
-	* COMMAND_REPLY_AS_ARRAY [default]: an array of objects of type Command is returned.
-
-If the server returns an error, and the output mode is COMMAND_REPLY_AS_ARRAY,
-this function throws CommandFailedException; no exceptions is thrown in text mode even if an error occurs.
-
-Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
-the function will handle those things implicitly.
-
-This function implies (but does not verify) that $socket global variable is set
-and represents connection between the script and the TeamTalk 5 server;
-the caller is responsible for meating that prerequisite.
-*/
-function executeCommand(string $command, int $outputMode = COMMAND_REPLY_AS_ARRAY): string|array
-{
-	$id = sendCommand($command);
-	// Wait for the reply.
-	$respondingText = getRespondingText($id);
-	$respondingCommands = parseRespondingText($respondingText);
-	// Check for errors.
-	if($respondingCommands[array_key_last($respondingCommands)]->name == "error" and $outputMode == COMMAND_REPLY_AS_ARRAY)
-	{
-		throw new CommandFailedException($command, $respondingCommands);
-	}
-	// Return the required result.
-	switch($outputMode)
-	{
-		case COMMAND_REPLY_AS_TEXT:
-			return $respondingText;
-		case COMMAND_REPLY_AS_ARRAY:
-			return $respondingCommands;
-	}
-}
-
-/*
-Returns true if an account with the given name exists; otherwise returns false.
-*/
-function accountExists(string $name): bool
-{
-	$reply = executeCommand("listaccounts");
-	for($i = 0; $reply[$i]->name == "useraccount"; $i++)
-	{
-		$username = $reply[$i]->params["username"];
-		if($username == $name)
+		$usernameIsValid = isValidUsername($username);
+		$passwordIsValid = isValidPassword($password);
+		if(!$usernameIsValid and !$passwordIsValid)
 		{
-			return true;
+			throw new InvalidArgumentException("Both username and password are invalid");
 		}
+		elseif(!$usernameIsValid)
+		{
+			throw new InvalidArgumentException("Invalid username");
+		}
+		elseif(!$passwordIsValid)
+		{
+			throw new InvalidArgumentException("Invalid password");
+		}
+		$this->executeCommand("newaccount username=\"$username\" password=\"$password\" usertype=1");
 	}
-	return false;
-}
 
-/*
-Creates a new account of "default" type with the given name and password.
-Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
-throws InvalidArgumentException if registration data is incorrect;
-also may throw CommandFailedException in case of other problems.
-*/
-function createAccount(string $username, string $password): void
-{
-	if(accountExists($username))
-	{
-		throw new AccountAlreadyExistsException($username);
-	}
-	$usernameIsValid = isValidUsername($username);
-	$passwordIsValid = isValidPassword($password);
-	if(!$usernameIsValid and !$passwordIsValid)
-	{
-		throw new InvalidArgumentException("Both username and password are invalid");
-	}
-	elseif(!$usernameIsValid)
-	{
-		throw new InvalidArgumentException("Invalid username");
-	}
-	elseif(!$passwordIsValid)
-	{
-		throw new InvalidArgumentException("Invalid password");
-	}
-	executeCommand("newaccount username=\"$username\" password=\"$password\" usertype=1");
 }
 
 

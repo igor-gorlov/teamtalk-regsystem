@@ -20,19 +20,23 @@
 
 -   Account Already Exists Exception ~already-exists
 
--   Responding Text Function ~getrespondtext
+-   Server Unavailable Exception ~unavailable
 
--   Command Parsing Function ~cmdparse
+-   TeamTalk Server Connection Class ~connection
 
--   Function for Parsing Server Replies ~resp-parse
+    -   Responding Text Function ~getrespondtext
 
--   Command Sending Function ~send
+    -   Command Parsing Function ~cmdparse
 
--   Command Execution Function ~execute
+    -   Function for Parsing Server Replies ~resp-parse
 
--   Function for Checking Account Existence ~exists
+    -   Command Sending Function ~send
 
--   Account Creation Function ~newacc
+    -   Command Execution Function ~execute
+
+    -   Function for Checking Account Existence ~exists
+
+    -   Account Creation Function ~newacc
 
 ## User Input Validation Toolkit (validator.php) ~validator
 
