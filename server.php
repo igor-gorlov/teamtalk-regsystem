@@ -49,19 +49,13 @@ class Credentials
 	// Validates a username.
 	static function isValidUsername(string $str): bool
 	{
-		if(strlen($str)>0)
-		{
-			return true;
-		}
+		return strlen($str)>0;
 	}
 
 	// Validates a password.
 	static function isValidPassword(string $str): bool
 	{
-		if(strlen($str)>0)
-		{
-			return true;
-		}
+		return strlen($str)>0;
 	}
 
 }
