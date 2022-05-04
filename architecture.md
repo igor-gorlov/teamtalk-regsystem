@@ -14,6 +14,8 @@
 
 -   Constants ~const
 
+-   Credentials' Class ~cred
+
 -   Command Class ~command
 
 -   Command Failed Exception ~cmdfailed

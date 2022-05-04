@@ -17,6 +17,37 @@ require "validator.php";
 const COMMAND_REPLY_AS_TEXT = 1;
 const COMMAND_REPLY_AS_ARRAY = 2;
 
+
+// Encapsulates TeamTalk 5 account credentials.
+class Credentials
+{
+
+	public string $username;
+	public string $password;
+
+	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
+	function __construct(string $username, string $password)
+	{
+		$usernameIsValid = isValidUsername($username);
+		$passwordIsValid = isValidPassword($password);
+		if(!$usernameIsValid and !$passwordIsValid)
+		{
+			throw new InvalidArgumentException("Both username and password are invalid");
+		}
+		elseif(!$usernameIsValid)
+		{
+			throw new InvalidArgumentException("Invalid username");
+		}
+		elseif(!$passwordIsValid)
+		{
+			throw new InvalidArgumentException("Invalid password");
+		}
+		$this->username = $username;
+		$this->password = $password;
+	}
+
+}
+
 // Represents a single command.
 class Command
 {
@@ -259,28 +290,13 @@ class TtServerConnection
 	/*
 	Creates a new account of "default" type with the given name and password.
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
-	throws InvalidArgumentException if credentials are incorrect;
-	also may throw CommandFailedException in case of other problems.
+	may throw CommandFailedException in case of other problems.
 	*/
 	function createAccount(string $username, string $password): void
 	{
 		if($this->accountExists($username))
 		{
 			throw new AccountAlreadyExistsException($username);
-		}
-		$usernameIsValid = isValidUsername($username);
-		$passwordIsValid = isValidPassword($password);
-		if(!$usernameIsValid and !$passwordIsValid)
-		{
-			throw new InvalidArgumentException("Both username and password are invalid");
-		}
-		elseif(!$usernameIsValid)
-		{
-			throw new InvalidArgumentException("Invalid username");
-		}
-		elseif(!$passwordIsValid)
-		{
-			throw new InvalidArgumentException("Invalid password");
 		}
 		$this->executeCommand("newaccount username=\"$username\" password=\"$password\" usertype=1");
 	}
