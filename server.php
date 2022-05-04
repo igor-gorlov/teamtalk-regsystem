@@ -47,7 +47,7 @@ class Credentials
 	}
 
 	// Validates a username.
-	static function isValidUsername($str)
+	static function isValidUsername(string $str): bool
 	{
 		if(strlen($str)>0)
 		{
@@ -56,7 +56,7 @@ class Credentials
 	}
 
 	// Validates a password.
-	static function isValidPassword($str)
+	static function isValidPassword(string $str): bool
 	{
 		if(strlen($str)>0)
 		{
