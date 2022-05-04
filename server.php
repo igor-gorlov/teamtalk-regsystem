@@ -259,7 +259,7 @@ class TtServerConnection
 	/*
 	Creates a new account of "default" type with the given name and password.
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
-	throws InvalidArgumentException if registration data is incorrect;
+	throws InvalidArgumentException if credentials are incorrect;
 	also may throw CommandFailedException in case of other problems.
 	*/
 	function createAccount(string $username, string $password): void

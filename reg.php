@@ -2,7 +2,7 @@
 
 
 /*
-This script accepts registration data and creates a new TeamTalk 5 account from it.
+This script accepts credentials and creates a new TeamTalk 5 account from them.
 © Igor Gorlov, 2022.
 */
 
