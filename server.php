@@ -183,7 +183,7 @@ class TtServerConnection
 		// Build the resulting array.
 		foreach($lines as &$line)
 		{
-			$command = TtServerConnection::parseCommand($line);
+			$command = static::parseCommand($line);
 			$commands[] = $command;
 		}
 		return $commands;
@@ -223,7 +223,7 @@ class TtServerConnection
 		$id = $this->sendCommand($command);
 		// Wait for the reply.
 		$respondingText = $this->getRespondingText($id);
-		$respondingCommands = TtServerConnection::parseRespondingText($respondingText);
+		$respondingCommands = static::parseRespondingText($respondingText);
 		// Check for errors.
 		if($respondingCommands[array_key_last($respondingCommands)]->name == "error" and $outputMode == COMMAND_REPLY_AS_ARRAY)
 		{
