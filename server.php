@@ -46,23 +46,23 @@ class Credentials
 		$this->password = $password;
 	}
 
-// Validates a username.
-static function isValidUsername($str)
-{
-	if(strlen($str)>0)
+	// Validates a username.
+	static function isValidUsername($str)
 	{
-		return true;
+		if(strlen($str)>0)
+		{
+			return true;
+		}
 	}
-}
 
-// Validates a password.
-static function isValidPassword($str)
-{
-	if(strlen($str)>0)
+	// Validates a password.
+	static function isValidPassword($str)
 	{
-		return true;
+		if(strlen($str)>0)
+		{
+			return true;
+		}
 	}
-}
 
 }
 
