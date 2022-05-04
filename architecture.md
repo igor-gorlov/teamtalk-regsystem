@@ -16,6 +16,10 @@
 
 -   Credentials' Class ~cred
 
+    -   Username Validation Function ~username
+
+    -   Password Validation Function ~userpass
+
 -   Command Class ~command
 
 -   Command Failed Exception ~cmdfailed
@@ -43,7 +47,3 @@
     -   Authorization Function ~login
 
 ## User Input Validation Toolkit (validator.php) ~validator
-
--   Username Validation Function ~username
-
--   Password Validation Function ~userpass
