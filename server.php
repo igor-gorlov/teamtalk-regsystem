@@ -37,19 +37,21 @@ class Credentials
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
 	function __construct(string $username, string $password)
 	{
-		$usernameIsValid = static::isValidUsername($username);
-		$passwordIsValid = static::isValidPassword($password);
-		if(!$usernameIsValid and !$passwordIsValid)
+		$error = false;
+		$errorMessage = "The following credentials are invalid:\n";
+		if(!static::isValidUsername($username))
 		{
-			throw new InvalidArgumentException("Both username and password are invalid");
+			$error = true;
+			$errorMessage .= "\tUsername\n";
 		}
-		elseif(!$usernameIsValid)
+		if(!static::isValidPassword($password))
 		{
-			throw new InvalidArgumentException("Invalid username");
+			$error = true;
+			$errorMessage .= "\tPassword\n";
 		}
-		elseif(!$passwordIsValid)
+		if($error)
 		{
-			throw new InvalidArgumentException("Invalid password");
+			throw new InvalidArgumentException($errorMessage);
 		}
 		$this->username = $username;
 		$this->password = $password;
