@@ -334,11 +334,11 @@ class TtServerConnection
 	}
 
 	/*
-	Creates a new account of "default" type with the given name and password.
+	Creates a new account of "default" type with the given name and password, returns its username.
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
 	may throw CommandFailedException in case of other problems.
 	*/
-	function createAccount(Credentials $cred): void
+	function createAccount(Credentials $cred): string
 	{
 		if($this->accountExists($cred->username))
 		{
@@ -348,6 +348,7 @@ class TtServerConnection
 		(
 			"newaccount username=\"$cred->username\" password=\"$cred->password\" usertype=1"
 		);
+		return $cred->username;
 	}
 
 	/*
