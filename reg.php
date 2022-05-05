@@ -22,7 +22,7 @@ try
 	$systemNickname = "Registration System"; // The system account's nickname.
 
 	// Establish connection.
-	$connection = new TtServerConnection($host, $port);
+	$connection = new Tt5Session($host, $port);
 
 	// Authorize under the system account.
 	$connection->login(new Credentials($systemUsername, $systemPassword), $systemNickname);

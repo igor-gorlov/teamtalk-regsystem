@@ -138,7 +138,7 @@ class ServerUnavailableException extends RuntimeException
 }
 
 // Represents a single connection with a TeamTalk 5 server.
-class TtServerConnection
+class Tt5Session
 {
 
 	private $mSocket; // the actual underlying connection.
