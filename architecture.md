@@ -22,6 +22,8 @@
 
     -   Password Validation Function ~userpass
 
+    -   Function for URL-Based Construction ~from-url
+
 -   Command Class ~command
 
 -   Command Failed Exception ~cmdfailed

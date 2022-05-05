@@ -55,6 +55,31 @@ class Credentials
 		$this->password = $password;
 	}
 
+	/*
+	Tries to construct an instance of the class using parameters passed via the URL query string.
+	Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
+	*/
+	static function fromUrl(): static
+	{
+		$error = false;
+		$errorMessage = "The following URL parameters are not provided:\n";
+		if(!isset($_GET["name"]))
+		{
+			$error = true;
+			$errorMessage .= "\tname\n";
+		}
+		if(!isset($_GET["password"]))
+		{
+			$error = true;
+			$errorMessage .= "\tpassword\n";
+		}
+		if($error)
+		{
+			throw new BadQueryStringException($errorMessage);
+		}
+		return new static($_GET["name"], $_GET["password"]);
+	}
+
 	// Validates a username.
 	static function isValidUsername(string $str): bool
 	{
