@@ -14,6 +14,8 @@
 
 -   Constants ~const
 
+-   Bad Query String Exception ~bad-query
+
 -   Credentials' Class ~cred
 
     -   Username Validation Function ~username
