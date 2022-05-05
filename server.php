@@ -21,7 +21,7 @@ const COMMAND_REPLY_AS_ARRAY = 2;
 // Is thrown when one or more URL parameters needed for some task are missing.
 class BadQueryStringException extends RuntimeException
 {
-	function __construct(string $message)
+	public function __construct(string $message)
 	{
 		parent::__construct($message);
 	}
@@ -35,7 +35,7 @@ class Credentials
 	public string $password;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
-	function __construct(string $username, string $password)
+	public function __construct(string $username, string $password)
 	{
 		$error = false;
 		$errorMessage = "The following credentials are invalid:\n";
@@ -61,7 +61,7 @@ class Credentials
 	Tries to construct an instance of the class using parameters passed via the URL query string.
 	Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
 	*/
-	static function fromUrl(): static
+	public static function fromUrl(): static
 	{
 		$error = false;
 		$errorMessage = "The following URL parameters are not provided:\n";
@@ -83,13 +83,13 @@ class Credentials
 	}
 
 	// Validates a username.
-	static function isValidUsername(string $str): bool
+	public static function isValidUsername(string $str): bool
 	{
 		return strlen($str)>0;
 	}
 
 	// Validates a password.
-	static function isValidPassword(string $str): bool
+	public static function isValidPassword(string $str): bool
 	{
 		return strlen($str)>0;
 	}
@@ -106,7 +106,7 @@ class Command
 // Is thrown when a command yields an error.
 class CommandFailedException extends RuntimeException
 {
-	function __construct(string $command, array|null $reply)
+	public function __construct(string $command, array|null $reply)
 	{
 		$message = "The following command failed:\n\t$command";
 		if($reply != null)
@@ -122,7 +122,7 @@ class CommandFailedException extends RuntimeException
 // Is thrown when attempting to register an account that already exists.
 class AccountAlreadyExistsException extends RuntimeException
 {
-	function __construct(string $username)
+	public function __construct(string $username)
 	{
 		parent::__construct("Unable to create account named $username because this username is already taken");
 	}
@@ -131,7 +131,7 @@ class AccountAlreadyExistsException extends RuntimeException
 // Is thrown when an attempt to establish connection with the TeamTalk 5 server fails.
 class ServerUnavailableException extends RuntimeException
 {
-	function __construct(string $address, int $port)
+	public function __construct(string $address, int $port)
 	{
 		parent::__construct("Unable to connect to $address:$port");
 	}
@@ -148,7 +148,7 @@ class TtServerConnection
 	The constructor does not establish connection:
 	this operation may take a lot of time and thus should be delayed while possible.
 	*/
-	function __construct(public readonly string $address, public readonly int $port)
+	public function __construct(public readonly string $address, public readonly int $port)
 	{
 		$this->mLastId = 0;
 		$this->mSocket = null;
@@ -175,7 +175,7 @@ class TtServerConnection
 	Waits for the server to process the command with the given id;
 	returns the server's reply (with "begin" and "end" parts excluded).
 	*/
-	function getRespondingText(int $id): string
+	public function getRespondingText(int $id): string
 	{
 		$text = "";
 		while(true) // scan the communication history again and again until the reply is found.
@@ -198,7 +198,7 @@ class TtServerConnection
 	Accepts a command in the form of a string; returns an object containing the parsed data.
 	This function expects the input to be a syntactically correct TeamTalk 5 command; no validation is performed.
 	*/
-	static function parseCommand(string $command): Command
+	public static function parseCommand(string $command): Command
 	{
 		$result = new Command;
 		$matches = array(); // a reusable array to store preg_match results in.
@@ -252,7 +252,7 @@ class TtServerConnection
 	Parses a server reply into an array of objects of type Command.
 	The reply must be syntactically correct; this function performs no validation.
 	*/
-	static function parseRespondingText(string $text): array
+	public static function parseRespondingText(string $text): array
 	{
 		// Prepare a container for future results.
 		$commands = array();
@@ -275,7 +275,7 @@ class TtServerConnection
 	Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 	the function will handle those things implicitly.
 	*/
-	function sendCommand(string $command): int
+	public function sendCommand(string $command): int
 	{
 		$this->ensureConnection();
 		$id = ++$this->mLastId;
@@ -297,7 +297,7 @@ class TtServerConnection
 	Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 	the function will handle those things implicitly.
 	*/
-	function executeCommand(string $command, int $outputMode = COMMAND_REPLY_AS_ARRAY): string|array
+	public function executeCommand(string $command, int $outputMode = COMMAND_REPLY_AS_ARRAY): string|array
 	{
 		$id = $this->sendCommand($command);
 		// Wait for the reply.
@@ -321,7 +321,7 @@ class TtServerConnection
 	/*
 	Returns true if an account with the given name exists; otherwise returns false.
 	*/
-	function accountExists(string $name): bool
+	public function accountExists(string $name): bool
 	{
 		$reply = $this->executeCommand("listaccounts");
 		for($i = 0; $reply[$i]->name == "useraccount"; $i++)
@@ -340,7 +340,7 @@ class TtServerConnection
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
 	may throw CommandFailedException in case of other problems.
 	*/
-	function createAccount(Credentials $cred): string
+	public function createAccount(Credentials $cred): string
 	{
 		if($this->accountExists($cred->username))
 		{
@@ -357,7 +357,7 @@ class TtServerConnection
 	Performs authorization with the given username, password and nickname.
 	Throws CommandFailedException on error.
 	*/
-	function login(Credentials $cred, string $nickname): void
+	public function login(Credentials $cred, string $nickname): void
 	{
 		$this->executeCommand
 		(
