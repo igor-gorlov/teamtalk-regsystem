@@ -14,6 +14,16 @@
 
 -   Constants ~const
 
+-   Bad Query String Exception ~bad-query
+
+-   Credentials' Class ~cred
+
+    -   Username Validation Function ~username
+
+    -   Password Validation Function ~userpass
+
+    -   Function for URL-Based Construction ~from-url
+
 -   Command Class ~command
 
 -   Command Failed Exception ~cmdfailed
@@ -41,7 +51,3 @@
     -   Authorization Function ~login
 
 ## User Input Validation Toolkit (validator.php) ~validator
-
--   Username Validation Function ~username
-
--   Password Validation Function ~userpass

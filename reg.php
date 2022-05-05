@@ -2,7 +2,7 @@
 
 
 /*
-This script accepts registration data and creates a new TeamTalk 5 account from it.
+This script accepts credentials and creates a new TeamTalk 5 account from them.
 © Igor Gorlov, 2022.
 */
 
@@ -25,12 +25,10 @@ try
 	$connection = new TtServerConnection($host, $port);
 
 	// Authorize under the system account.
-	$connection->login($systemUsername, $systemPassword, $systemNickname);
+	$connection->login(new Credentials($systemUsername, $systemPassword), $systemNickname);
 
 	// Create a new account.
-	$newUsername = $_GET["name"];
-	$newPassword = $_GET["password"];
-	$connection->createAccount($newUsername, $newPassword);
+	$newUsername = $connection->createAccount(Credentials::fromUrl());
 	echo("Successfully created a new account named $newUsername!");
 
 }

@@ -17,6 +17,85 @@ require "validator.php";
 const COMMAND_REPLY_AS_TEXT = 1;
 const COMMAND_REPLY_AS_ARRAY = 2;
 
+
+// Is thrown when one or more URL parameters needed for some task are missing.
+class BadQueryStringException extends RuntimeException
+{
+	function __construct(string $message)
+	{
+		parent::__construct($message);
+	}
+}
+
+// Encapsulates TeamTalk 5 account credentials.
+class Credentials
+{
+
+	public string $username;
+	public string $password;
+
+	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
+	function __construct(string $username, string $password)
+	{
+		$error = false;
+		$errorMessage = "The following credentials are invalid:\n";
+		if(!static::isValidUsername($username))
+		{
+			$error = true;
+			$errorMessage .= "\tUsername\n";
+		}
+		if(!static::isValidPassword($password))
+		{
+			$error = true;
+			$errorMessage .= "\tPassword\n";
+		}
+		if($error)
+		{
+			throw new InvalidArgumentException($errorMessage);
+		}
+		$this->username = $username;
+		$this->password = $password;
+	}
+
+	/*
+	Tries to construct an instance of the class using parameters passed via the URL query string.
+	Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
+	*/
+	static function fromUrl(): static
+	{
+		$error = false;
+		$errorMessage = "The following URL parameters are not provided:\n";
+		if(!isset($_GET["name"]))
+		{
+			$error = true;
+			$errorMessage .= "\tname\n";
+		}
+		if(!isset($_GET["password"]))
+		{
+			$error = true;
+			$errorMessage .= "\tpassword\n";
+		}
+		if($error)
+		{
+			throw new BadQueryStringException($errorMessage);
+		}
+		return new static($_GET["name"], $_GET["password"]);
+	}
+
+	// Validates a username.
+	static function isValidUsername(string $str): bool
+	{
+		return strlen($str)>0;
+	}
+
+	// Validates a password.
+	static function isValidPassword(string $str): bool
+	{
+		return strlen($str)>0;
+	}
+
+}
+
 // Represents a single command.
 class Command
 {
@@ -257,43 +336,32 @@ class TtServerConnection
 	}
 
 	/*
-	Creates a new account of "default" type with the given name and password.
+	Creates a new account of "default" type with the given name and password, returns its username.
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
-	throws InvalidArgumentException if registration data is incorrect;
-	also may throw CommandFailedException in case of other problems.
+	may throw CommandFailedException in case of other problems.
 	*/
-	function createAccount(string $username, string $password): void
+	function createAccount(Credentials $cred): string
 	{
-		if($this->accountExists($username))
+		if($this->accountExists($cred->username))
 		{
-			throw new AccountAlreadyExistsException($username);
+			throw new AccountAlreadyExistsException($cred->username);
 		}
-		$usernameIsValid = isValidUsername($username);
-		$passwordIsValid = isValidPassword($password);
-		if(!$usernameIsValid and !$passwordIsValid)
-		{
-			throw new InvalidArgumentException("Both username and password are invalid");
-		}
-		elseif(!$usernameIsValid)
-		{
-			throw new InvalidArgumentException("Invalid username");
-		}
-		elseif(!$passwordIsValid)
-		{
-			throw new InvalidArgumentException("Invalid password");
-		}
-		$this->executeCommand("newaccount username=\"$username\" password=\"$password\" usertype=1");
+		$this->executeCommand
+		(
+			"newaccount username=\"$cred->username\" password=\"$cred->password\" usertype=1"
+		);
+		return $cred->username;
 	}
 
 	/*
 	Performs authorization with the given username, password and nickname.
 	Throws CommandFailedException on error.
 	*/
-	function login(string $username, string $password, string $nickname): void
+	function login(Credentials $cred, string $nickname): void
 	{
 		$this->executeCommand
 		(
-			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
+			"login username=\"$cred->username\" password=\"$cred->password\" nickname=\"$nickname\" protocol=\"5.0\""
 		);
 	}
 
