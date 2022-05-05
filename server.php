@@ -338,24 +338,27 @@ class TtServerConnection
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
 	may throw CommandFailedException in case of other problems.
 	*/
-	function createAccount(string $username, string $password): void
+	function createAccount(Credentials $cred): void
 	{
-		if($this->accountExists($username))
+		if($this->accountExists($cred->username))
 		{
-			throw new AccountAlreadyExistsException($username);
+			throw new AccountAlreadyExistsException($cred->username);
 		}
-		$this->executeCommand("newaccount username=\"$username\" password=\"$password\" usertype=1");
+		$this->executeCommand
+		(
+			"newaccount username=\"$cred->username\" password=\"$cred->password\" usertype=1"
+		);
 	}
 
 	/*
 	Performs authorization with the given username, password and nickname.
 	Throws CommandFailedException on error.
 	*/
-	function login(string $username, string $password, string $nickname): void
+	function login(Credentials $cred, string $nickname): void
 	{
 		$this->executeCommand
 		(
-			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
+			"login username=\"$cred->username\" password=\"$cred->password\" nickname=\"$nickname\" protocol=\"5.0\""
 		);
 	}
 
