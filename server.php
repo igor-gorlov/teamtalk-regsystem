@@ -158,7 +158,7 @@ class TtServerConnection
 	Establishes connection if it has not been already established.
 	Throws ServerUnavailableException if cannot connect.
 	*/
-	private function ensureConnection(): void
+	private function mEnsureConnection(): void
 	{
 		if($this->mSocket === null)
 		{
@@ -277,7 +277,7 @@ class TtServerConnection
 	*/
 	public function sendCommand(string $command): int
 	{
-		$this->ensureConnection();
+		$this->mEnsureConnection();
 		$id = ++$this->mLastId;
 		$command .= " id=$id\r\n";
 		fwrite($this->mSocket, $command);
