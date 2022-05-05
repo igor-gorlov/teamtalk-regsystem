@@ -34,6 +34,8 @@
 
 -   TeamTalk Server Connection Class ~connection
 
+    -   Ensure Connection Function ~ensure
+
     -   Responding Text Function ~getrespondtext
 
     -   Command Parsing Function ~cmdparse
