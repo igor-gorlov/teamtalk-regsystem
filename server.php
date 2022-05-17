@@ -24,8 +24,8 @@ class BadQueryStringException extends RuntimeException
 	}
 }
 
-// Encapsulates TeamTalk 5 account credentials.
-class Credentials
+// Encapsulates TeamTalk 5 user information.
+class UserInfo
 {
 
 	private string $mUsername;
@@ -35,7 +35,7 @@ class Credentials
 	public function __construct(string $username, string $password)
 	{
 		$error = false;
-		$errorMessage = "The following credentials are invalid:\n";
+		$errorMessage = "The following user properties are invalid:\n";
 		if(!static::isValidUsername($username))
 		{
 			$error = true;
@@ -344,10 +344,10 @@ class Tt5Session
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
 	may throw CommandFailedException in case of other problems.
 	*/
-	public function createAccount(Credentials $cred): string
+	public function createAccount(UserInfo $acc): string
 	{
-		$username = $cred->getUsername();
-		$password = $cred->getPassword();
+		$username = $acc->getUsername();
+		$password = $acc->getPassword();
 		if($this->accountExists($username))
 		{
 			throw new AccountAlreadyExistsException($username);
@@ -360,13 +360,13 @@ class Tt5Session
 	}
 
 	/*
-	Performs authorization with the given credentials and nickname.
+	Performs authorization with the given parameters.
 	Throws CommandFailedException on error.
 	*/
-	public function login(Credentials $cred, string $nickname): void
+	public function login(UserInfo $acc, string $nickname): void
 	{
-		$username = $cred->getUsername();
-		$password = $cred->getPassword();
+		$username = $acc->getUsername();
+		$password = $acc->getPassword();
 		$this->executeCommand
 		(
 			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""

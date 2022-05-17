@@ -25,10 +25,10 @@ try
 	$connection = new Tt5Session($host, $port);
 
 	// Authorize under the system account.
-	$connection->login(new Credentials($systemUsername, $systemPassword), $systemNickname);
+	$connection->login(new UserInfo($systemUsername, $systemPassword), $systemNickname);
 
 	// Create a new account.
-	$newUsername = $connection->createAccount(credentialsFromUrl());
+	$newUsername = $connection->createAccount(userFromUrl());
 	echo("Successfully created a new account named $newUsername!");
 
 }
@@ -39,10 +39,10 @@ catch(Exception $e)
 
 
 /*
-Tries to construct an instance of Credentials class using parameters passed via the URL query string.
+Tries to construct an instance of UserInfo class using parameters passed via the URL query string.
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
 */
-function credentialsFromUrl(): Credentials
+function userFromUrl(): UserInfo
 {
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
@@ -60,7 +60,7 @@ function credentialsFromUrl(): Credentials
 	{
 		throw new BadQueryStringException($errorMessage);
 	}
-	return new Credentials($_GET["name"], $_GET["password"]);
+	return new UserInfo($_GET["name"], $_GET["password"]);
 }
 
 
