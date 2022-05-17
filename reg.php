@@ -28,13 +28,39 @@ try
 	$connection->login(new Credentials($systemUsername, $systemPassword), $systemNickname);
 
 	// Create a new account.
-	$newUsername = $connection->createAccount(Credentials::fromUrl());
+	$newUsername = $connection->createAccount(credentialsFromUrl());
 	echo("Successfully created a new account named $newUsername!");
 
 }
 catch(Exception $e)
 {
 	echo("<pre>Error: ".$e->getMessage()."</pre>");
+}
+
+
+/*
+Tries to construct an instance of Credentials class using parameters passed via the URL query string.
+Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
+*/
+function credentialsFromUrl(): Credentials
+{
+	$error = false;
+	$errorMessage = "The following URL parameters are not provided:\n";
+	if(!isset($_GET["name"]))
+	{
+		$error = true;
+		$errorMessage .= "\tname\n";
+	}
+	if(!isset($_GET["password"]))
+	{
+		$error = true;
+		$errorMessage .= "\tpassword\n";
+	}
+	if($error)
+	{
+		throw new BadQueryStringException($errorMessage);
+	}
+	return new Credentials($_GET["name"], $_GET["password"]);
 }
 
 
