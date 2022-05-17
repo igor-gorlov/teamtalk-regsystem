@@ -25,7 +25,7 @@ try
 	$connection = new Tt5Session($host, $port);
 
 	// Authorize under the system account.
-	$connection->login(new UserInfo($systemUsername, $systemPassword), $systemNickname);
+	$connection->login(new UserInfo($systemUsername, $systemPassword, $systemNickname));
 
 	// Create a new account.
 	$newUsername = $connection->createAccount(userFromUrl());

@@ -32,7 +32,7 @@ class UserInfo
 	private string $mPassword;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
-	public function __construct(string $username, string $password)
+	public function __construct(string $username, string $password, public string $nickname="")
 	{
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
@@ -363,13 +363,13 @@ class Tt5Session
 	Performs authorization with the given parameters.
 	Throws CommandFailedException on error.
 	*/
-	public function login(UserInfo $acc, string $nickname): void
+	public function login(UserInfo $acc): void
 	{
 		$username = $acc->getUsername();
 		$password = $acc->getPassword();
 		$this->executeCommand
 		(
-			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
+			"login username=\"$username\" password=\"$password\" nickname=\"$acc->nickname\" protocol=\"5.0\""
 		);
 	}
 
