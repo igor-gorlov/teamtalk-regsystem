@@ -29,7 +29,7 @@ class Credentials
 {
 
 	private string $mUsername;
-	public string $password;
+	private string $mPassword;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
 	public function __construct(string $username, string $password)
@@ -51,7 +51,7 @@ class Credentials
 			throw new InvalidArgumentException($errorMessage);
 		}
 		$this->mUsername = $username;
-		$this->password = $password;
+		$this->mPassword = $password;
 	}
 
 	/*
@@ -93,6 +93,22 @@ class Credentials
 	function getUsername(): string
 	{
 		return $this->mUsername;
+	}
+
+	// Sets a password if it is valid, otherwise throws InvalidArgumentException.
+	function setPassword(string $password): void
+	{
+		if(!static::isValidPassword($password))
+		{
+			throw new InvalidArgumentException("Invalid password");
+		}
+		$this->mPassword = $password;
+	}
+
+	// Returns the current password.
+	function getPassword(): string
+	{
+		return $this->mPassword;
 	}
 
 	// Validates a username.
@@ -356,13 +372,14 @@ class Tt5Session
 	public function createAccount(Credentials $cred): string
 	{
 		$username = $cred->getUsername();
+		$password = $cred->getPassword();
 		if($this->accountExists($username))
 		{
 			throw new AccountAlreadyExistsException($username);
 		}
 		$this->executeCommand
 		(
-			"newaccount username=\"$username\" password=\"$cred->password\" usertype=1"
+			"newaccount username=\"$username\" password=\"$password\" usertype=1"
 		);
 		return $username;
 	}
@@ -374,9 +391,10 @@ class Tt5Session
 	public function login(Credentials $cred, string $nickname): void
 	{
 		$username = $cred->getUsername();
+		$password = $cred->getPassword();
 		$this->executeCommand
 		(
-			"login username=\"$username\" password=\"$cred->password\" nickname=\"$nickname\" protocol=\"5.0\""
+			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
 		);
 	}
 
