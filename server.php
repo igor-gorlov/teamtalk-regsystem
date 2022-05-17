@@ -28,7 +28,7 @@ class BadQueryStringException extends RuntimeException
 class Credentials
 {
 
-	public string $username;
+	private string $mUsername;
 	public string $password;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
@@ -50,7 +50,7 @@ class Credentials
 		{
 			throw new InvalidArgumentException($errorMessage);
 		}
-		$this->username = $username;
+		$this->mUsername = $username;
 		$this->password = $password;
 	}
 
@@ -77,6 +77,22 @@ class Credentials
 			throw new BadQueryStringException($errorMessage);
 		}
 		return new static($_GET["name"], $_GET["password"]);
+	}
+
+	// Sets a username if it is valid, otherwise throws InvalidArgumentException.
+	function setUsername(string $username): void
+	{
+		if(!static::isValidUsername($username))
+		{
+			throw new InvalidArgumentException("Invalid username");
+		}
+		$this->mUsername = $username;
+	}
+
+	// Returns the current username.
+	function getUsername(): string
+	{
+		return $this->mUsername;
 	}
 
 	// Validates a username.
@@ -339,15 +355,16 @@ class Tt5Session
 	*/
 	public function createAccount(Credentials $cred): string
 	{
-		if($this->accountExists($cred->username))
+		$username = $cred->getUsername();
+		if($this->accountExists($username))
 		{
-			throw new AccountAlreadyExistsException($cred->username);
+			throw new AccountAlreadyExistsException($username);
 		}
 		$this->executeCommand
 		(
-			"newaccount username=\"$cred->username\" password=\"$cred->password\" usertype=1"
+			"newaccount username=\"$username\" password=\"$cred->password\" usertype=1"
 		);
-		return $cred->username;
+		return $username;
 	}
 
 	/*
@@ -356,9 +373,10 @@ class Tt5Session
 	*/
 	public function login(Credentials $cred, string $nickname): void
 	{
+		$username = $cred->getUsername();
 		$this->executeCommand
 		(
-			"login username=\"$cred->username\" password=\"$cred->password\" nickname=\"$nickname\" protocol=\"5.0\""
+			"login username=\"$username\" password=\"$cred->password\" nickname=\"$nickname\" protocol=\"5.0\""
 		);
 	}
 
