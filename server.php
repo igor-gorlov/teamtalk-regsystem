@@ -385,7 +385,7 @@ class Tt5Session
 	}
 
 	/*
-	Performs authorization with the given username, password and nickname.
+	Performs authorization with the given credentials and nickname.
 	Throws CommandFailedException on error.
 	*/
 	public function login(Credentials $cred, string $nickname): void
