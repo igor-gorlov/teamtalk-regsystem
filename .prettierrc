@@ -1,0 +1,32 @@
+{
+	"printWidth": 120,
+	"tabWidth": 4,
+	"useTabs": true,
+	"trailingComma": "none",
+	"bracketSpacing": false,
+	"bracketSameLine": true,
+	"proseWrap": "always",
+	"endOfLine": "crlf",
+	"htmlWhitespaceSensitivity": "css",
+	"singleQuote": false,
+	"quoteProps": "consistent",
+	"arrowParens": "avoid",
+	"embeddedLanguageFormatting": "off",
+	"overrides": [
+		{
+			"files": ".prettierrc",
+			"options": {
+				"parser": "json"
+			}
+		},
+		{
+			"files": [
+				"*.json",
+				".prettierrc"
+			],
+			"options": {
+				"printWidth": 40
+			}
+		}
+	]
+}
