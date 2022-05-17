@@ -28,7 +28,7 @@ try
 	$connection->login(new UserInfo($systemUsername, $systemPassword, $systemNickname));
 
 	// Create a new account.
-	$newUsername = $connection->createAccount(userFromUrl());
+	$newUsername = $connection->createAccount(userInfoFromUrl());
 	echo("Successfully created a new account named $newUsername!");
 
 }
@@ -42,7 +42,7 @@ catch(Exception $e)
 Tries to construct an instance of UserInfo class using parameters passed via the URL query string.
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
 */
-function userFromUrl(): UserInfo
+function userInfoFromUrl(): UserInfo
 {
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
