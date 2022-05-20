@@ -14,7 +14,7 @@ declare(strict_types=1);
 class Config
 {
 
-	public static string $filename;
+	private static string $mFilename;
 	private static array $mConf;
 
 	/*
@@ -36,7 +36,13 @@ class Config
 			throw new RuntimeException("Unable to read configuration file \"$filename\"");
 		}
 		static::$mConf = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		static::$filename = $filename;
+		static::$mFilename = $filename;
+	}
+
+	// Returns the name of the configuration file.
+	public static function getFilename(): string
+	{
+		return static::$mFilename;
 	}
 
 	/*
@@ -167,9 +173,9 @@ class Config
 	public static function save(): void
 	{
 		$json = json_encode(static::$mConf, JSON_PRETTY_PRINT|JSON_PRESERVE_ZERO_FRACTION|JSON_THROW_ON_ERROR);
-		if(file_put_contents(static::$filename, $json, LOCK_EX) === false)
+		if(file_put_contents(static::$mFilename, $json, LOCK_EX) === false)
 		{
-			throw new RuntimeException("Unable to save configuration to \"".static::$filename."\"");
+			throw new RuntimeException("Unable to save configuration to \"".static::$mFilename."\"");
 		}
 	}
 	
