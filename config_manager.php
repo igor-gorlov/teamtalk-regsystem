@@ -41,7 +41,7 @@ class Config
 	Returns true if the configuration option pointed by the given key exists, otherwise returns false.
 	Just like in arrays, the key must be either a string or an integer.
 	If the option you are looking for is nested, pass multiple keys.
-	The option value must be of a scalar type: you can test neither for an array nor for an object,
+	The option value must be of a nullable scalar type: you can test neither for an array nor for an object,
 	but only for an individual item of an array or for an individual object field.
 	The method will return false if the path determined by the given key(s) ends with an object or with an array.
 	*/
@@ -71,7 +71,7 @@ class Config
 	Returns a value of the configuration option pointed by the given key. If this option does not exist, returns null.
 	Just like in arrays, the key must be either a string or an integer.
 	If the option you are looking for is nested, pass multiple keys.
-	The option value must be of a scalar type: you can request neither an array nor an object,
+	The option value must be of a nullable scalar type: you can request neither an array nor an object,
 	but only an individual item of an array or an individual object field.
 	Please note: using this function, it is impossible to distinguish an existing option set to null
 	from an option that is not present in the configuration file at all.
@@ -123,9 +123,9 @@ class Config
 		/*
 		Check the key sequence:
 		- Each key must be a string or an integer to meat the array requirements.
-		- It is critical to prevent accidental modification or deletion of third-party scalars,
+		- It is critical to prevent accidental modification or deletion of third-party nullable scalars,
 			hence all values lying on the path determined by the keys must be either unset or an array,
-			but the last value (which is to be written) must be either unset or a scalar.
+			but the last value (which is to be written) must be either unset or a nullable scalar.
 		*/
 		$previousValue = static::$mConf;
 		foreach($keys as $i => $key)
