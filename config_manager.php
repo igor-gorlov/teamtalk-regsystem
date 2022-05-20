@@ -95,6 +95,69 @@ class Config
 		return $value;
 	}
 
+	/*
+	Assigns the value (passed as the last argument)
+	to the option pointed by a key or a sequence of keys (passed via all preceding arguments).
+	Returns the assigned value.
+	If this option does not exist, the method will try to create it silently;
+	InvalidArgumentException will be thrown on failure.
+	You can ensure beforehand whether a specific property is defined by calling to isDefined() method.
+	Just like in arrays, all the keys must be either a string or an integer;
+	InvalidArgumentException will be thrown if at least one key has another type.
+	*/
+	public static function set(string|int $arg1, string|bool|int|float|null $arg2, string|bool|int|float|null ...$args): string|bool|int|float|null
+	{
+		/*
+		Handle a special case when only the mandatory arguments are given,
+		so that $arg1 is the key and $arg2 is the value.
+		*/
+		if(count($args) == 0)
+		{
+			static::$mConf[$arg1] = $arg2;
+			return $arg2;
+		}
+		// Split the arguments into the value and the sequence of keys.
+		$keys = $args;
+		$value = array_pop($keys);
+		array_unshift($keys, $arg1, $arg2);
+		/*
+		Check the key sequence:
+		- Each key must be a string or an integer to meat the array requirements.
+		- It is critical to prevent accidental modification or deletion of third-party scalars,
+			hence all values lying on the path determined by the keys must be either unset or an array,
+			but the last value (which is to be written) must be either unset or a scalar.
+		*/
+		$previousValue = static::$mConf;
+		foreach($keys as $i => $key)
+		{
+			if(!is_string($key) and !is_int($key))
+			{
+				throw new InvalidArgumentException("Unable to set a configuration option");
+			}
+			if($i == count($keys)-1)
+			{
+				if(is_array($previousValue[$key]))
+				{
+					throw new InvalidArgumentException("Unable to set a configuration option");
+				}
+			}
+			elseif(!is_array($previousValue[$key]))
+			{
+				throw new InvalidArgumentException("Unable to set a configuration option");
+			}
+			$previousValue = $previousValue[$key];
+		}
+		// All right, now set the value.
+		$code = "static::\$mConf";
+		foreach($keys as $key)
+		{
+			$code .= "[\"$key\"]";
+		}
+		$code .= " = \$value;";
+		eval($code);
+		return $value;
+	}
+
 }
 
 
