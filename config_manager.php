@@ -16,6 +16,7 @@ class Config
 
 	private static string $mFilename;
 	private static array $mConf;
+	private static bool $mIsModified;
 
 	/*
 	Loads configuration from the given file.
@@ -37,6 +38,7 @@ class Config
 		}
 		static::$mConf = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 		static::$mFilename = $filename;
+		static::$mIsModified = false;
 	}
 
 	// Returns the name of the configuration file.
@@ -122,6 +124,7 @@ class Config
 		if(count($args) == 0)
 		{
 			static::$mConf[$arg1] = $arg2;
+			static::$mIsModified = true;
 			return $arg2;
 		}
 		// Split the arguments into the value and the sequence of keys.
@@ -163,15 +166,20 @@ class Config
 		}
 		$code .= " = \$value;";
 		eval($code);
+		static::$mIsModified = true;
 		return $value;
 	}
 
 	/*
-	Stores configuration back to the file.
+	Stores configuration back to the file. If none of the options was modified, does nothing.
 	Throws RuntimeException when cannot write data or JsonException if there is a problem with configuration itself.
 	*/
 	public static function save(): void
 	{
+		if(!static::$mIsModified)
+		{
+			return;
+		}
 		$json = json_encode(static::$mConf, JSON_PRETTY_PRINT|JSON_PRESERVE_ZERO_FRACTION|JSON_THROW_ON_ERROR);
 		if(file_put_contents(static::$mFilename, $json, LOCK_EX) === false)
 		{
