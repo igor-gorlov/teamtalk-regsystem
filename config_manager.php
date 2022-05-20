@@ -160,6 +160,19 @@ class Config
 		return $value;
 	}
 
+	/*
+	Stores configuration back to the file.
+	Throws RuntimeException when cannot write data or JsonException if there is a problem with configuration itself.
+	*/
+	public static function save(): void
+	{
+		$json = json_encode(static::$mConf, JSON_PRETTY_PRINT|JSON_PRESERVE_ZERO_FRACTION|JSON_THROW_ON_ERROR);
+		if(file_put_contents(static::$filename, $json, LOCK_EX) === false)
+		{
+			throw new RuntimeException("Unable to save configuration to \"".static::$filename."\"");
+		}
+	}
+	
 }
 
 
