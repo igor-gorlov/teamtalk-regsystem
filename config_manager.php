@@ -14,6 +14,7 @@ declare(strict_types=1);
 class Config
 {
 
+	public static string $filename;
 	private static array $mConf;
 
 	/*
@@ -35,6 +36,7 @@ class Config
 			throw new RuntimeException("Unable to read configuration file \"$filename\"");
 		}
 		static::$mConf = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		static::$filename = $filename;
 	}
 
 	/*
