@@ -50,11 +50,9 @@ class Config
 	}
 
 	/*
-	Returns true if the configuration option pointed by the given key exists, otherwise returns false.
+	Returns true if the configuration option pointed by the given sequence of keys exists, otherwise returns false.
 
-	Just like in arrays, the key must be either a string or an integer.
-
-	If the option you are looking for is nested, pass multiple keys.
+	Just like in arrays, any key must be either a string or an integer.
 
 	The option value must be of a nullable scalar type: you can test neither for an array nor for an object,
 	but only for an individual item of an array or for an individual object field.
