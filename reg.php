@@ -35,9 +35,9 @@ try
 }
 catch(Exception $e)
 {
-	echo("<pre>");
-	echo("Error: ".$e->getMessage());
-	echo("</pre>");
+	echo("<table><tr><td style=\"color: red\"><strong>Error!</strong></td><td><pre><code>");
+	echo($e->getMessage());
+	echo("</code></pre></td></tr></table>");
 }
 
 
