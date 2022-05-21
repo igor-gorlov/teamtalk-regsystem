@@ -35,7 +35,9 @@ try
 }
 catch(Exception $e)
 {
-	echo("<pre>Error: ".$e->getMessage()."</pre>");
+	echo("<pre>");
+	echo("Error: ".$e->getMessage());
+	echo("</pre>");
 }
 
 
