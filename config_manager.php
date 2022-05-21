@@ -81,11 +81,10 @@ class Config
 	}
 
 	/*
-	Returns a value of the configuration option pointed by the given key. If this option does not exist, returns null.
+	Returns a value of the configuration option pointed by the given sequence of keys.
+	If this option does not exist, returns null.
 
-	Just like in arrays, the key must be either a string or an integer.
-
-	If the option you are looking for is nested, pass multiple keys.
+	Just like in arrays, any key must be either a string or an integer.
 
 	The option value must be of a nullable scalar type: you can request neither an array nor an object,
 	but only an individual item of an array or an individual object field.
