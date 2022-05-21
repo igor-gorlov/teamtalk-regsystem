@@ -16,15 +16,6 @@ const COMMAND_REPLY_AS_TEXT = 1;
 const COMMAND_REPLY_AS_ARRAY = 2;
 
 
-// Is thrown when one or more URL parameters needed for some task are missing.
-class BadQueryStringException extends RuntimeException
-{
-	public function __construct(string $message)
-	{
-		parent::__construct($message);
-	}
-}
-
 // Encapsulates TeamTalk 5 user information.
 class UserInfo
 {

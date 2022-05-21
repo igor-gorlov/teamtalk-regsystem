@@ -39,6 +39,15 @@ catch(Exception $e)
 }
 
 
+// Is thrown when one or more URL parameters needed for some task are missing.
+class BadQueryStringException extends RuntimeException
+{
+	public function __construct(string $message)
+	{
+		parent::__construct($message);
+	}
+}
+
 /*
 Tries to construct an instance of UserInfo class using parameters passed via the URL query string.
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
