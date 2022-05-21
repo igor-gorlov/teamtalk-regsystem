@@ -144,10 +144,10 @@ class Config
 		array_unshift($keys, $arg1, $arg2);
 		/*
 		Check the key sequence:
-		- Each key must be a string or an integer to meat the array requirements.
-		- It is critical to prevent accidental modification or deletion of third-party nullable scalars,
-			hence all values lying on the path determined by the keys must be either unset or an array,
-			but the last value (which is to be written) must be either unset or a nullable scalar.
+			- Each key must be a string or an integer to meat the array requirements.
+			- It is critical to prevent accidental modification or deletion of third-party nullable scalars,
+				hence all values lying on the path determined by the keys must be either unset or an array,
+				but the last value (which is to be written) must be either unset or a nullable scalar.
 		*/
 		$previousValue = static::$mConf;
 		foreach($keys as $i => $key)
