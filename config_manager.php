@@ -3,6 +3,7 @@
 
 /*
 Gives the ability to load, review, manipulate and store program settings.
+
 © Igor Gorlov, 2022.
 */
 
@@ -21,6 +22,7 @@ class Config
 	/*
 	Loads configuration from the given file.
 	Throws RuntimeException when cannot read the file specified or JsonException if the file contains syntactic errors.
+
 	This method must be called first of all and only once; BadMethodCallException will be thrown on subsequent calls.
 	*/
 	public static function init(string $filename): void
@@ -49,8 +51,11 @@ class Config
 
 	/*
 	Returns true if the configuration option pointed by the given key exists, otherwise returns false.
+
 	Just like in arrays, the key must be either a string or an integer.
+
 	If the option you are looking for is nested, pass multiple keys.
+
 	The option value must be of a nullable scalar type: you can test neither for an array nor for an object,
 	but only for an individual item of an array or for an individual object field.
 	The method will return false if the path determined by the given key(s) ends with an object or with an array.
@@ -79,10 +84,14 @@ class Config
 
 	/*
 	Returns a value of the configuration option pointed by the given key. If this option does not exist, returns null.
+
 	Just like in arrays, the key must be either a string or an integer.
+
 	If the option you are looking for is nested, pass multiple keys.
+
 	The option value must be of a nullable scalar type: you can request neither an array nor an object,
 	but only an individual item of an array or an individual object field.
+
 	Please note: using this function, it is impossible to distinguish an existing option set to null
 	from an option that is not present in the configuration file at all.
 	You can test whether an option exists with isDefined() method.
@@ -109,9 +118,11 @@ class Config
 	Assigns the value (passed as the last argument)
 	to the option pointed by a key or a sequence of keys (passed via all preceding arguments).
 	Returns the assigned value.
+
 	If this option does not exist, the method will try to create it silently;
 	InvalidArgumentException will be thrown on failure.
 	You can ensure beforehand whether a specific property is defined by calling to isDefined() method.
+
 	Just like in arrays, all the keys must be either a string or an integer;
 	InvalidArgumentException will be thrown if at least one key has another type.
 	*/

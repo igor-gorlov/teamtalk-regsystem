@@ -3,6 +3,7 @@
 
 /*
 This file helps to communicate with the TeamTalk 5 server.
+
 © Igor Gorlov, 2022.
 */
 
@@ -276,6 +277,7 @@ class Tt5Session
 	Sends the given command to the TeamTalk 5 server and transfers control back immediately;
 	returns the ID assigned to this command.
 	The result of command execution can be obtained later with getRespondingText() method.
+
 	Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 	the function will handle those things implicitly.
 	*/
