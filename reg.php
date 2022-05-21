@@ -7,7 +7,7 @@ This script accepts credentials and creates a new TeamTalk 5 account from them.
 */
 
 
-require "server.php";
+require_once "server.php";
 
 
 try
