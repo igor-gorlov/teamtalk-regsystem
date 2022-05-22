@@ -20,12 +20,13 @@ class Config
 	private static bool $mIsModified;
 
 	/*
-	Loads configuration from the given file.
+	Loads configuration from the given file;
+	registers save() method as a shutdown function if the optional argument autosave is set to true.
 	Throws RuntimeException when cannot read the file specified or JsonException if the file contains syntactic errors.
 
 	This method must be called first of all and only once; BadMethodCallException will be thrown on subsequent calls.
 	*/
-	public static function init(string $filename): void
+	public static function init(string $filename, bool $autosave = false): void
 	{
 		static $hasBeenCalled = false;
 		if($hasBeenCalled == true)
@@ -46,6 +47,10 @@ class Config
 		static::$mConf = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 		static::$mFile = $file;
 		static::$mIsModified = false;
+		if($autosave)
+		{
+			register_shutdown_function(array('Config', 'save'));
+		}
 	}
 
 	/*
