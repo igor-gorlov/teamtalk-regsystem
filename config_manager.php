@@ -15,7 +15,7 @@ declare(strict_types=1);
 class Config
 {
 
-	private static string $mFilename;
+	private static $mFile;
 	private static array $mConf;
 	private static bool $mIsModified;
 
@@ -33,20 +33,19 @@ class Config
 			throw new BadMethodCallException("Unneeded call to Config::init()");
 		}
 		$hasBeenCalled = true;
-		$json = file_get_contents($filename);
+		$file = fopen($filename, "r+");
+		if($file === false)
+		{
+			throw new RuntimeException("Unable to open configuration file \"$filename\"");
+		}
+		$json = stream_get_contents($file);
 		if($json === false)
 		{
 			throw new RuntimeException("Unable to read configuration file \"$filename\"");
 		}
 		static::$mConf = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		static::$mFilename = $filename;
+		static::$mFile = $file;
 		static::$mIsModified = false;
-	}
-
-	// Returns the name of the configuration file.
-	public static function getFilename(): string
-	{
-		return static::$mFilename;
 	}
 
 	/*
@@ -189,9 +188,11 @@ class Config
 			return;
 		}
 		$json = json_encode(static::$mConf, JSON_PRETTY_PRINT|JSON_PRESERVE_ZERO_FRACTION|JSON_THROW_ON_ERROR);
-		if(file_put_contents(static::$mFilename, $json, LOCK_EX) === false)
+		ftruncate(static::$mFile, 0);
+		rewind(static::$mFile);
+		if(fwrite(static::$mFile, $json) === false)
 		{
-			throw new RuntimeException("Unable to save configuration to \"".static::$mFilename."\"");
+			throw new RuntimeException("Unable to save configuration to the file");
 		}
 	}
 	
