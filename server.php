@@ -11,11 +11,6 @@ This file helps to communicate with the TeamTalk 5 server.
 declare(strict_types=1);
 
 
-// Constants.
-const COMMAND_REPLY_AS_TEXT = 1;
-const COMMAND_REPLY_AS_ARRAY = 2;
-
-
 // Encapsulates TeamTalk 5 user information.
 class UserInfo
 {
@@ -136,6 +131,9 @@ class ServerUnavailableException extends RuntimeException
 // Represents a single connection with a TeamTalk 5 server.
 class Tt5Session
 {
+
+	public const REPLY_AS_TEXT = 1;
+	public const REPLY_AS_ARRAY = 2;
 
 	private $mSocket; // the actual underlying connection.
 	private int $mLastId; // a counter used to compute command identifiers.
@@ -294,23 +292,23 @@ class Tt5Session
 	Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 	the function will handle those things implicitly.
 	*/
-	public function executeCommand(string $command, int $outputMode = COMMAND_REPLY_AS_ARRAY): string|array
+	public function executeCommand(string $command, int $outputMode = self::REPLY_AS_ARRAY): string|array
 	{
 		$id = $this->sendCommand($command);
 		// Wait for the reply.
 		$respondingText = $this->getRespondingText($id);
 		$respondingCommands = static::parseRespondingText($respondingText);
 		// Check for errors.
-		if($respondingCommands[array_key_last($respondingCommands)]->name == "error" and $outputMode == COMMAND_REPLY_AS_ARRAY)
+		if($respondingCommands[array_key_last($respondingCommands)]->name == "error" and $outputMode == self::REPLY_AS_ARRAY)
 		{
 			throw new CommandFailedException($command, $respondingCommands);
 		}
 		// Return the required result.
 		switch($outputMode)
 		{
-			case COMMAND_REPLY_AS_TEXT:
+			case self::REPLY_AS_TEXT:
 				return $respondingText;
-			case COMMAND_REPLY_AS_ARRAY:
+			case self::REPLY_AS_ARRAY:
 				return $respondingCommands;
 		}
 	}
