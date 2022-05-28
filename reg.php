@@ -14,36 +14,6 @@ declare(strict_types=1);
 require_once "server.php";
 
 
-try
-{
-
-	// Configure the essential options.
-	$host = "localhost"; // TeamTalk 5 server address.
-	$port = 10333; // TeamTalk 5 TCP port.
-	$systemUsername = "regsystem"; /* The name of a registered admin account which will be used for all operations
-	                                   involving the server (so-called "the system account"). */
-	$systemPassword = "qwerty123456"; // The password of the system account.
-	$systemNickname = "Registration System"; // The system account's nickname.
-
-	// Establish connection.
-	$connection = new Tt5Session($host, $port);
-
-	// Authorize under the system account.
-	$connection->login(new UserInfo($systemUsername, $systemPassword, $systemNickname));
-
-	// Create a new account.
-	$newUsername = $connection->createAccount(userInfoFromUrl());
-	echo("Successfully created a new account named $newUsername!");
-
-}
-catch(Exception $e)
-{
-	echo("<table><tr><td style=\"color: red\"><strong>Error!</strong></td><td><pre><code>");
-	echo($e->getMessage());
-	echo("</code></pre></td></tr></table>");
-}
-
-
 // Is thrown when one or more URL parameters needed for some task are missing.
 class BadQueryStringException extends RuntimeException
 {
@@ -76,6 +46,36 @@ function userInfoFromUrl(): UserInfo
 		throw new BadQueryStringException($errorMessage);
 	}
 	return new UserInfo($_GET["name"], $_GET["password"]);
+}
+
+
+try
+{
+
+	// Configure the essential options.
+	$host = "localhost"; // TeamTalk 5 server address.
+	$port = 10333; // TeamTalk 5 TCP port.
+	$systemUsername = "regsystem"; /* The name of a registered admin account which will be used for all operations
+	                                   involving the server (so-called "the system account"). */
+	$systemPassword = "qwerty123456"; // The password of the system account.
+	$systemNickname = "Registration System"; // The system account's nickname.
+
+	// Establish connection.
+	$connection = new Tt5Session($host, $port);
+
+	// Authorize under the system account.
+	$connection->login(new UserInfo($systemUsername, $systemPassword, $systemNickname));
+
+	// Create a new account.
+	$newUsername = $connection->createAccount(userInfoFromUrl());
+	echo("Successfully created a new account named $newUsername!");
+
+}
+catch(Exception $e)
+{
+	echo("<table><tr><td style=\"color: red\"><strong>Error!</strong></td><td><pre><code>");
+	echo($e->getMessage());
+	echo("</code></pre></td></tr></table>");
 }
 
 
