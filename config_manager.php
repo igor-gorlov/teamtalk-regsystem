@@ -105,6 +105,29 @@ class Config
 	}
 
 	/*
+	Deletes the entry pointed-to by the given path; returns the deleted value on success or null on failure.
+
+	Caution!
+	This method may return boolean false after a successfull deletion if the value being removed is identical to false.
+	Compare the result against null using === operator to determine whether the deletion has failed.
+	*/
+	public static function unset(string $path): mixed
+	{
+		$access = static::translatePath($path);
+		$code =
+		"
+			if((\$deleted = @$access) === null)
+			{
+				return null;
+			}
+			unset($access);
+			static::\$mIsModified = true;
+			return \$deleted;
+		";
+		return eval($code);
+	}
+
+	/*
 	Stores configuration back to the file. If none of the options was modified, does nothing.
 	Throws RuntimeException when cannot write data or JsonException if there is a problem with configuration itself.
 	*/
