@@ -2,3 +2,4 @@ third_party
 node_modules
 package.json
 package-lock.json
+config.json
