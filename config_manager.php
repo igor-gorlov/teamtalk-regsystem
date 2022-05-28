@@ -15,6 +15,8 @@ declare(strict_types=1);
 class Config
 {
 
+	public const MAX_DEPTH = 2147483646;
+
 	private static $mFile;
 	private static array $mConf;
 	private static bool $mIsModified;
@@ -44,7 +46,7 @@ class Config
 		{
 			throw new RuntimeException("Unable to read configuration file \"$filename\"");
 		}
-		$assoc = json_decode($json, true, 512);
+		$assoc = json_decode($json, true, self::MAX_DEPTH);
 		if($assoc === null)
 		{
 			throw new RuntimeException("Invalid syntax of configuration file \"$filename\"");
