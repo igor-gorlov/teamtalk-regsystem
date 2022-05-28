@@ -54,132 +54,54 @@ class Config
 	}
 
 	/*
-	Returns true if the configuration option pointed by the given sequence of keys exists, otherwise returns false.
-
-	Just like in arrays, any key must be either a string or an integer.
-
-	The option value must be of a nullable scalar type: you can test neither for an array nor for an object,
-	but only for an individual item of an array or for an individual object field.
-	The method will return false if the path determined by the given key(s) ends with an object or with an array.
+	Translates the given path from a sequence of dot-separated keys
+	to a valid PHP code which accesses the target configuration entry.
 	*/
-	public static function isDefined(string|int $firstKey, string|int ...$keys): bool
+	private static function translatePath(string $path): string
 	{
-		if(!array_key_exists($firstKey, static::$mConf))
-		{
-			return false;
-		}
-		$value = static::$mConf[$firstKey];
-		foreach($keys as $key)
-		{
-			if(!is_array($value) or !array_key_exists($key, $value))
-			{
-				return false;
-			}
-			$value = $value[$key];
-		}
-		if(is_array($value))
-		{
-			return false;
-		}
-		return true;
-	}
-
-	/*
-	Returns a value of the configuration option pointed by the given sequence of keys.
-	If this option does not exist, returns null.
-
-	Just like in arrays, any key must be either a string or an integer.
-
-	The option value must be of a nullable scalar type: you can request neither an array nor an object,
-	but only an individual item of an array or an individual object field.
-
-	Please note: using this function, it is impossible to distinguish an existing option set to null
-	from an option that is not present in the configuration file at all.
-	You can test whether an option exists with isDefined() method.
-	*/
-	public static function get(string|int $firstKey, string|int ...$keys): string|bool|int|float|null
-	{
-		if(!array_key_exists($firstKey, static::$mConf))
-		{
-			return null;
-		}
-		$value = static::$mConf[$firstKey];
-		foreach($keys as $key)
-		{
-			if(!is_array($value) or !array_key_exists($key, $value))
-			{
-				return null;
-			}
-			$value = $value[$key];
-		}
-		return $value;
-	}
-
-	/*
-	Assigns the value (passed as the last argument)
-	to the option pointed by a key or a sequence of keys (passed via all preceding arguments).
-	Returns the assigned value.
-
-	If this option does not exist, the method will try to create it silently;
-	InvalidArgumentException will be thrown on failure.
-	You can ensure beforehand whether a specific property is defined by calling to isDefined() method.
-
-	Just like in arrays, all the keys must be either a string or an integer;
-	InvalidArgumentException will be thrown if at least one key has another type.
-	*/
-	public static function set(string|int $arg1, string|bool|int|float|null $arg2, string|bool|int|float|null ...$args): string|bool|int|float|null
-	{
-		/*
-		Handle a special case when only the mandatory arguments are given,
-		so that $arg1 is the key and $arg2 is the value.
-		*/
-		if(count($args) == 0)
-		{
-			static::$mConf[$arg1] = $arg2;
-			static::$mIsModified = true;
-			return $arg2;
-		}
-		// Split the arguments into the value and the sequence of keys.
-		$keys = $args;
-		$value = array_pop($keys);
-		array_unshift($keys, $arg1, $arg2);
-		/*
-		Check the key sequence:
-			* Each key must be a string or an integer to meat the array requirements.
-			* It is critical to prevent accidental modification or deletion of third-party nullable scalars,
-				hence all values lying on the path determined by the keys must be either unset or an array,
-				but the last value (which is to be written) must be either unset or a nullable scalar.
-		*/
-		$previousValue = static::$mConf;
-		foreach($keys as $i => $key)
-		{
-			if(!is_string($key) and !is_int($key))
-			{
-				throw new InvalidArgumentException("Unable to set a configuration option");
-			}
-			if($i == count($keys)-1)
-			{
-				if(is_array($previousValue[$key]))
-				{
-					throw new InvalidArgumentException("Unable to set a configuration option");
-				}
-			}
-			elseif(!is_array($previousValue[$key]))
-			{
-				throw new InvalidArgumentException("Unable to set a configuration option");
-			}
-			$previousValue = $previousValue[$key];
-		}
-		// All right, now set the value.
 		$code = "static::\$mConf";
+		$keys = explode(".", $path);
 		foreach($keys as $key)
 		{
 			$code .= "[\"$key\"]";
 		}
-		$code .= " = \$value;";
-		eval($code);
+		return $code;
+	}
+
+	/*
+	Returns the value of the configuration option pointed by the given path.
+	If this option does not exist, returns null.
+	*/
+	public static function get(string $path): mixed
+	{
+		$code = "return " . static::translatePath($path) . ";";
+		return @eval($code);
+	}
+
+	/*
+	Assigns a value (passed as the second argument) to an entry pointed by a path (passed as the first argument).
+	Returns the assigned value on success or null on failure.
+
+	Caution!
+	This method may return boolean false after a successfull assignment if you pass that boolean false as the value.
+	Compare the result against null using === operator to determine whether the assignment has failed.
+
+	If the requested entry does not exist, the method will create it silently.
+	
+	The value can be of any type except of null and resource.
+	*/
+	public static function set(string $path, object|array|string|int|float|bool $value): mixed
+	{
+		$code = "return " . static::translatePath($path) . " = \$value;";
 		static::$mIsModified = true;
-		return $value;
+		try
+		{
+			return eval($code);
+		}
+		catch(Error $e)
+		{
+			return null;
+		}
 	}
 
 	/*
