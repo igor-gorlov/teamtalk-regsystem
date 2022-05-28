@@ -8,6 +8,9 @@ This script accepts user information and creates a new TeamTalk 5 account from i
 */
 
 
+declare(strict_types=1);
+
+
 require_once "server.php";
 
 
