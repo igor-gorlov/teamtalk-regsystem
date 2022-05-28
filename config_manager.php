@@ -35,7 +35,6 @@ class Config
 		{
 			throw new BadMethodCallException("Unneeded call to Config::init()");
 		}
-		$hasBeenCalled = true;
 		$file = fopen($filename, "r+");
 		if($file === false)
 		{
@@ -58,6 +57,7 @@ class Config
 		{
 			register_shutdown_function(array('Config', 'save'));
 		}
+		$hasBeenCalled = true;
 	}
 
 	/*
