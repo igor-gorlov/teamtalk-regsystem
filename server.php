@@ -156,7 +156,7 @@ class Tt5Session
 	{
 		if($this->mSocket === null)
 		{
-			$this->mSocket = fsockopen($this->address, $this->port);
+			$this->mSocket = @fsockopen($this->address, $this->port);
 			if($this->mSocket === false)
 			{
 				$this->mSocket = null;
