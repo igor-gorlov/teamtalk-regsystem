@@ -22,7 +22,7 @@ class Config
 	/*
 	Loads configuration from the given file;
 	registers save() method as a shutdown function if the optional argument autosave is set to true.
-	Throws RuntimeException when cannot read the file specified or JsonException if the file contains syntactic errors.
+	Throws RuntimeException when the file cannot be read or if it contains syntactic errors.
 
 	This method must be called first of all and only once; BadMethodCallException will be thrown on subsequent calls.
 	*/
@@ -44,7 +44,12 @@ class Config
 		{
 			throw new RuntimeException("Unable to read configuration file \"$filename\"");
 		}
-		static::$mConf = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$assoc = json_decode($json, true, 512);
+		if($assoc === null)
+		{
+			throw new RuntimeException("Invalid syntax of configuration file \"$filename\"");
+		}
+		static::$mConf = $assoc;
 		static::$mFile = $file;
 		static::$mIsModified = false;
 		if($autosave)
