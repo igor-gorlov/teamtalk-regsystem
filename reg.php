@@ -11,6 +11,7 @@ This script accepts user information and creates a new TeamTalk 5 account from i
 declare(strict_types=1);
 
 
+require_once "config_manager.php";
 require_once "server.php";
 
 
@@ -53,18 +54,35 @@ try
 {
 
 	// Configure the essential options.
-	$host = "localhost"; // TeamTalk 5 server address.
-	$port = 10333; // TeamTalk 5 TCP port.
-	$systemUsername = "regsystem"; /* The name of a registered admin account which will be used for all operations
-	                                   involving the server (so-called "the system account"). */
-	$systemPassword = "qwerty123456"; // The password of the system account.
-	$systemNickname = "Registration System"; // The system account's nickname.
+	Config::init("config.json");
+	$serverName = "";
+	if(isset($_GET["server"]))
+	{
+		$serverName = $_GET["server"];
+	}
+	else
+	{
+		$serverName = "default";
+	}
+	$serverInfo = Config::get("servers.$serverName");
+	if($serverInfo === null)
+	{
+		throw new BadQueryStringException("Unknown server requested");
+	}
 
 	// Establish connection.
-	$connection = new Tt5Session($host, $port);
+	$connection = new Tt5Session($serverInfo["host"], $serverInfo["port"]);
 
 	// Authorize under the system account.
-	$connection->login(new UserInfo($systemUsername, $systemPassword, $systemNickname));
+	$connection->login
+	(
+		new UserInfo
+		(
+			$serverInfo["systemAccount"]["username"],
+			$serverInfo["systemAccount"]["password"],
+			$serverInfo["systemAccount"]["nickname"]
+		)
+	);
 
 	// Create a new account.
 	$newUsername = $connection->createAccount(userInfoFromUrl());
