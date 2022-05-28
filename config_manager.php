@@ -28,7 +28,7 @@ class Config
 
 	This method must be called first of all and only once; BadMethodCallException will be thrown on subsequent calls.
 	*/
-	public static function init(string $filename, bool $autosave = false): void
+	public static function init(string $filename, bool $autosave = true): void
 	{
 		static $hasBeenCalled = false;
 		if($hasBeenCalled == true)
