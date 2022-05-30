@@ -51,9 +51,6 @@ function userInfoFromUrl(): UserInfo
 }
 
 
-try
-{
-
 	// Configure the essential options.
 	$serverName = "";
 	if(isset($_GET["server"]))
@@ -87,14 +84,6 @@ try
 	// Create a new account.
 	$newUsername = $connection->createAccount(userInfoFromUrl());
 	echo("Successfully created a new account named $newUsername!");
-
-}
-catch(Exception $e)
-{
-	echo("<table><tr><td style=\"color: red\"><strong>Error!</strong></td><td><pre><code>");
-	echo($e->getMessage());
-	echo("</code></pre></td></tr></table>");
-}
 
 
 ?>
