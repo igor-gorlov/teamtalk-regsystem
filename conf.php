@@ -55,7 +55,7 @@ class Config
 		static::$mIsModified = false;
 		if($autosave)
 		{
-			register_shutdown_function(array('Config', 'save'));
+			register_shutdown_function("Config::save");
 		}
 		$hasBeenCalled = true;
 	}
