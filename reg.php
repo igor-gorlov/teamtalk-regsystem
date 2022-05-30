@@ -51,39 +51,39 @@ function userInfoFromUrl(): UserInfo
 }
 
 
-	// Configure the essential options.
-	$serverName = "";
-	if(isset($_GET["server"]))
-	{
-		$serverName = $_GET["server"];
-	}
-	else
-	{
-		$serverName = "default";
-	}
-	$serverInfo = Config::get("servers.$serverName");
-	if($serverInfo === null)
-	{
-		throw new BadQueryStringException("Unknown server requested");
-	}
+// Configure the essential options.
+$serverName = "";
+if(isset($_GET["server"]))
+{
+	$serverName = $_GET["server"];
+}
+else
+{
+	$serverName = "default";
+}
+$serverInfo = Config::get("servers.$serverName");
+if($serverInfo === null)
+{
+	throw new BadQueryStringException("Unknown server requested");
+}
 
-	// Establish connection.
-	$connection = new Tt5Session($serverInfo["host"], $serverInfo["port"]);
+// Establish connection.
+$connection = new Tt5Session($serverInfo["host"], $serverInfo["port"]);
 
-	// Authorize under the system account.
-	$connection->login
+// Authorize under the system account.
+$connection->login
+(
+	new UserInfo
 	(
-		new UserInfo
-		(
-			$serverInfo["systemAccount"]["username"],
-			$serverInfo["systemAccount"]["password"],
-			$serverInfo["systemAccount"]["nickname"]
-		)
-	);
+		$serverInfo["systemAccount"]["username"],
+		$serverInfo["systemAccount"]["password"],
+		$serverInfo["systemAccount"]["nickname"]
+	)
+);
 
-	// Create a new account.
-	$newUsername = $connection->createAccount(userInfoFromUrl());
-	echo("Successfully created a new account named $newUsername!");
+// Create a new account.
+$newUsername = $connection->createAccount(userInfoFromUrl());
+echo("Successfully created a new account named $newUsername!");
 
 
 ?>
