@@ -11,7 +11,8 @@ This script accepts user information and creates a new TeamTalk 5 account from i
 declare(strict_types=1);
 
 
-require_once "conf.php";
+require_once "init.php";
+
 require_once "server.php";
 
 
@@ -50,51 +51,39 @@ function userInfoFromUrl(): UserInfo
 }
 
 
-try
+// Configure the essential options.
+$serverName = "";
+if(isset($_GET["server"]))
 {
+	$serverName = $_GET["server"];
+}
+else
+{
+	$serverName = "default";
+}
+$serverInfo = Config::get("servers.$serverName");
+if($serverInfo === null)
+{
+	throw new BadQueryStringException("Unknown server requested");
+}
 
-	// Configure the essential options.
-	Config::init("config.json");
-	$serverName = "";
-	if(isset($_GET["server"]))
-	{
-		$serverName = $_GET["server"];
-	}
-	else
-	{
-		$serverName = "default";
-	}
-	$serverInfo = Config::get("servers.$serverName");
-	if($serverInfo === null)
-	{
-		throw new BadQueryStringException("Unknown server requested");
-	}
+// Establish connection.
+$connection = new Tt5Session($serverInfo["host"], $serverInfo["port"]);
 
-	// Establish connection.
-	$connection = new Tt5Session($serverInfo["host"], $serverInfo["port"]);
-
-	// Authorize under the system account.
-	$connection->login
+// Authorize under the system account.
+$connection->login
+(
+	new UserInfo
 	(
-		new UserInfo
-		(
-			$serverInfo["systemAccount"]["username"],
-			$serverInfo["systemAccount"]["password"],
-			$serverInfo["systemAccount"]["nickname"]
-		)
-	);
+		$serverInfo["systemAccount"]["username"],
+		$serverInfo["systemAccount"]["password"],
+		$serverInfo["systemAccount"]["nickname"]
+	)
+);
 
-	// Create a new account.
-	$newUsername = $connection->createAccount(userInfoFromUrl());
-	echo("Successfully created a new account named $newUsername!");
-
-}
-catch(Exception $e)
-{
-	echo("<table><tr><td style=\"color: red\"><strong>Error!</strong></td><td><pre><code>");
-	echo($e->getMessage());
-	echo("</code></pre></td></tr></table>");
-}
+// Create a new account.
+$newUsername = $connection->createAccount(userInfoFromUrl());
+echo("Successfully created a new account named $newUsername!");
 
 
 ?>
