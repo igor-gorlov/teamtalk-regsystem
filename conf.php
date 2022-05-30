@@ -8,7 +8,7 @@ Gives the ability to load, review, manipulate and store program settings.
 */
 
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 
 // Provides an interface to configuration stored in a file. Cannot be instantiated.

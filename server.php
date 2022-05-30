@@ -8,7 +8,7 @@ This file helps to communicate with the TeamTalk 5 server.
 */
 
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 
 // Encapsulates TeamTalk 5 user information.
@@ -76,13 +76,13 @@ class UserInfo
 	// Validates a username.
 	public static function isValidUsername(string $str): bool
 	{
-		return strlen($str)>0;
+		return strlen($str) > 0;
 	}
 
 	// Validates a password.
 	public static function isValidPassword(string $str): bool
 	{
-		return strlen($str)>0;
+		return strlen($str) > 0;
 	}
 
 }
@@ -176,7 +176,7 @@ class Tt5Session
 		{
 			while($line = fgets($this->mSocket))
 			{
-				if($line=="begin id=$id\r\n") // the beginning of the reply is found.
+				if($line == "begin id=$id\r\n") // the beginning of the reply is found.
 				{
 					for($respondingLine = fgets($this->mSocket); $respondingLine != "end id=$id\r\n"; $respondingLine = fgets($this->mSocket))
 					{
@@ -201,7 +201,7 @@ class Tt5Session
 		$result->name = $matches[1];
 		$offset = strlen($matches[0]);
 		// Parse the parameters.
-		while($offset!=strlen($command))
+		while($offset != strlen($command))
 		{
 			// Extract the parameter name.
 			preg_match("/^([a-z]+\b)\=/i", substr($command, $offset), $matches);
