@@ -107,8 +107,7 @@ class Config {
 	*/
 	public static function unset(string $path): mixed {
 		$access = static::translatePath($path);
-		$code =
-		"
+		$code = "
 			if((\$deleted = @$access) === null) {
 				return null;
 			}
