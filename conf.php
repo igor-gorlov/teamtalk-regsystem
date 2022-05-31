@@ -144,8 +144,7 @@ class Config
 		{
 			return;
 		}
-		$json = json_encode
-		(
+		$json = json_encode(
 			static::$mConf, JSON_PRETTY_PRINT|JSON_PRESERVE_ZERO_FRACTION|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR
 		) . "\n";
 		ftruncate(static::$mFile, 0);

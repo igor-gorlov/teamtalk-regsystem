@@ -343,8 +343,7 @@ class Tt5Session
 		{
 			throw new AccountAlreadyExistsException($username);
 		}
-		$this->executeCommand
-		(
+		$this->executeCommand(
 			"newaccount username=\"$username\" password=\"$password\" usertype=1"
 		);
 		return $username;
@@ -358,8 +357,7 @@ class Tt5Session
 	{
 		$username = $acc->getUsername();
 		$password = $acc->getPassword();
-		$this->executeCommand
-		(
+		$this->executeCommand(
 			"login username=\"$username\" password=\"$password\" nickname=\"$acc->nickname\" protocol=\"5.0\""
 		);
 	}

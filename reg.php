@@ -71,10 +71,8 @@ if($serverInfo === null)
 $connection = new Tt5Session($serverInfo["host"], $serverInfo["port"]);
 
 // Authorize under the system account.
-$connection->login
-(
-	new UserInfo
-	(
+$connection->login(
+	new UserInfo(
 		$serverInfo["systemAccount"]["username"],
 		$serverInfo["systemAccount"]["password"],
 		$serverInfo["systemAccount"]["nickname"]
