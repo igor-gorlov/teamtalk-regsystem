@@ -17,10 +17,8 @@ require_once "server.php";
 
 
 // Is thrown when one or more URL parameters needed for some task are missing.
-class BadQueryStringException extends RuntimeException
-{
-	public function __construct(string $message)
-	{
+class BadQueryStringException extends RuntimeException {
+	public function __construct(string $message) {
 		parent::__construct($message);
 	}
 }
@@ -29,22 +27,18 @@ class BadQueryStringException extends RuntimeException
 Tries to construct an instance of UserInfo class using parameters passed via the URL query string.
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
 */
-function userInfoFromUrl(): UserInfo
-{
+function userInfoFromUrl(): UserInfo {
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
-	if(!isset($_GET["name"]))
-	{
+	if(!isset($_GET["name"])) {
 		$error = true;
 		$errorMessage .= "\tname\n";
 	}
-	if(!isset($_GET["password"]))
-	{
+	if(!isset($_GET["password"])) {
 		$error = true;
 		$errorMessage .= "\tpassword\n";
 	}
-	if($error)
-	{
+	if($error) {
 		throw new BadQueryStringException($errorMessage);
 	}
 	return new UserInfo($_GET["name"], $_GET["password"]);
@@ -53,17 +47,14 @@ function userInfoFromUrl(): UserInfo
 
 // Configure the essential options.
 $serverName = "";
-if(isset($_GET["server"]))
-{
+if(isset($_GET["server"])) {
 	$serverName = $_GET["server"];
 }
-else
-{
+else {
 	$serverName = "default";
 }
 $serverInfo = Config::get("servers.$serverName");
-if($serverInfo === null)
-{
+if($serverInfo === null) {
 	throw new BadQueryStringException("Unknown server requested");
 }
 
