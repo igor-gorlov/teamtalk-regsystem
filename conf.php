@@ -120,7 +120,7 @@ class Config {
 
 	/*
 	Stores configuration back to the file. If none of the options was modified, does nothing.
-	Throws RuntimeException when cannot write data or JsonException if there is a problem with configuration itself.
+	Throws RuntimeException when cannot write data.
 	*/
 	public static function save(): void {
 		if(!static::$mIsModified) {
