@@ -82,7 +82,7 @@ class Command {
 
 // Is thrown when a command yields an error.
 class CommandFailedException extends RuntimeException {
-	public function __construct(string $command, array|null $reply) {
+	public function __construct(string $command, ?array $reply) {
 		$message = "The following command failed:\n\t$command";
 		if($reply != null) {
 			$errorCode = $reply[array_key_last($reply)]->params["number"];
