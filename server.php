@@ -240,10 +240,10 @@ class Tt5Session {
 	Sends the given command to the TeamTalk 5 server and waits for the server's reply.
 
 	The return value type depends on the optional argument $outputMode. You can choose between two modes:
-		* COMMAND_REPLY_AS_TEXT: a plain text string is returned;
-		* COMMAND_REPLY_AS_ARRAY [default]: an array of objects of type Command is returned.
+		* Tt5Session::REPLY_AS_TEXT: a plain text string is returned;
+		* Tt5Session::REPLY_AS_ARRAY [default]: an array of objects of type Command is returned.
 
-	If the server returns an error, and the output mode is COMMAND_REPLY_AS_ARRAY,
+	If the server returns an error, and the output mode is Tt5Session::REPLY_AS_ARRAY,
 	this function throws CommandFailedException; no exceptions is thrown in text mode even if an error occurs.
 
 	Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
