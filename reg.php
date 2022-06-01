@@ -58,13 +58,7 @@ else {
 $connection = new Tt5Session($serverName);
 
 // Authorize under the system account.
-$connection->login(
-	new UserInfo(
-		$serverInfo["systemAccount"]["username"],
-		$serverInfo["systemAccount"]["password"],
-		$serverInfo["systemAccount"]["nickname"]
-	)
-);
+$connection->login();
 
 // Create a new account.
 $newUsername = $connection->createAccount(userInfoFromUrl());

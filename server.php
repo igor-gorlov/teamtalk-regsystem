@@ -307,14 +307,15 @@ class Tt5Session {
 	}
 
 	/*
-	Performs authorization with the given parameters.
+	Performs authorization with the configured parameters.
 	Throws CommandFailedException on error.
 	*/
-	public function login(UserInfo $acc): void {
-		$username = $acc->getUsername();
-		$password = $acc->getPassword();
+	public function login(): void {
+		$username = Config::get("servers.$this->serverName.systemAccount.username");
+		$password = Config::get("servers.$this->serverName.systemAccount.password");
+		$nickname = Config::get("servers.$this->serverName.systemAccount.nickname");
 		$this->executeCommand(
-			"login username=\"$username\" password=\"$password\" nickname=\"$acc->nickname\" protocol=\"5.0\""
+			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
 		);
 	}
 
