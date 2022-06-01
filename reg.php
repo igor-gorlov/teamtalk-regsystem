@@ -53,13 +53,9 @@ if(isset($_GET["server"])) {
 else {
 	$serverName = "default";
 }
-$serverInfo = Config::get("servers.$serverName");
-if($serverInfo === null) {
-	throw new BadQueryStringException("Unknown server requested");
-}
 
 // Establish connection.
-$connection = new Tt5Session($serverInfo["host"], $serverInfo["port"]);
+$connection = new Tt5Session($serverName);
 
 // Authorize under the system account.
 $connection->login(
