@@ -77,9 +77,16 @@ class UserInfo {
 		return boolval($result);
 	}
 
-	// Validates a password.
+	/*
+	Validates a password against the configured regular expression.
+	If an error occurres during validation process, throws RuntimeException.
+	*/
 	public static function isValidPassword(string $str): bool {
-		return strlen($str) > 0;
+		$result = @preg_match(Config::get("validation.password"), $str);
+		if($result === false) {
+			throw new RuntimeException("Unable to validate a password");
+		}
+		return boolval($result);
 	}
 
 }
