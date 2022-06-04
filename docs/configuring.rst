@@ -33,3 +33,10 @@ Server information object itself has the following fields:
   * ``username``
   * ``password``
   * ``nickname``
+
+``validation`` Object
+---------------------
+
+Defines the rules by which user input is validated.
+
+Contains two fields: ``username`` and ``password``. Their values are both **PHP regular expressions** describing the respective entities.
