@@ -9,5 +9,9 @@
                 "nickname": "Registration System by Igor Gorlov"
             }
         }
+    },
+    "validation": {
+        "username": "/.+/i",
+        "password": "/.+/i"
     }
 }
