@@ -11,6 +11,9 @@ This file helps to communicate with the TeamTalk 5 server.
 declare(strict_types = 1);
 
 
+require_once "conf.php";
+
+
 // Encapsulates TeamTalk 5 user information.
 class UserInfo {
 
@@ -117,10 +120,16 @@ class Tt5Session {
 	private int $mLastId; // a counter used to compute command identifiers.
 
 	/*
-	The constructor does not establish connection:
+	Prepares the object for connection to a TeamTalk 5 server pointed-to by the given name.
+	Throws InvalidArgumentException if the name is unknown.
+
+	The constructor does not actually establish connection:
 	this operation may take a lot of time and thus should be delayed while possible.
 	*/
-	public function __construct(public readonly string $address, public readonly int $port) {
+	public function __construct(public readonly string $serverName) {
+		if(($serverData = Config::get("servers.$serverName")) === null) {
+			throw new InvalidArgumentException("Unknown server \"$serverName\"");
+		}
 		$this->mLastId = 0;
 		$this->mSocket = null;
 	}
@@ -131,10 +140,11 @@ class Tt5Session {
 	*/
 	private function mEnsureConnection(): void {
 		if($this->mSocket === null) {
-			$this->mSocket = @fsockopen($this->address, $this->port);
+			$serverData = Config::get("servers.$this->serverName");
+			$this->mSocket = @fsockopen($serverData["host"], $serverData["port"]);
 			if($this->mSocket === false) {
 				$this->mSocket = null;
-				throw new ServerUnavailableException($this->address, $this->port);
+				throw new ServerUnavailableException($serverData["host"], $serverData["port"]);
 			}
 		}
 	}
@@ -297,14 +307,15 @@ class Tt5Session {
 	}
 
 	/*
-	Performs authorization with the given parameters.
+	Performs authorization with the configured parameters.
 	Throws CommandFailedException on error.
 	*/
-	public function login(UserInfo $acc): void {
-		$username = $acc->getUsername();
-		$password = $acc->getPassword();
+	public function login(): void {
+		$username = Config::get("servers.$this->serverName.systemAccount.username");
+		$password = Config::get("servers.$this->serverName.systemAccount.password");
+		$nickname = Config::get("servers.$this->serverName.systemAccount.nickname");
 		$this->executeCommand(
-			"login username=\"$username\" password=\"$password\" nickname=\"$acc->nickname\" protocol=\"5.0\""
+			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
 		);
 	}
 
