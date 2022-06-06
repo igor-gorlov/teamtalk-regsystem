@@ -11,6 +11,13 @@ Gives the ability to load, review, manipulate and store program settings.
 declare(strict_types = 1);
 
 
+// Is thrown on a problem with mandatory configuration entries.
+class InvalidConfigException extends RuntimeException {
+	public function __construct(string $message) {
+		parent::__construct($message);
+	}
+}
+
 // Provides an interface to configuration stored in a file. Cannot be instantiated.
 class Config {
 
@@ -21,9 +28,43 @@ class Config {
 	private static bool $mIsModified;
 
 	/*
+	Check whether all mandatory entries are present and have the required types;
+	throws InvalidConfigException if that is not the case.
+	*/
+	private static function mCheckMandatoryEntries(): void {
+		// Managed servers.
+		if(
+			!isset(static::$mConf["servers"]) or
+			!is_array(static::$mConf["servers"]) or
+			empty(static::$mConf["servers"])
+		) {
+			throw new InvalidConfigException("There are no managed servers or they are incorrectly configured");
+		}
+		foreach(static::$mConf["servers"] as $server) {
+			if(
+				!isset($server["host"]) or
+				!is_string($server["host"]) or
+				!isset($server["port"]) or
+				!is_int($server["port"]) or
+				!isset($server["systemAccount"]) or
+				!isset($server["systemAccount"]["username"]) or
+				!is_string($server["systemAccount"]["username"]) or
+				!isset($server["systemAccount"]["password"]) or
+				!is_string($server["systemAccount"]["password"]) or
+				!isset($server["systemAccount"]["nickname"]) or
+				!is_string($server["systemAccount"]["nickname"])
+			) {
+				throw new InvalidConfigException("One or more of managed servers are configured incorrectly");
+			}
+		}
+	}
+
+	/*
 	Loads configuration from the given file;
 	registers save() method as a shutdown function if the optional argument autosave is set to true.
-	Throws RuntimeException when the file cannot be read or if it contains syntactic errors.
+
+	Throws RuntimeException when the file cannot be read or when it contains syntactic errors;
+	throws InvalidConfigException if one or more mandatory configuration options are missing or have unexpected types.
 
 	This method must be called first of all and only once; BadMethodCallException will be thrown on subsequent calls.
 	*/
@@ -45,6 +86,7 @@ class Config {
 			throw new RuntimeException("Invalid syntax of configuration file \"$filename\"");
 		}
 		static::$mConf = $assoc;
+		static::mCheckMandatoryEntries();
 		static::$mFile = $file;
 		static::$mIsModified = false;
 		if($autosave) {
