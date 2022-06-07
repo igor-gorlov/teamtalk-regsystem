@@ -104,11 +104,14 @@ class Config {
 	}
 
 	/*
-	Translates the given path from a sequence of dot-separated keys
-	to a valid PHP code which accesses the target configuration entry.
+	Converts the given path to a sequence of array indices,
+	so that "servers.default.host" is translated to "[\"servers\"][\"default\"][\"host\"]".
+
+	The output may be used to construct a string of code for eval(),
+	especially when access to a configuration entry is required.
 	*/
 	private static function translatePath(string $path): string {
-		$code = "static::\$mConf";
+		$code = "";
 		$keys = explode(".", $path);
 		foreach($keys as $key) {
 			$code .= "[\"$key\"]";
@@ -121,7 +124,7 @@ class Config {
 	If this option does not exist, returns null.
 	*/
 	public static function get(string $path): mixed {
-		$code = "return " . static::translatePath($path) . ";";
+		$code = "return static::\$mConf" . static::translatePath($path) . ";";
 		return @eval($code);
 	}
 
@@ -138,7 +141,7 @@ class Config {
 	The value can be of any type except of null and resource.
 	*/
 	public static function set(string $path, object|array|string|int|float|bool $value): mixed {
-		$code = "return " . static::translatePath($path) . " = \$value;";
+		$code = "return static::\$mConf" . static::translatePath($path) . " = \$value;";
 		static::$mIsModified = true;
 		try {
 			return eval($code);
@@ -156,7 +159,7 @@ class Config {
 	Compare the result against null using === operator to determine whether the deletion has failed.
 	*/
 	public static function unset(string $path): mixed {
-		$access = static::translatePath($path);
+		$access = "static::\$mConf" . static::translatePath($path);
 		$code = "
 			if((\$deleted = @$access) === null) {
 				return null;
