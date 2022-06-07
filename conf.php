@@ -36,8 +36,7 @@ class Config {
 	private static bool $mIsModified;
 
 	/*
-	Check whether all mandatory entries are present and have the required types;
-	throws InvalidConfigException if that is not the case.
+	Check configuration invariants; throws InvalidConfigException if something is violated.
 
 	By default, this function works with static::$mConf,
 	but another configuration source can be supplied via $conf optional argument.
