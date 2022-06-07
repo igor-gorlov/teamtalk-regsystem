@@ -38,17 +38,28 @@ class Config {
 	/*
 	Check whether all mandatory entries are present and have the required types;
 	throws InvalidConfigException if that is not the case.
+
+	By default, this function works with static::$mConf,
+	but another configuration source can be supplied via $conf optional argument.
 	*/
-	private static function mCheckMandatoryEntries(): void {
-		// Managed servers.
+	private static function mCheckMandatoryEntries(?array &$conf = null): void {
+		// Determine the configuration source.
+		$source = array();
+		if($conf === null) {
+			$source = &static::$mConf;
+		}
+		else {
+			$source = $conf;
+		}
+		// Check the managed servers.
 		if(
-			!isset(static::$mConf["servers"]) or
-			!is_array(static::$mConf["servers"]) or
-			empty(static::$mConf["servers"])
+			!isset($source["servers"]) or
+			!is_array($source["servers"]) or
+			empty($source["servers"])
 		) {
 			throw new InvalidConfigException("There are no managed servers or they are incorrectly configured");
 		}
-		foreach(static::$mConf["servers"] as $server) {
+		foreach($source["servers"] as &$server) {
 			if(
 				!isset($server["host"]) or
 				!is_string($server["host"]) or
