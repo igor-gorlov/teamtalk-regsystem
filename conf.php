@@ -175,13 +175,10 @@ class Config {
 
 	/*
 	Assigns a value (passed as the second argument) to an entry pointed by a path (passed as the first argument).
-	Returns the assigned value on success or null on failure.
+	Returns the assigned value.
 
-	Caution!
-	This method may return boolean false after a successfull assignment if you pass that boolean false as the value.
-	Compare the result against null using === operator to determine whether the assignment has failed.
-
-	If the requested entry does not exist, the method will create it silently.
+	If the requested entry does not exist, the method will try to create it silently;
+	InvalidConfigException will be thrown on failure.
 	
 	If the assignment operation breaks configuration validity,
 	an instance of InvalidConfigException is thrown and no changes are applied.
@@ -197,13 +194,23 @@ class Config {
 			$assigned = eval($code);
 		}
 		catch(Error $e) {
-			return null;
+			$assigned = null;
 		}
 		if($assigned === null) {
-			return null;
+			throw new InvalidConfigException(
+				"Unable to set configuration entry \"$path\": this path cannot be created"
+			);
 		}
 		// The virtual operation succeeded, now apply the new configuration if it is valid.
-		static::mValidate($virtualConf);
+		try {
+			static::mValidate($virtualConf);
+		}
+		catch(InvalidConfigException $e) {
+			throw new InvalidConfigException(
+				"Unable to set configuration entry \"$path\"; you would get the following on success:\n\t" .
+				$e->getMessage()
+			);
+		}
 		static::$mConf = $virtualConf;
 		static::$mIsModified = true;
 		return $assigned;
