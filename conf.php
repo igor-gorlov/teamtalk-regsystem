@@ -104,8 +104,8 @@ class Config {
 		if($assoc === null) {
 			throw new RuntimeException("Invalid syntax of configuration file \"$filename\"");
 		}
+		static::mCheckMandatoryEntries($assoc);
 		static::$mConf = $assoc;
-		static::mCheckMandatoryEntries();
 		static::$mFile = $file;
 		static::$mIsModified = false;
 		if($autosave) {
