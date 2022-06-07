@@ -79,6 +79,35 @@ class Config {
 	}
 
 	/*
+	Returns true if the entry pointed-to by the given path is mandatory;
+	returns false when that is not the case or when this entry does not exist at all.
+	*/
+	public static function isMandatory(string $path): bool {
+		// Copy the configuration to a local variable.
+		$testBench = static::$mConf;
+		// Try to delete a copy of the requested entry.
+		$indices = static::translatePath($path);
+		$code = "
+			if(@\$testBench$indices === null) {
+				return false;
+			}
+			unset(\$testBench$indices);
+			return true;
+		";
+		if(!eval($code)) { // deletion failed, the entry does not exist.
+			return false;
+		}
+		// After the deletion, check whether the configuration in $testBench contains all mandatory entries.
+		try {
+			static::mCheckMandatoryEntries($testBench);
+		}
+		catch(Exception) { // a problem, the deleted entry was mandatory!
+			return true;
+		}
+		return false;
+	}
+
+	/*
 	Loads configuration from the given file;
 	registers save() method as a shutdown function if the optional argument autosave is set to true.
 
