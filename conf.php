@@ -183,17 +183,30 @@ class Config {
 
 	If the requested entry does not exist, the method will create it silently.
 	
+	If the assignment operation breaks configuration validity,
+	an instance of InvalidConfigException is thrown and no changes are applied.
+
 	The value can be of any type except of null and resource.
 	*/
 	public static function set(string $path, object|array|string|int|float|bool $value): mixed {
-		$code = "return static::\$mConf" . static::translatePath($path) . " = \$value;";
-		static::$mIsModified = true;
+		// Try to perform the operation on a local configuration copy.
+		$virtualConf = static::$mConf;
+		$code = "return \$virtualConf" . static::translatePath($path) . " = \$value;";
+		$assigned = null;
 		try {
-			return eval($code);
+			$assigned = eval($code);
 		}
 		catch(Error $e) {
 			return null;
 		}
+		if($assigned === null) {
+			return null;
+		}
+		// The virtual operation succeeded, now apply the new configuration if it is valid.
+		static::mValidate($virtualConf);
+		static::$mConf = $virtualConf;
+		static::$mIsModified = true;
+		return $assigned;
 	}
 
 	/*
