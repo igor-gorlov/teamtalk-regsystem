@@ -42,7 +42,7 @@ class Config {
 	By default, this function works with static::$mConf,
 	but another configuration source can be supplied via $conf optional argument.
 	*/
-	private static function mCheckMandatoryEntries(?array &$conf = null): void {
+	private static function mValidate(?array &$conf = null): void {
 		// Determine the configuration source.
 		$source = array();
 		if($conf === null) {
@@ -99,7 +99,7 @@ class Config {
 		}
 		// After the deletion, check whether the configuration in $testBench contains all mandatory entries.
 		try {
-			static::mCheckMandatoryEntries($testBench);
+			static::mValidate($testBench);
 		}
 		catch(Exception) { // a problem, the deleted entry was mandatory!
 			return true;
@@ -133,7 +133,7 @@ class Config {
 		if($assoc === null) {
 			throw new RuntimeException("Invalid syntax of configuration file \"$filename\"");
 		}
-		static::mCheckMandatoryEntries($assoc);
+		static::mValidate($assoc);
 		static::$mConf = $assoc;
 		static::$mFile = $file;
 		static::$mIsModified = false;
