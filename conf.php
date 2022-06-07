@@ -120,11 +120,17 @@ class Config {
 	}
 
 	/*
-	Returns the value of the configuration option pointed by the given path.
-	If this option does not exist, returns null.
+	Returns the value of the configuration entry pointed by the given path.
+	If this entry does not exist in the loaded configuration, returns its default value.
+	If there is no default value for this entry, returns null.
 	*/
 	public static function get(string $path): mixed {
-		$code = "return static::\$mConf" . static::translatePath($path) . ";";
+		$indices = static::translatePath($path);
+		$code = "return static::\$mConf$indices;";
+		if(($result = @eval($code)) !== null) {
+			return $result;
+		}
+		$code = "return static::DEFAULT$indices;";
 		return @eval($code);
 	}
 
@@ -153,6 +159,9 @@ class Config {
 
 	/*
 	Deletes the entry pointed-to by the given path; returns the deleted value on success or null on failure.
+
+	Sometimes, an optional entry may persist even after removal:
+	if it has a default value, this value will still be accessible.
 
 	Caution!
 	This method may return boolean false after a successfull deletion if the value being removed is identical to false.
