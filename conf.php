@@ -193,7 +193,7 @@ class Config {
 		try {
 			$assigned = eval($code);
 		}
-		catch(Error $e) {
+		catch(Error) {
 			$assigned = null;
 		}
 		if($assigned === null) {
