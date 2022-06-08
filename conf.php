@@ -222,6 +222,9 @@ class Config {
 	if it has a default value, this value will still be accessible.
 	*/
 	public static function unset(string $path): mixed {
+		if(static::isMandatory($path)) {
+			throw new InvalidConfigException("Unable to remove mandatory configuration option \"$path\"");
+		}
 		$access = "static::\$mConf" . static::translatePath($path);
 		$deleted = null;
 		$code = "
