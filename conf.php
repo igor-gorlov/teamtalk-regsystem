@@ -215,26 +215,29 @@ class Config {
 	}
 
 	/*
-	Deletes the entry pointed-to by the given path; returns the deleted value on success or null on failure.
+	Deletes the entry pointed-to by the given path, returns the deleted value;
+	throws InvalidConfigException if an error occurres.
 
 	Sometimes, an optional entry may persist even after removal:
 	if it has a default value, this value will still be accessible.
-
-	Caution!
-	This method may return boolean false after a successfull deletion if the value being removed is identical to false.
-	Compare the result against null using === operator to determine whether the deletion has failed.
 	*/
 	public static function unset(string $path): mixed {
 		$access = "static::\$mConf" . static::translatePath($path);
+		$deleted = null;
 		$code = "
 			if((\$deleted = @$access) === null) {
 				return null;
 			}
 			unset($access);
-			static::\$mIsModified = true;
 			return \$deleted;
 		";
-		return eval($code);
+		if(eval($code) === null) {
+			throw new InvalidConfigException(
+				"Unable to remove configuration entry \"$path\": this path does not exist"
+			);
+		}
+		static::$mIsModified = true;
+		return $deleted;
 	}
 
 	/*
