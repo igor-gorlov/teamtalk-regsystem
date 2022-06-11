@@ -77,6 +77,13 @@ class Config {
 		}
 	}
 
+	// Checks existence of the configuration entry pointed-to by the given path.
+	public static function exists(string $path): bool {
+		$indices = static::translatePath($path);
+		$code = "return isset(static::\$mConf$indices);";
+		return eval($code);
+	}
+
 	/*
 	Returns true if the entry pointed-to by the given path is mandatory;
 	returns false when that is not the case or when this entry does not exist at all.
