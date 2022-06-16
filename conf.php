@@ -87,6 +87,13 @@ class Config {
 		return eval($code);
 	}
 
+	// Checks whether the configuration entry pointed-to by the given path has a default value.
+	public static function hasDefaultValue(string $path): bool {
+		$indices = static::translatePath($path);
+		$code = "return isset(static::DEFAULT$indices);";
+		return eval($code);
+	}
+
 	// Checks existence of the configuration entry pointed-to by the given path.
 	public static function exists(string $path): bool {
 		$indices = static::translatePath($path);
