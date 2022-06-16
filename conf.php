@@ -77,6 +77,16 @@ class Config {
 		}
 	}
 
+	/*
+	Checks whether the entry pointed-to by the given path had come from the configuration file
+	(but not from the array of defaults).
+	*/
+	public static function isLoaded(string $path): bool {
+		$indices = static::translatePath($path);
+		$code = "return isset(static::\$mConf$indices);";
+		return eval($code);
+	}
+
 	// Checks existence of the configuration entry pointed-to by the given path.
 	public static function exists(string $path): bool {
 		$indices = static::translatePath($path);
