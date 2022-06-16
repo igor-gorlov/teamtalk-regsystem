@@ -94,11 +94,15 @@ class Config {
 		return eval($code);
 	}
 
-	// Checks existence of the configuration entry pointed-to by the given path.
+	/*
+	Checks existence of the configuration entry pointed-to by the given path.
+	Returns true if this entry either is loaded from the file or has a default value; returns false otherwise.
+	*/
 	public static function exists(string $path): bool {
-		$indices = static::translatePath($path);
-		$code = "return isset(static::\$mConf$indices);";
-		return eval($code);
+		if(static::isLoaded($path) or static::hasDefaultValue($path)) {
+			return true;
+		}
+		return false;
 	}
 
 	/*
