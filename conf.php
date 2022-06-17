@@ -189,7 +189,7 @@ class Config {
 	/*
 	Returns the value of the configuration entry pointed by the given path.
 	If this entry does not exist in the loaded configuration, returns its default value.
-	If there is no default value for this entry, returns null.
+	If there is no default value for this entry, throws InvalidConfigException.
 	*/
 	public static function get(string $path): mixed {
 		$indices = static::translatePath($path);
@@ -201,7 +201,7 @@ class Config {
 			$code = "return static::DEFAULT$indices;";
 			return eval($code);
 		}
-		return null;
+		throw new InvalidConfigException("Configuration entry \"$path\" does not exist");
 	}
 
 	/*
