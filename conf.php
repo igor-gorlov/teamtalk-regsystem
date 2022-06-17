@@ -193,12 +193,15 @@ class Config {
 	*/
 	public static function get(string $path): mixed {
 		$indices = static::translatePath($path);
-		$code = "return static::\$mConf$indices;";
-		if(($result = @eval($code)) !== null) {
-			return $result;
+		if(static::isLoaded($path)) {
+			$code = "return static::\$mConf$indices;";
+			return eval($code);
 		}
-		$code = "return static::DEFAULT$indices;";
-		return @eval($code);
+		if(static::hasDefaultValue($path)) {
+			$code = "return static::DEFAULT$indices;";
+			return eval($code);
+		}
+		return null;
 	}
 
 	/*
