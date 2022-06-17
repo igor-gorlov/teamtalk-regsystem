@@ -206,7 +206,7 @@ class Config {
 
 	/*
 	Assigns a value (passed as the second argument) to an entry pointed-to by a path (passed as the first argument).
-	Returns the assigned value, which can be of any type except of null and resource.
+	Returns the assigned value.
 
 	If the requested entry does not exist, the method will try to create it silently;
 	InvalidConfigException will be thrown on failure.
@@ -214,7 +214,7 @@ class Config {
 	If the assignment operation breaks configuration validity,
 	an instance of InvalidConfigException is thrown and no changes are applied.
 	*/
-	public static function set(string $path, object|array|string|int|float|bool $value): mixed {
+	public static function set(string $path, object|array|string|int|float|bool|null $value): mixed {
 		// Try to perform the operation on a local configuration copy.
 		$virtualConf = static::$mConf;
 		$code = "return \$virtualConf" . static::translatePath($path) . " = \$value;";
@@ -223,9 +223,6 @@ class Config {
 			$assigned = eval($code);
 		}
 		catch(Error) {
-			$assigned = null;
-		}
-		if($assigned === null) {
 			throw new InvalidConfigException(
 				"Unable to set configuration entry \"$path\": this path cannot be created"
 			);
