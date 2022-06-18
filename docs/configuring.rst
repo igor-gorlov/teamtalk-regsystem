@@ -12,7 +12,7 @@ All keys are strings in :dfn:`lower camel case`:
 **no** spaces, **no** underscores, **no** hyphens, only lower-case letters (a-z) and digits (0-9);
 each word except of the first one begins with a digit or with a **capital** letter.
 
-The following sections will describe JSON entities used by the Registration System.
+The following sections provide comprehensive description of all configuration entries used by the Registration System.
 
 ``servers`` Object
 ------------------
