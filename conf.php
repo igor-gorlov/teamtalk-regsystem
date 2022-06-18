@@ -110,12 +110,16 @@ class Config {
 	returns false when that is not the case or when this entry does not exist at all.
 	*/
 	public static function isMandatory(string $path): bool {
+		// Check existence of the entry.
+		if(!static::exists($path)) {
+			return false;
+		}
 		// Copy the configuration to a local variable.
 		$testBench = static::$mConf;
 		// Try to delete a copy of the requested entry.
 		$indices = static::translatePath($path);
 		$code = "
-			if(@\$testBench$indices === null) {
+			if(!isset(\$testBench$indices)) {
 				return false;
 			}
 			unset(\$testBench$indices);
