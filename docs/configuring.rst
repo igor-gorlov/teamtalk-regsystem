@@ -4,6 +4,10 @@ Configuring
 The system is controlled by settings (more formally, :dfn:`configuration entries`)
 from :file:`config.json` file located within the root folder.
 
+There are :dfn:`mandatory` and :dfn:`optional` entries.
+All mandatory entries **must** be present in the configuration file.
+Optional entries can be omitted; they often have default values.
+
 All keys are strings in :dfn:`lower camel case`:
 **no** spaces, **no** underscores, **no** hyphens, only lower-case letters (a-z) and digits (0-9);
 each word except of the first one begins with a digit or with a **capital** letter.
