@@ -1,7 +1,8 @@
 Configuring
 ===========
 
-The system is controlled by settings from :file:`config.json` file located within the root folder.
+The system is controlled by settings (more formally, :dfn:`configuration entries`)
+from :file:`config.json` file located within the root folder.
 
 All keys are strings in :dfn:`lower camel case`:
 **no** spaces, **no** underscores, **no** hyphens, only lower-case letters (a-z) and digits (0-9);
