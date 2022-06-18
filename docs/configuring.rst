@@ -14,15 +14,15 @@ each word except of the first one begins with a digit or with a **capital** lett
 
 The following sections provide comprehensive description of all configuration entries used by the Registration System.
 
-``servers`` Object
-------------------
+Mandatory ``servers`` Object
+----------------------------
 
 This is a container for metadata of all TeamTalk 5 servers being managed by your Regsystem copy.
 
 Here, each key is a unique :dfn:`server name` mapped to an object
 encapsulating information directly related to this particular server.
 
-Server information object itself has the following fields:
+Server information object itself has the following fields, which are all mandatory regardless of their nesting level:
 
 ``host``
   URL or IP address of the server.
@@ -37,9 +37,12 @@ Server information object itself has the following fields:
   * ``password``
   * ``nickname``
 
-``validation`` Object
----------------------
+Optional ``validation`` Object
+------------------------------
 
 Defines the rules by which user input is validated.
 
-Contains two fields: ``username`` and ``password``. Their values are both **PHP regular expressions** describing the respective entities.
+Contains two optional fields: ``username`` and ``password``.
+Their values are both **PHP regular expressions** describing the respective entities.
+By default, these regular expressions are equivalent:
+":regexp:`/.+/i`" (in English: "At least one arbitrary character is required").
