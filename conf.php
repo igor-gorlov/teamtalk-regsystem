@@ -128,8 +128,8 @@ class Config {
 		}
 		$json = json_encode(
 			static::$mConf,
-			JSON_PRETTY_PRINT|JSON_PRESERVE_ZERO_FRACTION|
-			JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR
+			JSON_PRETTY_PRINT | JSON_PRESERVE_ZERO_FRACTION |
+			JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
 		) . "\n";
 		ftruncate(static::$mFile, 0);
 		rewind(static::$mFile);
