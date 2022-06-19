@@ -77,6 +77,11 @@ class Config {
 		}
 	}
 
+	// Checks whether the given string is a valid configuration path.
+	public static function isValidPath(string $str): bool {
+		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $str));
+	}
+
 	/*
 	Checks whether the entry pointed-to by the given path had come from the configuration file
 	(but not from the array of defaults).
