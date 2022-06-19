@@ -137,7 +137,7 @@ class Config {
 			throw new RuntimeException("Unable to save configuration to the file");
 		}
 	}
-	
+
 }
 
 
