@@ -40,7 +40,7 @@ class UserInfo {
 	}
 
 	// Sets a username if it is valid, otherwise throws InvalidArgumentException.
-	function setUsername(string $username): void {
+	public function setUsername(string $username): void {
 		if(!static::isValidUsername($username)) {
 			throw new InvalidArgumentException("Invalid username");
 		}
@@ -48,12 +48,12 @@ class UserInfo {
 	}
 
 	// Returns the current username.
-	function getUsername(): string {
+	public function getUsername(): string {
 		return $this->mUsername;
 	}
 
 	// Sets a password if it is valid, otherwise throws InvalidArgumentException.
-	function setPassword(string $password): void {
+	public function setPassword(string $password): void {
 		if(!static::isValidPassword($password)) {
 			throw new InvalidArgumentException("Invalid password");
 		}
@@ -61,7 +61,7 @@ class UserInfo {
 	}
 
 	// Returns the current password.
-	function getPassword(): string {
+	public function getPassword(): string {
 		return $this->mPassword;
 	}
 
