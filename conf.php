@@ -206,7 +206,7 @@ class Config {
 	}
 
 	/*
-	Returns the value of the configuration entry pointed by the given path.
+	Returns the value of the configuration entry pointed-to by the given path.
 	If this entry does not exist in the loaded configuration, returns its default value.
 
 	If there is no default value for the entry, throws InvalidConfigException;
