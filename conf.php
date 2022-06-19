@@ -87,14 +87,14 @@ class Config {
 	(but not from the array of defaults).
 	*/
 	public static function isLoaded(string $path): bool {
-		$indices = static::translatePath($path);
+		$indices = static::mTranslatePath($path);
 		$code = "return isset(static::\$mConf$indices);";
 		return eval($code);
 	}
 
 	// Checks whether the configuration entry pointed-to by the given path has a default value.
 	public static function hasDefaultValue(string $path): bool {
-		$indices = static::translatePath($path);
+		$indices = static::mTranslatePath($path);
 		$code = "return isset(static::DEFAULT$indices);";
 		return eval($code);
 	}
@@ -127,7 +127,7 @@ class Config {
 		// Copy the configuration to a local variable.
 		$testBench = static::$mConf;
 		// Try to delete a copy of the requested entry.
-		$indices = static::translatePath($path);
+		$indices = static::mTranslatePath($path);
 		$code = "
 			if(!isset(\$testBench$indices)) {
 				return false;
@@ -193,7 +193,7 @@ class Config {
 
 	This method throws InvalidArgumentException if the given path has incorrect format.
 	*/
-	private static function translatePath(string $path): string {
+	private static function mTranslatePath(string $path): string {
 		if(!static::isValidPath($path)) {
 			throw new InvalidArgumentException("Invalid configuration path");
 		}
@@ -213,7 +213,7 @@ class Config {
 	throws InvalidArgumentException if the given path is incorrect.
 	*/
 	public static function get(string $path): mixed {
-		$indices = static::translatePath($path);
+		$indices = static::mTranslatePath($path);
 		if(static::isLoaded($path)) {
 			$code = "return static::\$mConf$indices;";
 			return eval($code);
@@ -239,7 +239,7 @@ class Config {
 	*/
 	public static function set(string $path, object|array|string|int|float|bool|null $value): mixed {
 		// Try to perform the operation on a local configuration copy.
-		$code = "return \$virtualConf" . static::translatePath($path) . " = \$value;";
+		$code = "return \$virtualConf" . static::mTranslatePath($path) . " = \$value;";
 		$virtualConf = static::$mConf;
 		$assigned = null;
 		try {
@@ -283,7 +283,7 @@ class Config {
 		if(static::isMandatory($path)) {
 			throw new InvalidConfigException("Unable to remove mandatory configuration option \"$path\"");
 		}
-		$access = "static::\$mConf" . static::translatePath($path);
+		$access = "static::\$mConf" . static::mTranslatePath($path);
 		$deleted = eval("return $access;");
 		eval("unset($access);");
 		static::$mIsModified = true;
