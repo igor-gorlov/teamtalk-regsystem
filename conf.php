@@ -102,8 +102,12 @@ class Config {
 	/*
 	Checks existence of the configuration entry pointed-to by the given path.
 	Returns true if this entry either is loaded from the file or has a default value; returns false otherwise.
+	Throws InvalidArgumentException if the path has incorrect format.
 	*/
 	public static function exists(string $path): bool {
+		if(!static::isValidPath($path)) {
+			throw new InvalidArgumentException("Invalid configuration path");
+		}
 		if(static::isLoaded($path) or static::hasDefaultValue($path)) {
 			return true;
 		}
@@ -113,6 +117,7 @@ class Config {
 	/*
 	Returns true if the entry pointed-to by the given path is mandatory;
 	returns false when that is not the case or when this entry does not exist at all.
+	Throws InvalidArgumentException in case of incorrect path.
 	*/
 	public static function isMandatory(string $path): bool {
 		// Check existence of the entry.
@@ -185,8 +190,13 @@ class Config {
 
 	The output may be used to construct a string of code for eval(),
 	especially when access to a configuration entry is required.
+
+	This method throws InvalidArgumentException if the given path has incorrect format.
 	*/
 	private static function translatePath(string $path): string {
+		if(!static::isValidPath($path)) {
+			throw new InvalidArgumentException("Invalid configuration path");
+		}
 		$code = "";
 		$keys = explode(".", $path);
 		foreach($keys as $key) {
@@ -198,7 +208,9 @@ class Config {
 	/*
 	Returns the value of the configuration entry pointed by the given path.
 	If this entry does not exist in the loaded configuration, returns its default value.
-	If there is no default value for this entry, throws InvalidConfigException.
+
+	If there is no default value for the entry, throws InvalidConfigException;
+	throws InvalidArgumentException if the given path is incorrect.
 	*/
 	public static function get(string $path): mixed {
 		$indices = static::translatePath($path);
@@ -222,11 +234,13 @@ class Config {
 	
 	If the assignment operation breaks configuration validity,
 	an instance of InvalidConfigException is thrown and no changes are applied.
+
+	An incorrect configuration path given to this method results in InvalidArgumentException being thrown.
 	*/
 	public static function set(string $path, object|array|string|int|float|bool|null $value): mixed {
 		// Try to perform the operation on a local configuration copy.
-		$virtualConf = static::$mConf;
 		$code = "return \$virtualConf" . static::translatePath($path) . " = \$value;";
+		$virtualConf = static::$mConf;
 		$assigned = null;
 		try {
 			$assigned = eval($code);
@@ -252,8 +266,10 @@ class Config {
 	}
 
 	/*
-	Deletes the entry pointed-to by the given path, returns the deleted value;
-	throws InvalidConfigException if an error occurres.
+	Deletes the entry pointed-to by the given path, returns the deleted value.
+
+	If the requested entry does not exist or is mandatory, throws InvalidConfigException;
+	but if the passed string cannot be used as a path at all, this function throws InvalidArgumentException.
 
 	Sometimes, an optional entry may persist even after removal:
 	if it has a default value, this value will still be accessible.
