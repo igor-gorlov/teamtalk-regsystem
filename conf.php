@@ -194,22 +194,15 @@ class Config {
 
 	/*
 	Returns the value of the configuration entry pointed-to by the given path.
-	If this entry does not exist in the loaded configuration, returns its default value.
-
-	If there is no default value for the entry, throws InvalidConfigException;
-	throws InvalidArgumentException if the given path is incorrect.
+	Throws InvalidArgumentException if the given path is incorrect.
 	*/
 	public static function get(string $path): mixed {
 		$indices = static::mTranslatePath($path);
-		if(static::isLoaded($path)) {
-			$code = "return static::\$mConf$indices;";
-			return eval($code);
+		if(!static::exists($path)) {
+			throw new InvalidConfigException("Configuration entry \"$path\" does not exist");
 		}
-		if(static::hasDefaultValue($path)) {
-			$code = "return static::DEFAULT$indices;";
-			return eval($code);
-		}
-		throw new InvalidConfigException("Configuration entry \"$path\" does not exist");
+		$code = "return static::\$mConf$indices;";
+		return eval($code);
 	}
 
 	/*
@@ -257,9 +250,6 @@ class Config {
 
 	If the requested entry does not exist or is mandatory, throws InvalidConfigException;
 	but if the passed string cannot be used as a path at all, this function throws InvalidArgumentException.
-
-	Sometimes, an optional entry may persist even after removal:
-	if it has a default value, this value will still be accessible.
 	*/
 	public static function unset(string $path): mixed {
 		if(!static::exists($path)) {
