@@ -188,17 +188,31 @@ class Config {
 	Converts the given path to a sequence of array indices,
 	so that "servers.default.host" is translated to "[\"servers\"][\"default\"][\"host\"]".
 
+	The optional argument $offset determins how many indices should be trimmed from the final output.
+	If the value is positive, first $offset indices are skipped;
+	if it is negative, the same is done for last abs($offset) elements.
+	When abs($offset) is not less than total number of indices, an empty string is returned.
+
 	The output may be used to construct a string of code for eval(),
 	especially when access to a configuration entry is required.
 
 	This method throws InvalidArgumentException if the given path has incorrect format.
 	*/
-	private static function mTranslatePath(string $path): string {
+	private static function mTranslatePath(string $path, int $offset = 0): string {
 		if(!static::isValidPath($path)) {
 			throw new InvalidArgumentException("Invalid configuration path");
 		}
 		$code = "";
 		$keys = explode(".", $path);
+		if(abs($offset) >= count($keys)) {
+			return "";
+		}
+		if($offset > 0) {
+			$keys = array_slice($keys, $offset);
+		}
+		elseif($offset < 0) {
+			$keys = array_slice($keys, 0, $offset);
+		}
 		foreach($keys as $key) {
 			$code .= "[\"$key\"]";
 		}
