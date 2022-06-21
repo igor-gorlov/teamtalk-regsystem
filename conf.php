@@ -74,13 +74,6 @@ class Config {
 		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $str));
 	}
 
-	// Checks whether the configuration entry pointed-to by the given path has a default value.
-	public static function hasDefaultValue(string $path): bool {
-		$indices = static::mTranslatePath($path);
-		$code = "return isset(static::DEFAULT$indices);";
-		return eval($code);
-	}
-
 	/*
 	Checks existence of the configuration entry pointed-to by the given path.
 	Returns true if this entry either is loaded from the file or has a default value; returns false otherwise.
