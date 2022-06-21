@@ -23,14 +23,6 @@ class Config {
 
 	public const MAX_DEPTH = 2147483646;
 
-	// The default configuration for optional entries.
-	public const DEFAULT = array(
-		"validation" => array(
-			"username" => "/.+/i",
-			"password" => "/.+/i"
-		)
-	);
-
 	private static $mFile;
 	private static array $mConf;
 	private static bool $mIsModified;
