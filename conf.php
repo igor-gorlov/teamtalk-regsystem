@@ -82,8 +82,10 @@ class Config {
 		if(!static::isValidPath($path)) {
 			throw new InvalidArgumentException("Invalid configuration path");
 		}
-		$indices = static::mTranslatePath($path);
-		$code = "return isset(static::\$mConf$indices);";
+		$indices = static::mTranslatePath($path, -1);
+		$keys = static::splitPath($path);
+		$lastKey = array_pop($keys);
+		$code = "return array_key_exists(\"$lastKey\", static::\$mConf$indices);";
 		return eval($code);
 	}
 
