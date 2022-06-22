@@ -23,14 +23,6 @@ class Config {
 
 	public const MAX_DEPTH = 2147483646;
 
-	// The default configuration for optional entries.
-	public const DEFAULT = array(
-		"validation" => array(
-			"username" => "/.+/i",
-			"password" => "/.+/i"
-		)
-	);
-
 	private static $mFile;
 	private static array $mConf;
 	private static bool $mIsModified;
@@ -83,35 +75,16 @@ class Config {
 	}
 
 	/*
-	Checks whether the entry pointed-to by the given path had come from the configuration file
-	(but not from the array of defaults).
-	*/
-	public static function isLoaded(string $path): bool {
-		$indices = static::mTranslatePath($path);
-		$code = "return isset(static::\$mConf$indices);";
-		return eval($code);
-	}
-
-	// Checks whether the configuration entry pointed-to by the given path has a default value.
-	public static function hasDefaultValue(string $path): bool {
-		$indices = static::mTranslatePath($path);
-		$code = "return isset(static::DEFAULT$indices);";
-		return eval($code);
-	}
-
-	/*
 	Checks existence of the configuration entry pointed-to by the given path.
-	Returns true if this entry either is loaded from the file or has a default value; returns false otherwise.
 	Throws InvalidArgumentException if the path has incorrect format.
 	*/
 	public static function exists(string $path): bool {
 		if(!static::isValidPath($path)) {
 			throw new InvalidArgumentException("Invalid configuration path");
 		}
-		if(static::isLoaded($path) or static::hasDefaultValue($path)) {
-			return true;
-		}
-		return false;
+		$indices = static::mTranslatePath($path);
+		$code = "return isset(static::\$mConf$indices);";
+		return eval($code);
 	}
 
 	/*
@@ -221,22 +194,15 @@ class Config {
 
 	/*
 	Returns the value of the configuration entry pointed-to by the given path.
-	If this entry does not exist in the loaded configuration, returns its default value.
-
-	If there is no default value for the entry, throws InvalidConfigException;
-	throws InvalidArgumentException if the given path is incorrect.
+	Throws InvalidArgumentException if the given path is incorrect.
 	*/
 	public static function get(string $path): mixed {
 		$indices = static::mTranslatePath($path);
-		if(static::isLoaded($path)) {
-			$code = "return static::\$mConf$indices;";
-			return eval($code);
+		if(!static::exists($path)) {
+			throw new InvalidConfigException("Configuration entry \"$path\" does not exist");
 		}
-		if(static::hasDefaultValue($path)) {
-			$code = "return static::DEFAULT$indices;";
-			return eval($code);
-		}
-		throw new InvalidConfigException("Configuration entry \"$path\" does not exist");
+		$code = "return static::\$mConf$indices;";
+		return eval($code);
 	}
 
 	/*
@@ -284,9 +250,6 @@ class Config {
 
 	If the requested entry does not exist or is mandatory, throws InvalidConfigException;
 	but if the passed string cannot be used as a path at all, this function throws InvalidArgumentException.
-
-	Sometimes, an optional entry may persist even after removal:
-	if it has a default value, this value will still be accessible.
 	*/
 	public static function unset(string $path): mixed {
 		if(!static::exists($path)) {
