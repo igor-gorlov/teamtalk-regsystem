@@ -82,8 +82,10 @@ class Config {
 		if(!static::isValidPath($path)) {
 			throw new InvalidArgumentException("Invalid configuration path");
 		}
-		$indices = static::mTranslatePath($path);
-		$code = "return isset(static::\$mConf$indices);";
+		$indices = static::mTranslatePath($path, -1);
+		$keys = static::splitPath($path);
+		$lastKey = array_pop($keys);
+		$code = "return array_key_exists(\"$lastKey\", static::\$mConf$indices);";
 		return eval($code);
 	}
 
@@ -158,6 +160,17 @@ class Config {
 	}
 
 	/*
+	Splits a string representing a configuration path into individual keys.
+	Throws InvalidArgumentException if the path is incorrect.
+	*/
+	public static function splitPath(string $path): array {
+		if(!static::isValidPath($path)) {
+			throw new InvalidArgumentException("Invalid configuration path");
+		}
+		return explode(".", $path);
+	}
+
+	/*
 	Converts the given path to a sequence of array indices,
 	so that "servers.default.host" is translated to "[\"servers\"][\"default\"][\"host\"]".
 
@@ -176,7 +189,7 @@ class Config {
 			throw new InvalidArgumentException("Invalid configuration path");
 		}
 		$code = "";
-		$keys = explode(".", $path);
+		$keys = static::splitPath($path);
 		if(abs($offset) >= count($keys)) {
 			return "";
 		}
