@@ -187,7 +187,7 @@ class Config {
 			throw new InvalidArgumentException("Invalid configuration path");
 		}
 		$code = "";
-		$keys = explode(".", $path);
+		$keys = static::splitPath($path);
 		if(abs($offset) >= count($keys)) {
 			return "";
 		}
