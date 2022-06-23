@@ -21,14 +21,14 @@ class UserInfo {
 	private string $mPassword;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
-	public function __construct(string $username, string $password, public string $nickname="") {
+	public function __construct(private readonly ConfigManager $mConfig, string $username, string $password, public string $nickname="") {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
-		if(!static::isValidUsername($username)) {
+		if(!static::isValidUsername($username, $this->mConfig)) {
 			$error = true;
 			$errorMessage .= "\tUsername\n";
 		}
-		if(!static::isValidPassword($password)) {
+		if(!static::isValidPassword($password, $this->mConfig)) {
 			$error = true;
 			$errorMessage .= "\tPassword\n";
 		}
@@ -41,7 +41,7 @@ class UserInfo {
 
 	// Sets a username if it is valid, otherwise throws InvalidArgumentException.
 	public function setUsername(string $username): void {
-		if(!static::isValidUsername($username)) {
+		if(!static::isValidUsername($username, $this->mConfig)) {
 			throw new InvalidArgumentException("Invalid username");
 		}
 		$this->mUsername = $username;
@@ -54,7 +54,7 @@ class UserInfo {
 
 	// Sets a password if it is valid, otherwise throws InvalidArgumentException.
 	public function setPassword(string $password): void {
-		if(!static::isValidPassword($password)) {
+		if(!static::isValidPassword($password, $this->mConfig)) {
 			throw new InvalidArgumentException("Invalid password");
 		}
 		$this->mPassword = $password;
@@ -71,13 +71,13 @@ class UserInfo {
 
 	If an error occurres during validation process, the method throws RuntimeException.
 	*/
-	public static function isValidUsername(string $str): bool {
+	public static function isValidUsername(string $str, ConfigManager $config): bool {
 		$regexp = "";
-		if(!Config::exists("validation.username")) {
+		if(!$config->exists("validation.username")) {
 			$regexp = "/.+/i";
 		}
 		else {
-			$regexp = Config::get("validation.username");
+			$regexp = $config->get("validation.username");
 		}
 		$result = @preg_match($regexp, $str);
 		if($result === false) {
@@ -92,13 +92,13 @@ class UserInfo {
 
 	If an error occurres during validation process, the method throws RuntimeException.
 	*/
-	public static function isValidPassword(string $str): bool {
+	public static function isValidPassword(string $str, ConfigManager $config): bool {
 		$regexp = "";
-		if(!Config::exists("validation.password")) {
+		if(!$config->exists("validation.password")) {
 			$regexp = "/.+/i";
 		}
 		else {
-			$regexp = Config::get("validation.password");
+			$regexp = $config->get("validation.password");
 		}
 		$result = @preg_match($regexp, $str);
 		if($result === false) {
@@ -158,8 +158,8 @@ class Tt5Session {
 	The constructor does not actually establish connection:
 	this operation may take a lot of time and thus should be delayed while possible.
 	*/
-	public function __construct(public readonly string $serverName) {
-		if(($serverData = Config::get("servers.$serverName")) === null) {
+	public function __construct(public readonly string $serverName, private readonly ConfigManager $mConfig) {
+		if(($serverData = $mConfig->get("servers.$serverName")) === null) {
 			throw new InvalidArgumentException("Unknown server \"$serverName\"");
 		}
 		$this->mLastId = 0;
@@ -172,7 +172,7 @@ class Tt5Session {
 	*/
 	private function mEnsureConnection(): void {
 		if($this->mSocket === null) {
-			$serverData = Config::get("servers.$this->serverName");
+			$serverData = $this->mConfig->get("servers.$this->serverName");
 			$this->mSocket = @fsockopen($serverData["host"], $serverData["port"]);
 			if($this->mSocket === false) {
 				$this->mSocket = null;
@@ -343,9 +343,9 @@ class Tt5Session {
 	Throws CommandFailedException on error.
 	*/
 	public function login(): void {
-		$username = Config::get("servers.$this->serverName.systemAccount.username");
-		$password = Config::get("servers.$this->serverName.systemAccount.password");
-		$nickname = Config::get("servers.$this->serverName.systemAccount.nickname");
+		$username = $this->mConfig->get("servers.$this->serverName.systemAccount.username");
+		$password = $this->mConfig->get("servers.$this->serverName.systemAccount.password");
+		$nickname = $this->mConfig->get("servers.$this->serverName.systemAccount.nickname");
 		$this->executeCommand(
 			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
 		);

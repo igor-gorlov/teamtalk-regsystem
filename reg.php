@@ -25,10 +25,13 @@ class BadQueryStringException extends RuntimeException {
 }
 
 /*
-Tries to construct an instance of UserInfo class using parameters passed via the URL query string.
-Throws BadQueryStringException if the actual set of required fields within the URL is incomplete.
+Tries to construct an instance of UserInfo class using the given configuration manager
+and the parameters passed via the URL query string.
+
+Throws BadQueryStringException if the actual set of required fields within the URL is incomplete;
+Throws RuntimeException if the user information is invalid.
 */
-function userInfoFromUrl(): UserInfo {
+function userInfoFromUrl(ConfigManager $config): UserInfo {
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
 	if(!isset($_GET["name"])) {
@@ -42,12 +45,12 @@ function userInfoFromUrl(): UserInfo {
 	if($error) {
 		throw new BadQueryStringException($errorMessage);
 	}
-	return new UserInfo($_GET["name"], $_GET["password"]);
+	return new UserInfo($config, $_GET["name"], $_GET["password"]);
 }
 
 
 // Configure the essential options.
-Config::init("config.json");
+$config = new ConfigManager("config.json");
 $serverName = "";
 if(isset($_GET["server"])) {
 	$serverName = $_GET["server"];
@@ -57,13 +60,13 @@ else {
 }
 
 // Establish connection.
-$connection = new Tt5Session($serverName);
+$connection = new Tt5Session($serverName, $config);
 
 // Authorize under the system account.
 $connection->login();
 
 // Create a new account.
-$newUsername = $connection->createAccount(userInfoFromUrl());
+$newUsername = $connection->createAccount(userInfoFromUrl($config));
 echo("Successfully created a new account named $newUsername!");
 
 
