@@ -85,7 +85,9 @@ class Config {
 		$indices = static::mTranslatePath($path, -1);
 		$keys = static::splitPath($path);
 		$lastKey = array_pop($keys);
-		$code = "return array_key_exists(\"$lastKey\", static::\$mConf$indices);";
+		$code = "
+			return is_array(@static::\$mConf$indices) and array_key_exists(\"$lastKey\", static::\$mConf$indices);
+		";
 		return eval($code);
 	}
 
