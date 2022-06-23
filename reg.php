@@ -60,7 +60,7 @@ else {
 }
 
 // Establish connection.
-$connection = new Tt5Session($serverName);
+$connection = new Tt5Session($serverName, $config);
 
 // Authorize under the system account.
 $connection->login();

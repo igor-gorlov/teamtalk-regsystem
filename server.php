@@ -158,8 +158,8 @@ class Tt5Session {
 	The constructor does not actually establish connection:
 	this operation may take a lot of time and thus should be delayed while possible.
 	*/
-	public function __construct(public readonly string $serverName) {
-		if(($serverData = Config::get("servers.$serverName")) === null) {
+	public function __construct(public readonly string $serverName, private readonly ConfigManager $mConfig) {
+		if(($serverData = $mConfig->get("servers.$serverName")) === null) {
 			throw new InvalidArgumentException("Unknown server \"$serverName\"");
 		}
 		$this->mLastId = 0;
@@ -172,7 +172,7 @@ class Tt5Session {
 	*/
 	private function mEnsureConnection(): void {
 		if($this->mSocket === null) {
-			$serverData = Config::get("servers.$this->serverName");
+			$serverData = $this->mConfig->get("servers.$this->serverName");
 			$this->mSocket = @fsockopen($serverData["host"], $serverData["port"]);
 			if($this->mSocket === false) {
 				$this->mSocket = null;
@@ -343,9 +343,9 @@ class Tt5Session {
 	Throws CommandFailedException on error.
 	*/
 	public function login(): void {
-		$username = Config::get("servers.$this->serverName.systemAccount.username");
-		$password = Config::get("servers.$this->serverName.systemAccount.password");
-		$nickname = Config::get("servers.$this->serverName.systemAccount.nickname");
+		$username = $this->mConfig->get("servers.$this->serverName.systemAccount.username");
+		$password = $this->mConfig->get("servers.$this->serverName.systemAccount.password");
+		$nickname = $this->mConfig->get("servers.$this->serverName.systemAccount.nickname");
 		$this->executeCommand(
 			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
 		);
