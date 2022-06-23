@@ -18,26 +18,26 @@ class InvalidConfigException extends RuntimeException {
 	}
 }
 
-// Provides an interface to configuration stored in a file. Cannot be instantiated.
+// Provides an interface to configuration stored in a file.
 class ConfigManager {
 
 	public const MAX_DEPTH = 2147483646;
 
-	private static $mFile;
-	private static array $mConf;
-	private static bool $mIsModified;
+	private $mFile;
+	private array $mConf;
+	private bool $mIsModified;
 
 	/*
 	Check configuration invariants; throws InvalidConfigException if something is violated.
 
-	By default, this function works with static::$mConf,
+	By default, this function works with $mConf,
 	but another configuration source can be supplied via $conf optional argument.
 	*/
-	private static function mValidate(?array &$conf = null): void {
+	private function mValidate(?array &$conf = null): void {
 		// Determine the configuration source.
 		$source = array();
 		if($conf === null) {
-			$source = &static::$mConf;
+			$source = &$this->mConf;
 		}
 		else {
 			$source = $conf;
@@ -78,16 +78,14 @@ class ConfigManager {
 	Checks existence of the configuration entry pointed-to by the given path.
 	Throws InvalidArgumentException if the path has incorrect format.
 	*/
-	public static function exists(string $path): bool {
+	public function exists(string $path): bool {
 		if(!static::isValidPath($path)) {
 			throw new InvalidArgumentException("Invalid configuration path");
 		}
 		$indices = static::mTranslatePath($path, -1);
 		$keys = static::splitPath($path);
 		$lastKey = array_pop($keys);
-		$code = "
-			return is_array(@static::\$mConf$indices) and array_key_exists(\"$lastKey\", static::\$mConf$indices);
-		";
+		$code = "return is_array(@\$this->mConf$indices) and array_key_exists(\"$lastKey\", \$this->mConf$indices);";
 		return eval($code);
 	}
 
@@ -96,13 +94,13 @@ class ConfigManager {
 	returns false when that is not the case or when this entry does not exist at all.
 	Throws InvalidArgumentException in case of incorrect path.
 	*/
-	public static function isMandatory(string $path): bool {
+	public function isMandatory(string $path): bool {
 		// Check existence of the entry.
-		if(!static::exists($path)) {
+		if(!$this->exists($path)) {
 			return false;
 		}
 		// Copy the configuration to a local variable.
-		$testBench = static::$mConf;
+		$testBench = $this->mConf;
 		// Try to delete a copy of the requested entry.
 		$indices = static::mTranslatePath($path);
 		$code = "
@@ -117,7 +115,7 @@ class ConfigManager {
 		}
 		// After the deletion, check whether the configuration in $testBench contains all mandatory entries.
 		try {
-			static::mValidate($testBench);
+			$this->mValidate($testBench);
 		}
 		catch(Exception) { // a problem, the deleted entry was mandatory!
 			return true;
@@ -131,14 +129,8 @@ class ConfigManager {
 
 	Throws RuntimeException when the file cannot be read or when it contains syntactic errors;
 	throws InvalidConfigException if one or more mandatory configuration options are missing or have unexpected types.
-
-	This method must be called first of all and only once; BadMethodCallException will be thrown on subsequent calls.
 	*/
-	public static function init(string $filename, bool $autosave = true): void {
-		static $hasBeenCalled = false;
-		if($hasBeenCalled == true) {
-			throw new BadMethodCallException("Unneeded call to Config::init()");
-		}
+	public function __construct(string $filename, bool $autosave = true) {
 		$file = fopen($filename, "r+");
 		if($file === false) {
 			throw new RuntimeException("Unable to open configuration file \"$filename\"");
@@ -151,14 +143,13 @@ class ConfigManager {
 		if($assoc === null) {
 			throw new RuntimeException("Invalid syntax of configuration file \"$filename\"");
 		}
-		static::mValidate($assoc);
-		static::$mConf = $assoc;
-		static::$mFile = $file;
-		static::$mIsModified = false;
+		$this->mValidate($assoc);
+		$this->mConf = $assoc;
+		$this->mFile = $file;
+		$this->mIsModified = false;
 		if($autosave) {
-			register_shutdown_function("Config::save");
+			register_shutdown_function(array($this, "save"));
 		}
-		$hasBeenCalled = true;
 	}
 
 	/*
@@ -211,12 +202,12 @@ class ConfigManager {
 	Returns the value of the configuration entry pointed-to by the given path.
 	Throws InvalidArgumentException if the given path is incorrect.
 	*/
-	public static function get(string $path): mixed {
+	public function get(string $path): mixed {
 		$indices = static::mTranslatePath($path);
-		if(!static::exists($path)) {
+		if(!$this->exists($path)) {
 			throw new InvalidConfigException("Configuration entry \"$path\" does not exist");
 		}
-		$code = "return static::\$mConf$indices;";
+		$code = "return \$this->mConf$indices;";
 		return eval($code);
 	}
 
@@ -232,10 +223,10 @@ class ConfigManager {
 
 	An incorrect configuration path given to this method results in InvalidArgumentException being thrown.
 	*/
-	public static function set(string $path, object|array|string|int|float|bool|null $value): mixed {
+	public function set(string $path, object|array|string|int|float|bool|null $value): mixed {
 		// Try to perform the operation on a local configuration copy.
 		$code = "return \$virtualConf" . static::mTranslatePath($path) . " = \$value;";
-		$virtualConf = static::$mConf;
+		$virtualConf = $this->mConf;
 		$assigned = null;
 		try {
 			$assigned = eval($code);
@@ -247,7 +238,7 @@ class ConfigManager {
 		}
 		// The virtual operation succeeded, now apply the new configuration if it is valid.
 		try {
-			static::mValidate($virtualConf);
+			$this->mValidate($virtualConf);
 		}
 		catch(InvalidConfigException $e) {
 			throw new InvalidConfigException(
@@ -255,8 +246,8 @@ class ConfigManager {
 				$e->getMessage()
 			);
 		}
-		static::$mConf = $virtualConf;
-		static::$mIsModified = true;
+		$this->mConf = $virtualConf;
+		$this->mIsModified = true;
 		return $assigned;
 	}
 
@@ -266,19 +257,19 @@ class ConfigManager {
 	If the requested entry does not exist or is mandatory, throws InvalidConfigException;
 	but if the passed string cannot be used as a path at all, this function throws InvalidArgumentException.
 	*/
-	public static function unset(string $path): mixed {
-		if(!static::exists($path)) {
+	public function unset(string $path): mixed {
+		if(!$this->exists($path)) {
 			throw new InvalidConfigException(
 				"Unable to remove configuration entry \"$path\": this path does not exist"
 			);
 		}
-		if(static::isMandatory($path)) {
+		if($this->isMandatory($path)) {
 			throw new InvalidConfigException("Unable to remove mandatory configuration option \"$path\"");
 		}
-		$access = "static::\$mConf" . static::mTranslatePath($path);
+		$access = "\$this->mConf" . static::mTranslatePath($path);
 		$deleted = eval("return $access;");
 		eval("unset($access);");
-		static::$mIsModified = true;
+		$this->mIsModified = true;
 		return $deleted;
 	}
 
@@ -286,18 +277,18 @@ class ConfigManager {
 	Stores configuration back to the file. If none of the options was modified, does nothing.
 	Throws RuntimeException when cannot write data.
 	*/
-	public static function save(): void {
-		if(!static::$mIsModified) {
+	public function save(): void {
+		if(!$this->mIsModified) {
 			return;
 		}
 		$json = json_encode(
-			static::$mConf,
+			$this->mConf,
 			JSON_PRETTY_PRINT | JSON_PRESERVE_ZERO_FRACTION |
 			JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
 		) . "\n";
-		ftruncate(static::$mFile, 0);
-		rewind(static::$mFile);
-		if(fwrite(static::$mFile, $json) === false) {
+		ftruncate($this->mFile, 0);
+		rewind($this->mFile);
+		if(fwrite($this->mFile, $json) === false) {
 			throw new RuntimeException("Unable to save configuration to the file");
 		}
 	}

@@ -47,7 +47,7 @@ function userInfoFromUrl(): UserInfo {
 
 
 // Configure the essential options.
-Config::init("config.json");
+$config = new ConfigManager("config.json");
 $serverName = "";
 if(isset($_GET["server"])) {
 	$serverName = $_GET["server"];
