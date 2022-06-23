@@ -21,14 +21,14 @@ class UserInfo {
 	private string $mPassword;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
-	public function __construct(string $username, string $password, public string $nickname="") {
+	public function __construct(private readonly ConfigManager $mConfig, string $username, string $password, public string $nickname="") {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
-		if(!static::isValidUsername($username)) {
+		if(!static::isValidUsername($username, $this->mConfig)) {
 			$error = true;
 			$errorMessage .= "\tUsername\n";
 		}
-		if(!static::isValidPassword($password)) {
+		if(!static::isValidPassword($password, $this->mConfig)) {
 			$error = true;
 			$errorMessage .= "\tPassword\n";
 		}
@@ -41,7 +41,7 @@ class UserInfo {
 
 	// Sets a username if it is valid, otherwise throws InvalidArgumentException.
 	public function setUsername(string $username): void {
-		if(!static::isValidUsername($username)) {
+		if(!static::isValidUsername($username, $this->mConfig)) {
 			throw new InvalidArgumentException("Invalid username");
 		}
 		$this->mUsername = $username;
@@ -54,7 +54,7 @@ class UserInfo {
 
 	// Sets a password if it is valid, otherwise throws InvalidArgumentException.
 	public function setPassword(string $password): void {
-		if(!static::isValidPassword($password)) {
+		if(!static::isValidPassword($password, $this->mConfig)) {
 			throw new InvalidArgumentException("Invalid password");
 		}
 		$this->mPassword = $password;
@@ -71,13 +71,13 @@ class UserInfo {
 
 	If an error occurres during validation process, the method throws RuntimeException.
 	*/
-	public static function isValidUsername(string $str): bool {
+	public static function isValidUsername(string $str, ConfigManager $config): bool {
 		$regexp = "";
-		if(!Config::exists("validation.username")) {
+		if(!$config->exists("validation.username")) {
 			$regexp = "/.+/i";
 		}
 		else {
-			$regexp = Config::get("validation.username");
+			$regexp = $config->get("validation.username");
 		}
 		$result = @preg_match($regexp, $str);
 		if($result === false) {
@@ -92,13 +92,13 @@ class UserInfo {
 
 	If an error occurres during validation process, the method throws RuntimeException.
 	*/
-	public static function isValidPassword(string $str): bool {
+	public static function isValidPassword(string $str, ConfigManager $config): bool {
 		$regexp = "";
-		if(!Config::exists("validation.password")) {
+		if(!$config->exists("validation.password")) {
 			$regexp = "/.+/i";
 		}
 		else {
-			$regexp = Config::get("validation.password");
+			$regexp = $config->get("validation.password");
 		}
 		$result = @preg_match($regexp, $str);
 		if($result === false) {
