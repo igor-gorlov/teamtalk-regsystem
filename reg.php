@@ -13,6 +13,7 @@ declare(strict_types = 1);
 
 require_once "init.php";
 
+require_once "conf.php";
 require_once "server.php";
 
 
