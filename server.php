@@ -21,7 +21,7 @@ class UserInfo {
 	private string $mPassword;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
-	public function __construct(private readonly ConfigManager $mConfig, string $username, string $password, public string $nickname="") {
+	public function __construct(private readonly ConfigManager $mConfig, string $username, string $password, public string $nickname = "") {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
 		if(!static::isValidUsername($username, $this->mConfig)) {
