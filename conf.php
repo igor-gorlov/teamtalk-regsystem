@@ -19,7 +19,7 @@ class InvalidConfigException extends RuntimeException {
 }
 
 // Provides an interface to configuration stored in a file. Cannot be instantiated.
-class Config {
+class ConfigManager {
 
 	public const MAX_DEPTH = 2147483646;
 
