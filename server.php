@@ -66,11 +66,20 @@ class UserInfo {
 	}
 
 	/*
-	Validates a username against the configured regular expression.
-	If an error occurres during validation process, throws RuntimeException.
+	Validates a username against the configured regular expression;
+	if no regexp is configured, the following is used: "/.+/i".
+
+	If an error occurres during validation process, the method throws RuntimeException.
 	*/
 	public static function isValidUsername(string $str): bool {
-		$result = @preg_match(Config::get("validation.username"), $str);
+		$regexp = "";
+		if(!Config::exists("validation.username")) {
+			$regexp = "/.+/i";
+		}
+		else {
+			$regexp = Config::get("validation.username");
+		}
+		$result = @preg_match($regexp, $str);
 		if($result === false) {
 			throw new RuntimeException("Unable to validate a username");
 		}
@@ -78,11 +87,20 @@ class UserInfo {
 	}
 
 	/*
-	Validates a password against the configured regular expression.
-	If an error occurres during validation process, throws RuntimeException.
+	Validates a password against the configured regular expression;
+	if no regexp is configured, the following is used: "/.+/i".
+
+	If an error occurres during validation process, the method throws RuntimeException.
 	*/
 	public static function isValidPassword(string $str): bool {
-		$result = @preg_match(Config::get("validation.password"), $str);
+		$regexp = "";
+		if(!Config::exists("validation.password")) {
+			$regexp = "/.+/i";
+		}
+		else {
+			$regexp = Config::get("validation.password");
+		}
+		$result = @preg_match($regexp, $str);
 		if($result === false) {
 			throw new RuntimeException("Unable to validate a password");
 		}
