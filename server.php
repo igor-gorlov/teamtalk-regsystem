@@ -21,7 +21,7 @@ class UserInfo {
 	private string $mPassword;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
-	public function __construct(private readonly ConfigManager $mConfig, string $username, string $password, public string $nickname = "") {
+	public function __construct(private readonly ConfigManager $mConfig, string $username, string $password, private string $mNickname = "") {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
 		if(!static::isValidUsername($username, $this->mConfig)) {
@@ -63,6 +63,16 @@ class UserInfo {
 	// Returns the current password.
 	public function getPassword(): string {
 		return $this->mPassword;
+	} 
+
+	// Sets a nickname.
+	public function setNickname(string $nickname): void {
+		$this->mNickname = $nickname;
+	}
+
+	// Returns the current nickname.
+	public function getNickname(): string {
+		return $this->mNickname;
 	}
 
 	/*
