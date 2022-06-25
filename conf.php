@@ -130,7 +130,7 @@ class ConfigManager {
 	Throws RuntimeException when the file cannot be read or when it contains syntactic errors;
 	throws InvalidConfigException if one or more mandatory configuration options are missing or have unexpected types.
 	*/
-	public function __construct(string $filename, bool $autosave = true) {
+	public function __construct(string $filename, public bool $autosave = true) {
 		$file = fopen($filename, "r+");
 		if($file === false) {
 			throw new RuntimeException("Unable to open configuration file \"$filename\"");
