@@ -165,21 +165,27 @@ class Tt5Session {
 	private int $mLastId; // a counter used to compute command identifiers.
 
 	/*
-	Establishes connection to a TeamTalk 5 server pointed-to by the given name.
+	Establishes connection to the TeamTalk 5 server pointed-to by the given name
+	and performs authorization under the configured system account.
 
 	Throws InvalidArgumentException if the name is unknown;
-	throws ServerUnavailableException if cannot connect to a well-known server for some reason.
+	throws ServerUnavailableException if cannot connect to a well-known server for some reason;
+	throws InvalidCommandException in case of other problems.
 	*/
 	public function __construct(public readonly string $serverName, private readonly Configurator $mConfig) {
+		$this->mLastId = 0;
+		// Retrieve server information.
 		if(!$mConfig->exists("servers.$serverName")) {
 			throw new InvalidArgumentException("Unknown server \"$serverName\"");
 		}
 		$serverData = $mConfig->get("servers.$serverName");
+		// Connect to the server.
 		$this->mSocket = @fsockopen($serverData["host"], $serverData["port"]);
 		if($this->mSocket === false) {
 			throw new ServerUnavailableException($serverData["host"], $serverData["port"]);
 		}
-		$this->mLastId = 0;
+		// Login under the system account.
+		$this->mLogin();
 	}
 
 	/*
@@ -342,7 +348,7 @@ class Tt5Session {
 	Performs authorization with the configured parameters.
 	Throws CommandFailedException on error.
 	*/
-	public function login(): void {
+	public function mLogin(): void {
 		$username = $this->mConfig->get("servers.$this->serverName.systemAccount.username");
 		$password = $this->mConfig->get("servers.$this->serverName.systemAccount.password");
 		$nickname = $this->mConfig->get("servers.$this->serverName.systemAccount.nickname");

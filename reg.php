@@ -62,9 +62,6 @@ else {
 // Establish connection.
 $connection = new Tt5Session($serverName, $config);
 
-// Authorize under the system account.
-$connection->login();
-
 // Create a new account.
 $newUsername = $connection->createAccount(userInfoFromUrl($config));
 echo("Successfully created a new account named $newUsername!");
