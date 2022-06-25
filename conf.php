@@ -124,11 +124,13 @@ class ConfigManager {
 	}
 
 	/*
-	Loads configuration from the given file;
-	registers save() method as a shutdown function if the optional argument autosave is set to true.
+	Loads configuration from the given file and validates it.
 
 	Throws RuntimeException when the file cannot be read or when it contains syntactic errors;
 	throws InvalidConfigException if one or more mandatory configuration options are missing or have unexpected types.
+
+	If $autosave optional argument is set to true,
+	the updated configuration will be stored back to the file on destruction of the current ConfigManager instance.
 	*/
 	public function __construct(string $filename, public bool $autosave = true) {
 		$file = fopen($filename, "r+");
@@ -147,9 +149,6 @@ class ConfigManager {
 		$this->mConf = $assoc;
 		$this->mFile = $file;
 		$this->mIsModified = false;
-		if($autosave) {
-			register_shutdown_function(array($this, "save"));
-		}
 	}
 
 	/*
@@ -292,6 +291,19 @@ class ConfigManager {
 			throw new RuntimeException("Unable to save configuration to the file");
 		}
 		$this->mIsModified = false;
+	}
+
+	/*
+	Automatically writes configuration to the file if it was modified since construction of the object
+	or since the last call to save() (provided that any such calls have took place).
+	If none of the options was modified, does nothing.
+	
+	Throws RuntimeException when cannot write data.
+	*/
+	public function __destruct() {
+		if($this->autosave) {
+			$this->save();
+		}
 	}
 
 }
