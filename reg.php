@@ -31,7 +31,7 @@ and the parameters passed via the URL query string.
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete;
 Throws RuntimeException if the user information is invalid.
 */
-function userInfoFromUrl(ConfigManager $config): UserInfo {
+function userInfoFromUrl(Configurator $config): UserInfo {
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
 	if(!isset($_GET["name"])) {
@@ -50,7 +50,7 @@ function userInfoFromUrl(ConfigManager $config): UserInfo {
 
 
 // Configure the essential options.
-$config = new ConfigManager("config.json");
+$config = new Configurator("config.json");
 $serverName = "";
 if(isset($_GET["server"])) {
 	$serverName = $_GET["server"];

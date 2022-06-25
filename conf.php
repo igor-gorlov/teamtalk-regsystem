@@ -19,7 +19,7 @@ class InvalidConfigException extends RuntimeException {
 }
 
 // Provides an interface to configuration stored in a file.
-class ConfigManager {
+class Configurator {
 
 	public const MAX_DEPTH = 2147483646;
 
@@ -130,7 +130,7 @@ class ConfigManager {
 	throws InvalidConfigException if one or more mandatory configuration options are missing or have unexpected types.
 
 	If $autosave optional argument is set to true,
-	the updated configuration will be stored back to the file on destruction of the current ConfigManager instance.
+	the updated configuration will be stored back to the file on destruction of the current Configurator instance.
 	*/
 	public function __construct(string $filename, public readonly bool $autosave = true) {
 		$file = fopen($filename, "r+");

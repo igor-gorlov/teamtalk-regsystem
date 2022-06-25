@@ -21,7 +21,7 @@ class UserInfo {
 	private string $mPassword;
 
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
-	public function __construct(private readonly ConfigManager $mConfig, string $username, string $password, private string $mNickname = "") {
+	public function __construct(private readonly Configurator $mConfig, string $username, string $password, private string $mNickname = "") {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
 		if(!static::isValidUsername($username, $this->mConfig)) {
@@ -81,7 +81,7 @@ class UserInfo {
 
 	If an error occurres during validation process, the method throws RuntimeException.
 	*/
-	public static function isValidUsername(string $str, ConfigManager $config): bool {
+	public static function isValidUsername(string $str, Configurator $config): bool {
 		$regexp = "";
 		if(!$config->exists("validation.username")) {
 			$regexp = "/.+/i";
@@ -102,7 +102,7 @@ class UserInfo {
 
 	If an error occurres during validation process, the method throws RuntimeException.
 	*/
-	public static function isValidPassword(string $str, ConfigManager $config): bool {
+	public static function isValidPassword(string $str, Configurator $config): bool {
 		$regexp = "";
 		if(!$config->exists("validation.password")) {
 			$regexp = "/.+/i";
@@ -167,7 +167,7 @@ class Tt5Session {
 	Throws InvalidArgumentException if the name is unknown;
 	throws ServerUnavailableException if cannot connect to a well-known server for some reason.
 	*/
-	public function __construct(public readonly string $serverName, private readonly ConfigManager $mConfig) {
+	public function __construct(public readonly string $serverName, private readonly Configurator $mConfig) {
 		if(!$mConfig->exists("servers.$serverName")) {
 			throw new InvalidArgumentException("Unknown server \"$serverName\"");
 		}
