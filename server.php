@@ -169,9 +169,10 @@ class Tt5Session {
 	this operation may take a lot of time and thus should be delayed while possible.
 	*/
 	public function __construct(public readonly string $serverName, private readonly ConfigManager $mConfig) {
-		if(($serverData = $mConfig->get("servers.$serverName")) === null) {
+		if(!$mConfig->exists("servers.$serverName")) {
 			throw new InvalidArgumentException("Unknown server \"$serverName\"");
 		}
+		$serverData = $mConfig->get("servers.$serverName");
 		$this->mLastId = 0;
 		$this->mSocket = null;
 	}
