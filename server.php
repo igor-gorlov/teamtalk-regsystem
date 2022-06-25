@@ -152,11 +152,14 @@ class ServerUnavailableException extends RuntimeException {
 	}
 }
 
+// Possible representation types for command responses.
+enum ReplyMode {
+	case AS_TEXT;
+	case AS_ARRAY;
+}
+
 // Represents a single connection with a TeamTalk 5 server.
 class Tt5Session {
-
-	public const REPLY_AS_TEXT = 1;
-	public const REPLY_AS_ARRAY = 2;
 
 	private $mSocket; // the actual underlying connection.
 	private int $mLastId; // a counter used to compute command identifiers.
@@ -279,29 +282,29 @@ class Tt5Session {
 	Sends the given command to the TeamTalk 5 server and waits for the server's reply.
 
 	The return value type depends on the optional argument $outputMode. You can choose between two modes:
-		* Tt5Session::REPLY_AS_TEXT: a plain text string is returned;
-		* Tt5Session::REPLY_AS_ARRAY [default]: an array of objects of type Command is returned.
+		* ReplyMode::AS_TEXT: a plain text string is returned;
+		* ReplyMode::AS_ARRAY [default]: an array of objects of type Command is returned.
 
-	If the server returns an error, and the output mode is Tt5Session::REPLY_AS_ARRAY,
-	this function throws CommandFailedException; no exceptions is thrown in text mode even if an error occurs.
+	If the server returns an error, and $mode = ReplyMode::AS_ARRAY, this function throws CommandFailedException;
+	no exceptions is thrown in text mode even if an error occurs.
 
 	Note that you must NOT explicitly use "id" parameter in your command or finish it with "\r\n" sequence:
 	the function will handle those things implicitly.
 	*/
-	public function executeCommand(string $command, int $outputMode = self::REPLY_AS_ARRAY): string|array {
+	public function executeCommand(string $command, ReplyMode $mode = ReplyMode::AS_ARRAY): string|array {
 		$id = $this->sendCommand($command);
 		// Wait for the reply.
 		$respondingText = $this->getRespondingText($id);
 		$respondingCommands = static::parseRespondingText($respondingText);
 		// Check for errors.
-		if($respondingCommands[array_key_last($respondingCommands)]->name == "error" and $outputMode == self::REPLY_AS_ARRAY) {
+		if($respondingCommands[array_key_last($respondingCommands)]->name == "error" and $mode == ReplyMode::AS_ARRAY) {
 			throw new CommandFailedException($command, $respondingCommands);
 		}
 		// Return the required result.
-		switch($outputMode) {
-			case self::REPLY_AS_TEXT:
+		switch($mode) {
+			case ReplyMode::AS_TEXT:
 				return $respondingText;
-			case self::REPLY_AS_ARRAY:
+			case ReplyMode::AS_ARRAY:
 				return $respondingCommands;
 		}
 	}
