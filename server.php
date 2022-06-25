@@ -349,6 +349,3 @@ class Tt5Session {
 	}
 
 }
-
-
-?>

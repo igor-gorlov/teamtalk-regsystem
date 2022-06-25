@@ -20,6 +20,3 @@ function printErrorMessage(Throwable $e): void {
 
 
 set_exception_handler("printErrorMessage");
-
-
-?>

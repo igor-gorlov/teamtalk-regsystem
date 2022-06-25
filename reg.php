@@ -68,6 +68,3 @@ $connection->login();
 // Create a new account.
 $newUsername = $connection->createAccount(userInfoFromUrl($config));
 echo("Successfully created a new account named $newUsername!");
-
-
-?>

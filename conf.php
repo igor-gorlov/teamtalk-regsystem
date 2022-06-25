@@ -307,6 +307,3 @@ class Configurator {
 	}
 
 }
-
-
-?>
