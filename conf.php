@@ -132,7 +132,7 @@ class ConfigManager {
 	If $autosave optional argument is set to true,
 	the updated configuration will be stored back to the file on destruction of the current ConfigManager instance.
 	*/
-	public function __construct(string $filename, public bool $autosave = true) {
+	public function __construct(string $filename, public readonly bool $autosave = true) {
 		$file = fopen($filename, "r+");
 		if($file === false) {
 			throw new RuntimeException("Unable to open configuration file \"$filename\"");
