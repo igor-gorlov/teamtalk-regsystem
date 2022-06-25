@@ -162,34 +162,21 @@ class Tt5Session {
 	private int $mLastId; // a counter used to compute command identifiers.
 
 	/*
-	Prepares the object for connection to a TeamTalk 5 server pointed-to by the given name.
-	Throws InvalidArgumentException if the name is unknown.
+	Establishes connection to a TeamTalk 5 server pointed-to by the given name.
 
-	The constructor does not actually establish connection:
-	this operation may take a lot of time and thus should be delayed while possible.
+	Throws InvalidArgumentException if the name is unknown;
+	throws ServerUnavailableException if cannot connect to a well-known server for some reason.
 	*/
 	public function __construct(public readonly string $serverName, private readonly ConfigManager $mConfig) {
 		if(!$mConfig->exists("servers.$serverName")) {
 			throw new InvalidArgumentException("Unknown server \"$serverName\"");
 		}
 		$serverData = $mConfig->get("servers.$serverName");
-		$this->mLastId = 0;
-		$this->mSocket = null;
-	}
-
-	/*
-	Establishes connection if it has not been already established.
-	Throws ServerUnavailableException if cannot connect.
-	*/
-	private function mEnsureConnection(): void {
-		if($this->mSocket === null) {
-			$serverData = $this->mConfig->get("servers.$this->serverName");
-			$this->mSocket = @fsockopen($serverData["host"], $serverData["port"]);
-			if($this->mSocket === false) {
-				$this->mSocket = null;
-				throw new ServerUnavailableException($serverData["host"], $serverData["port"]);
-			}
+		$this->mSocket = @fsockopen($serverData["host"], $serverData["port"]);
+		if($this->mSocket === false) {
+			throw new ServerUnavailableException($serverData["host"], $serverData["port"]);
 		}
+		$this->mLastId = 0;
 	}
 
 	/*
@@ -282,7 +269,6 @@ class Tt5Session {
 	the function will handle those things implicitly.
 	*/
 	public function sendCommand(string $command): int {
-		$this->mEnsureConnection();
 		$id = ++$this->mLastId;
 		$command .= " id=$id\r\n";
 		fwrite($this->mSocket, $command);
