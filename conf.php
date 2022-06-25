@@ -291,6 +291,7 @@ class ConfigManager {
 		if(fwrite($this->mFile, $json) === false) {
 			throw new RuntimeException("Unable to save configuration to the file");
 		}
+		$this->mIsModified = false;
 	}
 
 }
