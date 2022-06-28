@@ -2,7 +2,7 @@
 
 Implements graphical interface to the registration procedure for both users and administrators of a TeamTalk 5 server.
 
-Complies to [revision 1 of Igor Gorlov's coding style guidelines](https://igor-gorlov.github.com/coding-style/rev1) and
+Complies to [revision 1 of Igor Gorlov's coding style guidelines](https://igor-gorlov.github.io/coding-style/rev1) and
 has its own local [workflow](workflow.md).
 
 ## Attention!
