@@ -27,48 +27,6 @@ class Configurator {
 	private array $mConf;
 	private bool $mIsModified;
 
-	/*
-	Check configuration invariants; throws InvalidConfigException if something is violated.
-
-	By default, this function works with $mConf,
-	but another configuration source can be supplied via $conf optional argument.
-	*/
-	private function mValidate(?array &$conf = null): void {
-		// Determine the configuration source.
-		$source = array();
-		if($conf === null) {
-			$source = &$this->mConf;
-		}
-		else {
-			$source = $conf;
-		}
-		// Check the managed servers.
-		if(
-			!isset($source["servers"]) or
-			!is_array($source["servers"]) or
-			empty($source["servers"])
-		) {
-			throw new InvalidConfigException("There are no managed servers or they are incorrectly configured");
-		}
-		foreach($source["servers"] as &$server) {
-			if(
-				!isset($server["host"]) or
-				!is_string($server["host"]) or
-				!isset($server["port"]) or
-				!is_int($server["port"]) or
-				!isset($server["systemAccount"]) or
-				!isset($server["systemAccount"]["username"]) or
-				!is_string($server["systemAccount"]["username"]) or
-				!isset($server["systemAccount"]["password"]) or
-				!is_string($server["systemAccount"]["password"]) or
-				!isset($server["systemAccount"]["nickname"]) or
-				!is_string($server["systemAccount"]["nickname"])
-			) {
-				throw new InvalidConfigException("One or more of managed servers are configured incorrectly");
-			}
-		}
-	}
-
 	// Checks whether the given string is a valid configuration path.
 	public static function isValidPath(string $str): bool {
 		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $str));
@@ -90,44 +48,8 @@ class Configurator {
 	}
 
 	/*
-	Returns true if the entry pointed-to by the given path is mandatory;
-	returns false when that is not the case or when this entry does not exist at all.
-	Throws InvalidArgumentException in case of incorrect path.
-	*/
-	public function isMandatory(string $path): bool {
-		// Check existence of the entry.
-		if(!$this->exists($path)) {
-			return false;
-		}
-		// Copy the configuration to a local variable.
-		$testBench = $this->mConf;
-		// Try to delete a copy of the requested entry.
-		$indices = static::mTranslatePath($path);
-		$code = "
-			if(!isset(\$testBench$indices)) {
-				return false;
-			}
-			unset(\$testBench$indices);
-			return true;
-		";
-		if(!eval($code)) { // deletion failed, the entry does not exist.
-			return false;
-		}
-		// After the deletion, check whether the configuration in $testBench contains all mandatory entries.
-		try {
-			$this->mValidate($testBench);
-		}
-		catch(Exception) { // a problem, the deleted entry was mandatory!
-			return true;
-		}
-		return false;
-	}
-
-	/*
-	Loads configuration from the given file and validates it.
-
-	Throws RuntimeException when the file cannot be read or when it contains syntactic errors;
-	throws InvalidConfigException if one or more mandatory configuration options are missing or have unexpected types.
+	Loads configuration from the given file.
+	Throws RuntimeException when the file cannot be read or when it contains syntactic errors.
 
 	If $autosave optional argument is set to true,
 	the updated configuration will be stored back to the file on destruction of the current Configurator instance.
@@ -145,7 +67,6 @@ class Configurator {
 		if($assoc === null) {
 			throw new RuntimeException("Invalid syntax of configuration file \"$filename\"");
 		}
-		$this->mValidate($assoc);
 		$this->mConf = $assoc;
 		$this->mFile = $file;
 		$this->mIsModified = false;
@@ -217,15 +138,10 @@ class Configurator {
 	If the requested entry does not exist, the method will try to create it silently;
 	InvalidConfigException will be thrown on failure.
 	
-	If the assignment operation breaks configuration validity,
-	an instance of InvalidConfigException is thrown and no changes are applied.
-
 	An incorrect configuration path given to this method results in InvalidArgumentException being thrown.
 	*/
 	public function set(string $path, object|array|string|int|float|bool|null $value): mixed {
-		// Try to perform the operation on a local configuration copy.
-		$code = "return \$virtualConf" . static::mTranslatePath($path) . " = \$value;";
-		$virtualConf = $this->mConf;
+		$code = "return \$this->mConf" . static::mTranslatePath($path) . " = \$value;";
 		$assigned = null;
 		try {
 			$assigned = eval($code);
@@ -235,17 +151,6 @@ class Configurator {
 				"Unable to set configuration entry \"$path\": this path cannot be created"
 			);
 		}
-		// The virtual operation succeeded, now apply the new configuration if it is valid.
-		try {
-			$this->mValidate($virtualConf);
-		}
-		catch(InvalidConfigException $e) {
-			throw new InvalidConfigException(
-				"Unable to set configuration entry \"$path\"; you would get the following on success:\n\t" .
-				$e->getMessage()
-			);
-		}
-		$this->mConf = $virtualConf;
 		$this->mIsModified = true;
 		return $assigned;
 	}
@@ -253,7 +158,7 @@ class Configurator {
 	/*
 	Deletes the entry pointed-to by the given path, returns the deleted value.
 
-	If the requested entry does not exist or is mandatory, throws InvalidConfigException;
+	If the requested entry does not exist, throws InvalidConfigException;
 	but if the passed string cannot be used as a path at all, this function throws InvalidArgumentException.
 	*/
 	public function unset(string $path): mixed {
@@ -261,9 +166,6 @@ class Configurator {
 			throw new InvalidConfigException(
 				"Unable to remove configuration entry \"$path\": this path does not exist"
 			);
-		}
-		if($this->isMandatory($path)) {
-			throw new InvalidConfigException("Unable to remove mandatory configuration option \"$path\"");
 		}
 		$access = "\$this->mConf" . static::mTranslatePath($path);
 		$deleted = eval("return $access;");
