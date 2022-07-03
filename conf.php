@@ -48,10 +48,8 @@ class Configurator {
 	}
 
 	/*
-	Loads configuration from the given file and validates it.
-
-	Throws RuntimeException when the file cannot be read or when it contains syntactic errors;
-	throws InvalidConfigException if one or more mandatory configuration options are missing or have unexpected types.
+	Loads configuration from the given file.
+	Throws RuntimeException when the file cannot be read or when it contains syntactic errors.
 
 	If $autosave optional argument is set to true,
 	the updated configuration will be stored back to the file on destruction of the current Configurator instance.
@@ -69,7 +67,6 @@ class Configurator {
 		if($assoc === null) {
 			throw new RuntimeException("Invalid syntax of configuration file \"$filename\"");
 		}
-		$this->mValidate($assoc);
 		$this->mConf = $assoc;
 		$this->mFile = $file;
 		$this->mIsModified = false;
