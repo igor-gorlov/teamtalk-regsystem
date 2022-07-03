@@ -48,40 +48,6 @@ class Configurator {
 	}
 
 	/*
-	Returns true if the entry pointed-to by the given path is mandatory;
-	returns false when that is not the case or when this entry does not exist at all.
-	Throws InvalidArgumentException in case of incorrect path.
-	*/
-	public function isMandatory(string $path): bool {
-		// Check existence of the entry.
-		if(!$this->exists($path)) {
-			return false;
-		}
-		// Copy the configuration to a local variable.
-		$testBench = $this->mConf;
-		// Try to delete a copy of the requested entry.
-		$indices = static::mTranslatePath($path);
-		$code = "
-			if(!isset(\$testBench$indices)) {
-				return false;
-			}
-			unset(\$testBench$indices);
-			return true;
-		";
-		if(!eval($code)) { // deletion failed, the entry does not exist.
-			return false;
-		}
-		// After the deletion, check whether the configuration in $testBench contains all mandatory entries.
-		try {
-			$this->mValidate($testBench);
-		}
-		catch(Exception) { // a problem, the deleted entry was mandatory!
-			return true;
-		}
-		return false;
-	}
-
-	/*
 	Loads configuration from the given file and validates it.
 
 	Throws RuntimeException when the file cannot be read or when it contains syntactic errors;
