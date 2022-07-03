@@ -27,48 +27,6 @@ class Configurator {
 	private array $mConf;
 	private bool $mIsModified;
 
-	/*
-	Check configuration invariants; throws InvalidConfigException if something is violated.
-
-	By default, this function works with $mConf,
-	but another configuration source can be supplied via $conf optional argument.
-	*/
-	private function mValidate(?array &$conf = null): void {
-		// Determine the configuration source.
-		$source = array();
-		if($conf === null) {
-			$source = &$this->mConf;
-		}
-		else {
-			$source = $conf;
-		}
-		// Check the managed servers.
-		if(
-			!isset($source["servers"]) or
-			!is_array($source["servers"]) or
-			empty($source["servers"])
-		) {
-			throw new InvalidConfigException("There are no managed servers or they are incorrectly configured");
-		}
-		foreach($source["servers"] as &$server) {
-			if(
-				!isset($server["host"]) or
-				!is_string($server["host"]) or
-				!isset($server["port"]) or
-				!is_int($server["port"]) or
-				!isset($server["systemAccount"]) or
-				!isset($server["systemAccount"]["username"]) or
-				!is_string($server["systemAccount"]["username"]) or
-				!isset($server["systemAccount"]["password"]) or
-				!is_string($server["systemAccount"]["password"]) or
-				!isset($server["systemAccount"]["nickname"]) or
-				!is_string($server["systemAccount"]["nickname"])
-			) {
-				throw new InvalidConfigException("One or more of managed servers are configured incorrectly");
-			}
-		}
-	}
-
 	// Checks whether the given string is a valid configuration path.
 	public static function isValidPath(string $str): bool {
 		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $str));
