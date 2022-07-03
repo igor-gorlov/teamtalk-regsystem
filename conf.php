@@ -158,7 +158,7 @@ class Configurator {
 	/*
 	Deletes the entry pointed-to by the given path, returns the deleted value.
 
-	If the requested entry does not exist or is mandatory, throws InvalidConfigException;
+	If the requested entry does not exist, throws InvalidConfigException;
 	but if the passed string cannot be used as a path at all, this function throws InvalidArgumentException.
 	*/
 	public function unset(string $path): mixed {
@@ -166,9 +166,6 @@ class Configurator {
 			throw new InvalidConfigException(
 				"Unable to remove configuration entry \"$path\": this path does not exist"
 			);
-		}
-		if($this->isMandatory($path)) {
-			throw new InvalidConfigException("Unable to remove mandatory configuration option \"$path\"");
 		}
 		$access = "\$this->mConf" . static::mTranslatePath($path);
 		$deleted = eval("return $access;");
