@@ -24,6 +24,9 @@ encapsulating information directly related to this particular server.
 
 Server information object itself has the following fields, which are all mandatory regardless of their nesting level:
 
+``title``
+  A human-readable name intended to be displayed within Regsystem's GUI.
+
 ``host``
   URL or IP address of the server.
 
