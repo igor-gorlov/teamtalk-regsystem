@@ -1,6 +1,7 @@
 {
     "servers": {
         "default": {
+            "title": "Local TeamTalk 5 Server",
             "host": "localhost",
             "port": 10333,
             "systemAccount": {
