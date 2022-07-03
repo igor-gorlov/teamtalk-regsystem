@@ -138,15 +138,10 @@ class Configurator {
 	If the requested entry does not exist, the method will try to create it silently;
 	InvalidConfigException will be thrown on failure.
 	
-	If the assignment operation breaks configuration validity,
-	an instance of InvalidConfigException is thrown and no changes are applied.
-
 	An incorrect configuration path given to this method results in InvalidArgumentException being thrown.
 	*/
 	public function set(string $path, object|array|string|int|float|bool|null $value): mixed {
-		// Try to perform the operation on a local configuration copy.
-		$code = "return \$virtualConf" . static::mTranslatePath($path) . " = \$value;";
-		$virtualConf = $this->mConf;
+		$code = "return \$this->mConf" . static::mTranslatePath($path) . " = \$value;";
 		$assigned = null;
 		try {
 			$assigned = eval($code);
@@ -156,17 +151,6 @@ class Configurator {
 				"Unable to set configuration entry \"$path\": this path cannot be created"
 			);
 		}
-		// The virtual operation succeeded, now apply the new configuration if it is valid.
-		try {
-			$this->mValidate($virtualConf);
-		}
-		catch(InvalidConfigException $e) {
-			throw new InvalidConfigException(
-				"Unable to set configuration entry \"$path\"; you would get the following on success:\n\t" .
-				$e->getMessage()
-			);
-		}
-		$this->mConf = $virtualConf;
 		$this->mIsModified = true;
 		return $assigned;
 	}
