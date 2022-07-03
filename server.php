@@ -16,12 +16,13 @@ require_once "conf.php";
 
 // Encapsulates TeamTalk 5 user information.
 class UserInfo {
-
-	private string $mUsername;
-	private string $mPassword;
-
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
-	public function __construct(private readonly Configurator $mConfig, string $username, string $password, private string $mNickname = "") {
+	public function __construct(
+		private readonly Configurator $mConfig,
+		public readonly string $username,
+		public readonly string $password,
+		public readonly string $nickname = ""
+	) {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
 		if(!static::isValidUsername($username, $this->mConfig)) {
@@ -35,44 +36,6 @@ class UserInfo {
 		if($error) {
 			throw new InvalidArgumentException($errorMessage);
 		}
-		$this->mUsername = $username;
-		$this->mPassword = $password;
-	}
-
-	// Sets a username if it is valid, otherwise throws InvalidArgumentException.
-	public function setUsername(string $username): void {
-		if(!static::isValidUsername($username, $this->mConfig)) {
-			throw new InvalidArgumentException("Invalid username");
-		}
-		$this->mUsername = $username;
-	}
-
-	// Returns the current username.
-	public function getUsername(): string {
-		return $this->mUsername;
-	}
-
-	// Sets a password if it is valid, otherwise throws InvalidArgumentException.
-	public function setPassword(string $password): void {
-		if(!static::isValidPassword($password, $this->mConfig)) {
-			throw new InvalidArgumentException("Invalid password");
-		}
-		$this->mPassword = $password;
-	}
-
-	// Returns the current password.
-	public function getPassword(): string {
-		return $this->mPassword;
-	} 
-
-	// Sets a nickname.
-	public function setNickname(string $nickname): void {
-		$this->mNickname = $nickname;
-	}
-
-	// Returns the current nickname.
-	public function getNickname(): string {
-		return $this->mNickname;
 	}
 
 	/*
@@ -333,15 +296,13 @@ class Tt5Session {
 	may throw CommandFailedException in case of other problems.
 	*/
 	public function createAccount(UserInfo $acc): string {
-		$username = $acc->getUsername();
-		$password = $acc->getPassword();
-		if($this->accountExists($username)) {
-			throw new AccountAlreadyExistsException($username);
+		if($this->accountExists($acc->username)) {
+			throw new AccountAlreadyExistsException($acc->username);
 		}
 		$this->executeCommand(
-			"newaccount username=\"$username\" password=\"$password\" usertype=1"
+			"newaccount username=\"$acc->username\" password=\"$acc->password\" usertype=1"
 		);
-		return $username;
+		return $acc->username;
 	}
 
 	/*
