@@ -76,6 +76,10 @@ function endRegistrationPage(): void {
 }
 
 
+// Set up GUI.
+beginRegistrationPage();
+register_shutdown_function("endRegistrationPage");
+
 // Configure the essential options.
 $config = new Configurator("config.json");
 $serverName = "";
