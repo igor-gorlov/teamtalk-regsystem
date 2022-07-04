@@ -111,10 +111,21 @@ if(isset($_GET["server"])) {
 else {
 	$serverName = "default";
 }
+$newAccount = null;
+try {
+	$newAccount = userInfoFromUrl($config);
+}
+catch(Exception $e) {
+	if(!isset($_GET["form"])) {
+		showRegistrationForm($config);
+		exit();
+	}
+	throw $e;
+}
 
 // Establish connection.
 $connection = new Tt5Session($serverName, $config);
 
 // Create a new account.
-$newUsername = $connection->createAccount(userInfoFromUrl($config));
+$newUsername = $connection->createAccount($newAccount);
 echo("Successfully created a new account named $newUsername!");
