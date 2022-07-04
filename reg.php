@@ -59,9 +59,9 @@ function beginRegistrationPage(): void {
 	ob_start();
 	echo("<!DOCTYPE html><html lang=\"en\">");
 	echo("<head><meta charset=\"UTF-8\" />");
-	echo("<title>TeamTalk Registration System by Igor Gorlov</title></head>");
+	echo("<title>Система регистрации для TeamTalk от Игоря Горлова</title></head>");
 	echo("<body><h1 style=\"text-align: center; text-decoration: underline; font-weight: bold\">");
-	echo("Register a New TeamTalk Account</h1>");
+	echo("Создать учётную запись TeamTalk</h1>");
 }
 
 /*
@@ -83,17 +83,17 @@ function showRegistrationForm(Configurator $cfg): void {
 	$servers = $cfg->get("servers");
 	ob_start();
 	echo("<form method=\"GET\" action=\"reg.php\">");
-	echo("<div><label for=\"server\">Select a server you would like to register on:</label><br>");
+	echo("<div><label for=\"server\">Выберите сервер, на котором хотите зарегистрироваться:</label><br>");
 	echo("<select id=\"server\" name=\"server\">");
 	foreach($servers as $name => $server) {
 		echo("<option value=\"$name\">" . $server["title"] . "</option>");
 	}
 	echo("</select></div>");
-	echo("<div><label for=\"name\">Enter your username:</label><br>");
+	echo("<div><label for=\"name\">Введите имя пользователя:</label><br>");
 	echo("<input id=\"name\" type=\"text\" name=\"name\"></div>");
-	echo("<div><label for=\"password\">Enter your password:</label><br>");
+	echo("<div><label for=\"password\">Введите пароль:</label><br>");
 	echo("<input id=\"password\" type=\"password\" name=\"password\"></div>");
-	echo("<div><button type=\"submit\" name=\"form\" value=\"1\">Register now!</button></div>");
+	echo("<div><button type=\"submit\" name=\"form\" value=\"1\">Готово!</button></div>");
 	ob_end_flush();
 }
 
@@ -129,4 +129,4 @@ $connection = new Tt5Session($serverName, $config);
 
 // Create a new account.
 $newUsername = $connection->createAccount($newAccount);
-echo("Successfully created a new account named $newUsername on $serverTitle!");
+echo("На сервере $serverTitle создана новая учётная запись с именем $newUsername!");
