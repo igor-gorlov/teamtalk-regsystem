@@ -196,7 +196,7 @@ class Tt5Session {
 					$value = false;
 				}
 			}
-			elseif(preg_match("/^(\d+\b)(\s*)/i", substr($command, $offset), $matches)) { // integer
+			elseif(preg_match("/^(-?\d+\b)(\s*)/i", substr($command, $offset), $matches)) { // integer
 				$value = intval($matches[1]);
 			}
 			elseif(preg_match("/^\[(((\d+,)*\d+)?)\]\s*/i", substr($command, $offset), $matches)) { // array of integers
