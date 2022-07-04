@@ -111,6 +111,7 @@ if(isset($_GET["server"])) {
 else {
 	$serverName = "default";
 }
+$serverTitle = $config->get("servers.$serverName.title");
 $newAccount = null;
 try {
 	$newAccount = userInfoFromUrl($config);
@@ -128,4 +129,4 @@ $connection = new Tt5Session($serverName, $config);
 
 // Create a new account.
 $newUsername = $connection->createAccount($newAccount);
-echo("Successfully created a new account named $newUsername!");
+echo("Successfully created a new account named $newUsername on $serverTitle!");
