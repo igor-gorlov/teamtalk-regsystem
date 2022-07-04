@@ -75,6 +75,28 @@ function endRegistrationPage(): void {
 	ob_end_flush();
 }
 
+/*
+Prints the account creation form using the given Configurator instance.
+Throws InvalidArgumentException in case of a configuration error.
+*/
+function showRegistrationForm(Configurator $cfg): void {
+	$servers = $cfg->get("servers");
+	ob_start();
+	echo("<form method=\"GET\" action=\"reg.php\">");
+	echo("<div><label for=\"server\">Select a server you would like to register on:</label><br>");
+	echo("<select id=\"server\" name=\"server\">");
+	foreach($servers as $name => $server) {
+		echo("<option value=\"$name\">" . $server["title"] . "</option>");
+	}
+	echo("</select></div>");
+	echo("<div><label for=\"name\">Enter your username:</label><br>");
+	echo("<input id=\"name\" type=\"text\" name=\"name\"></div>");
+	echo("<div><label for=\"password\">Enter your password:</label><br>");
+	echo("<input id=\"password\" type=\"password\" name=\"password\"></div>");
+	echo("<div><button type=\"submit\" name=\"form\" value=\"1\">Register now!</button></div>");
+	ob_end_flush();
+}
+
 
 // Set up GUI.
 beginRegistrationPage();
