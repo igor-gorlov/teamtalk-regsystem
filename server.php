@@ -91,11 +91,11 @@ class Command {
 // Is thrown when a command yields an error.
 class CommandFailedException extends RuntimeException {
 	public function __construct(string $command, ?array $reply = null) {
-		$message = "The following command failed:\n\t$command";
+		$message = "The following command failed:\n$command";
 		if($reply != null) {
 			$errorCode = $reply[array_key_last($reply)]->params["number"];
 			$serverMessage = $reply[array_key_last($reply)]->params["message"];
-			$message .= "The server returned error code $errorCode and said:\n\t$serverMessage\n";
+			$message .= "\nThe server returned error code $errorCode and said:\n$serverMessage\n";
 		}
 		parent::__construct($message);
 	}
@@ -205,7 +205,7 @@ class Tt5Session {
 					$elem = intval($elem);
 				}
 			}
-			elseif(preg_match('/^\"(.*?)(\\\\)*\"\s*/i', substr($command, $offset), $matches)) { // string
+			elseif(preg_match('/^\"(|(\\\\\\\\)+|.*?[^\\\\](\\\\\\\\)*)\"\s*/i', substr($command, $offset), $matches)) { // string
 				$value = $matches[1];
 			}
 			$result->params[$paramName] = $value;
