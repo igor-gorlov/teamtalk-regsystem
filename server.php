@@ -205,7 +205,7 @@ class Tt5Session {
 					$elem = intval($elem);
 				}
 			}
-			elseif(preg_match('/^\"(.*?)(\\\\)*\"\s*/i', substr($command, $offset), $matches)) { // string
+			elseif(preg_match('/^\"(|(\\\\\\\\)+|.*?[^\\\\](\\\\\\\\)*)\"\s*/i', substr($command, $offset), $matches)) { // string
 				$value = $matches[1];
 			}
 			$result->params[$paramName] = $value;
