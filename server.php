@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 
 require_once "configurator.php";
+require_once "validator.php";
 
 
 // Encapsulates TeamTalk 5 user information.
@@ -25,11 +26,12 @@ class UserInfo {
 	) {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
-		if(!static::isValidUsername($username, $this->mConfig)) {
+		$validator = new Validator($mConfig->get("validation"));
+		if(!$validator->isValidUsername($username)) {
 			$error = true;
 			$errorMessage .= "\tUsername\n";
 		}
-		if(!static::isValidPassword($password, $this->mConfig)) {
+		if(!$validator->isValidPassword($password)) {
 			$error = true;
 			$errorMessage .= "\tPassword\n";
 		}
@@ -37,49 +39,6 @@ class UserInfo {
 			throw new InvalidArgumentException($errorMessage);
 		}
 	}
-
-	/*
-	Validates a username against the configured regular expression;
-	if no regexp is configured, the following is used: "/.+/i".
-
-	If an error occurres during validation process, the method throws RuntimeException.
-	*/
-	public static function isValidUsername(string $str, Configurator $config): bool {
-		$regexp = "";
-		if(!$config->exists("validation.username")) {
-			$regexp = "/.+/i";
-		}
-		else {
-			$regexp = $config->get("validation.username");
-		}
-		$result = @preg_match($regexp, $str);
-		if($result === false) {
-			throw new RuntimeException("Unable to validate a username");
-		}
-		return boolval($result);
-	}
-
-	/*
-	Validates a password against the configured regular expression;
-	if no regexp is configured, the following is used: "/.+/i".
-
-	If an error occurres during validation process, the method throws RuntimeException.
-	*/
-	public static function isValidPassword(string $str, Configurator $config): bool {
-		$regexp = "";
-		if(!$config->exists("validation.password")) {
-			$regexp = "/.+/i";
-		}
-		else {
-			$regexp = $config->get("validation.password");
-		}
-		$result = @preg_match($regexp, $str);
-		if($result === false) {
-			throw new RuntimeException("Unable to validate a password");
-		}
-		return boolval($result);
-	}
-
 }
 
 // Represents a single command.
