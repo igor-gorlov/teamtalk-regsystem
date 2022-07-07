@@ -199,7 +199,7 @@ class Tt5Session {
 			elseif(preg_match("/^(-?\d+\b)(\s*)/i", substr($command, $offset), $matches)) { // integer
 				$value = intval($matches[1]);
 			}
-			elseif(preg_match("/^\[(((\d+,)*\d+)?)\]\s*/i", substr($command, $offset), $matches)) { // array of integers
+			elseif(preg_match("/^\[(((-?\d+,)*-?\d+)?)\]\s*/i", substr($command, $offset), $matches)) { // array of integers
 				$value = explode(",", $matches[1]);
 				foreach($value as &$elem) {
 					$elem = intval($elem);
