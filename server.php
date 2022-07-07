@@ -201,6 +201,9 @@ class Tt5Session {
 			}
 			elseif(preg_match("/^\[(((-?\d+,)*-?\d+)?)\]\s*/i", substr($command, $offset), $matches)) { // array of integers
 				$value = explode(",", $matches[1]);
+				if($value === array("")) {
+					$value = array();
+				}
 				foreach($value as &$elem) {
 					$elem = intval($elem);
 				}
