@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 
 require_once "configurator.php";
+require_once "validator.php";
 
 
 // Encapsulates TeamTalk 5 user information.
@@ -25,11 +26,12 @@ class UserInfo {
 	) {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
-		if(!static::isValidUsername($username, $this->mConfig)) {
+		$validator = new Validator($mConfig->get("validation"));
+		if(!$validator->isValidUsername($username)) {
 			$error = true;
 			$errorMessage .= "\tUsername\n";
 		}
-		if(!static::isValidPassword($password, $this->mConfig)) {
+		if(!$validator->isValidPassword($password)) {
 			$error = true;
 			$errorMessage .= "\tPassword\n";
 		}
