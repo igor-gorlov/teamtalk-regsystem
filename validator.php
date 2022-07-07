@@ -40,4 +40,46 @@ class Validator {
 	*/
 	public function __construct(private array $mRules) {}
 
+	/*
+	Validates a username against the configured regular expression;
+	if no regexp is configured, the following is used: "/.+/i".
+
+	If an error occurres during validation process, the method throws RuntimeException.
+	*/
+	public function isValidUsername(string $str): bool {
+		$regexp = "";
+		if(!array_key_exists("username", $this->mRules)) {
+			$regexp = "/.+/i";
+		}
+		else {
+			$regexp = $this->mRules["username"];
+		}
+		$result = @preg_match($regexp, $str);
+		if($result === false) {
+			throw new RuntimeException("Unable to validate a username");
+		}
+		return boolval($result);
+	}
+
+	/*
+	Validates a password against the configured regular expression;
+	if no regexp is configured, the following is used: "/.+/i".
+
+	If an error occurres during validation process, the method throws RuntimeException.
+	*/
+	public function isValidPassword(string $str): bool {
+		$regexp = "";
+		if(!array_key_exists("password", $this->mRules)) {
+			$regexp = "/.+/i";
+		}
+		else {
+			$regexp = $this->mRules["password"];
+		}
+		$result = @preg_match($regexp, $str);
+		if($result === false) {
+			throw new RuntimeException("Unable to validate a password");
+		}
+		return boolval($result);
+	}
+
 }
