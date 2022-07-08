@@ -213,6 +213,23 @@ class Configurator {
 	}
 
 	/*
+	Returns an array of ServerInfo objects describing all managed servers currently configured.
+	If there are no servers, or the configuration does not contain `servers` object at all,
+	the returned array is empty.
+	*/
+	public function getAllServersInfo(): array {
+		if(!$this->exists("servers")) {
+			return array();
+		}
+		$names = array_keys($this->get("servers"));
+		$result = array();
+		foreach($names as $name) {
+			$result[] = $this->getServerInfo($name);
+		}
+		return $result;
+	}
+
+	/*
 	Automatically writes configuration to the file if it was modified since construction of the object
 	or since the last call to save() (provided that any such calls have took place).
 	If none of the options was modified, does nothing.
