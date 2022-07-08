@@ -15,6 +15,16 @@ require_once "configurator.php";
 require_once "validator.php";
 
 
+// Encapsulates TeamTalk 5 server information.
+class ServerInfo {
+	public function __construct(
+		public readonly string $host,
+		public readonly int $port,
+		public readonly string $name = "",
+		public readonly string $title = ""
+	) {}
+}
+
 // Encapsulates TeamTalk 5 user information.
 class UserInfo {
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.

@@ -11,6 +11,9 @@ Gives the ability to load, review, manipulate and store program settings.
 declare(strict_types = 1);
 
 
+require_once "server.php";
+
+
 // Is thrown on a problem with mandatory configuration entries.
 class InvalidConfigException extends RuntimeException {
 	public function __construct(string $message) {
@@ -193,6 +196,72 @@ class Configurator {
 			throw new RuntimeException("Unable to save configuration to the file");
 		}
 		$this->mIsModified = false;
+	}
+
+	/*
+	Returns a ServerInfo instance which describes the managed server pointed-to by the given name.
+	Throws InvalidArgumentException if there is no server with such name.
+	*/
+	public function getServerInfo(string $name): ServerInfo {
+		if(!$this->exists("servers.$name")) {
+			throw new InvalidArgumentException("No server named \"$name\" is configured");
+		}
+		$data = $this->get("servers.$name");
+		return new ServerInfo(
+			name: $name,
+			title: $data["title"],
+			host: $data["host"],
+			port: $data["port"]
+		);
+	}
+
+	/*
+	Returns an array of ServerInfo objects describing all managed servers currently configured.
+	If there are no servers, or the configuration does not contain `servers` object at all,
+	the returned array is empty.
+	*/
+	public function getAllServersInfo(): array {
+		if(!$this->exists("servers")) {
+			return array();
+		}
+		$names = array_keys($this->get("servers"));
+		$result = array();
+		foreach($names as $name) {
+			$result[] = $this->getServerInfo($name);
+		}
+		return $result;
+	}
+
+	/*
+	Returns a UserInfo object representing the system account
+	which belongs to the managed server pointed-to by the given name.
+
+	Throws InvalidArgumentException if there is no server with such name;
+	throws InvalidConfigException if a system account is configured incorrectly
+	or is not configured for this server at all.
+	*/
+	public function getSystemAccountInfo(string $serverName): UserInfo {
+		if(!$this->exists("servers.$serverName")) {
+			throw new InvalidArgumentException("No server named \"$serverName\" is configured");
+		}
+		if(!$this->exists("servers.$serverName.systemAccount")) {
+			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
+		}
+		$data = $this->get("servers.$serverName.systemAccount");
+		$validator = new Validator($this->get("validation"));
+		if(
+			!$validator->isValidUsername($data["username"]) or
+			!$validator->isValidPassword($data["password"]) or
+			!is_string($data["nickname"])
+		) {
+			throw new InvalidConfigException("The system account for managed server \"$serverName\" is configured incorrectly");
+		}
+		return new UserInfo(
+			mConfig: $this,
+			username: $data["username"],
+			password: $data["password"],
+			nickname: $data["nickname"]
+		);
 	}
 
 	/*
