@@ -24,7 +24,7 @@ Validation methods never modify the passed entity (even if it is passed by refer
 Also, they never change the internal state of the class or internal state of its current instance
 and have no other side effects.
 
-The behaviour of any validation method depends only and only on two factors:
+The behavior of any validation method depends only and only on two factors:
 	1. The accepted entity.
 	2. The underlying set of validation rules stored within the current class instance.
 */
