@@ -27,26 +27,6 @@ class Configurator {
 	private array $mConf;
 	private bool $mIsModified;
 
-	// Checks whether the given string is a valid configuration path.
-	public static function isValidPath(string $str): bool {
-		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $str));
-	}
-
-	/*
-	Checks existence of the configuration entry pointed-to by the given path.
-	Throws InvalidArgumentException if the path has incorrect format.
-	*/
-	public function exists(string $path): bool {
-		if(!static::isValidPath($path)) {
-			throw new InvalidArgumentException("Invalid configuration path");
-		}
-		$indices = static::mTranslatePath($path, -1);
-		$keys = static::splitPath($path);
-		$lastKey = array_pop($keys);
-		$code = "return is_array(@\$this->mConf$indices) and array_key_exists(\"$lastKey\", \$this->mConf$indices);";
-		return eval($code);
-	}
-
 	/*
 	Loads configuration from the given file.
 	Throws RuntimeException when the file cannot be read or when it contains syntactic errors.
@@ -70,6 +50,26 @@ class Configurator {
 		$this->mConf = $assoc;
 		$this->mFile = $file;
 		$this->mIsModified = false;
+	}
+
+	// Checks whether the given string is a valid configuration path.
+	public static function isValidPath(string $str): bool {
+		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $str));
+	}
+
+	/*
+	Checks existence of the configuration entry pointed-to by the given path.
+	Throws InvalidArgumentException if the path has incorrect format.
+	*/
+	public function exists(string $path): bool {
+		if(!static::isValidPath($path)) {
+			throw new InvalidArgumentException("Invalid configuration path");
+		}
+		$indices = static::mTranslatePath($path, -1);
+		$keys = static::splitPath($path);
+		$lastKey = array_pop($keys);
+		$code = "return is_array(@\$this->mConf$indices) and array_key_exists(\"$lastKey\", \$this->mConf$indices);";
+		return eval($code);
 	}
 
 	/*
