@@ -230,6 +230,38 @@ class Configurator {
 	}
 
 	/*
+	Returns a UserInfo object representing the system account
+	which belongs to the managed server pointed-to by the given name.
+
+	Throws InvalidArgumentException if there is no server with such name;
+	throws InvalidConfigException if a system account is configured incorrectly
+	or is not configured for this server at all.
+	*/
+	public function getSystemAccountInfo(string $serverName): UserInfo {
+		if(!$this->exists("servers.$serverName")) {
+			throw new InvalidArgumentException("No server named \"$serverName\" is configured");
+		}
+		if(!$this->exists("servers.$serverName.systemAccount")) {
+			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
+		}
+		$data = $this->get("servers.$serverName.systemAccount");
+		$validator = new Validator($this->get("validation"));
+		if(
+			!$validator->isValidUsername($data["username"]) or
+			!$validator->isValidPassword($data["password"]) or
+			!is_string($data["nickname"])
+		) {
+			throw new InvalidConfigException("The system account for managed server \"$serverName\" is configured incorrectly");
+		}
+		return new UserInfo(
+			mConfig: $this,
+			username: $data["username"],
+			password: $data["password"],
+			nickname: $data["nickname"]
+		);
+	}
+
+	/*
 	Automatically writes configuration to the file if it was modified since construction of the object
 	or since the last call to save() (provided that any such calls have took place).
 	If none of the options was modified, does nothing.
