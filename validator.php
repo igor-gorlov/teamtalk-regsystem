@@ -38,7 +38,7 @@ class Validator {
 	Each particular validation method uses its own rule name and its own format of the rule body;
 	both are described in header comment of the method.
 	*/
-	public function __construct(private array $mRules) {}
+	public function __construct(private array $mRules = array()) {}
 
 	/*
 	Validates a username against the configured regular expression;
