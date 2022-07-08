@@ -11,6 +11,9 @@ Gives the ability to load, review, manipulate and store program settings.
 declare(strict_types = 1);
 
 
+require_once "server.php";
+
+
 // Is thrown on a problem with mandatory configuration entries.
 class InvalidConfigException extends RuntimeException {
 	public function __construct(string $message) {
