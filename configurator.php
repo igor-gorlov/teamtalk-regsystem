@@ -125,7 +125,7 @@ class Configurator {
 	public function get(string $path): mixed {
 		$indices = static::mTranslatePath($path);
 		if(!$this->exists($path)) {
-			throw new InvalidConfigException("Configuration entry \"$path\" does not exist");
+			throw new InvalidArgumentException("Configuration entry \"$path\" does not exist");
 		}
 		$code = "return \$this->mConf$indices;";
 		return eval($code);
