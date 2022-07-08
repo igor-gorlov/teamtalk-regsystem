@@ -196,6 +196,23 @@ class Configurator {
 	}
 
 	/*
+	Returns a ServerInfo instance which describes the managed server pointed-to by the given name.
+	Throws InvalidArgumentException if there is no server with such name.
+	*/
+	public function getServerInfo(string $name): ServerInfo {
+		if(!$this->exists("servers.$name")) {
+			throw new InvalidArgumentException("No server named \"$name\" is configured");
+		}
+		$data = $this->get("servers.$name");
+		return new ServerInfo(
+			name: $name,
+			title: $data["title"],
+			host: $data["host"],
+			port: $data["port"]
+		);
+	}
+
+	/*
 	Automatically writes configuration to the file if it was modified since construction of the object
 	or since the last call to save() (provided that any such calls have took place).
 	If none of the options was modified, does nothing.
