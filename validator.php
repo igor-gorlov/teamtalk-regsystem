@@ -31,12 +31,14 @@ The behavior of any validation method depends only and only on two factors:
 class Validator {
 
 	/*
-	The constructor accepts a set of validation rules.
+	The constructor accepts an optional set of validation rules.
 	This is an associative array, where each key denotes an entity type (rule name),
 	and the corresponding value establishes requirements and constraints that are to be met (rule body).
 
-	Each particular validation method uses its own rule name and its own format of the rule body;
+	Each particular validation method uses its own rule name and its own format of rule body;
 	both are described in header comment of the method.
+
+	If a rule with an appropriate name is absent, a method which uses that rule may apply hardcoded defaults.
 	*/
 	public function __construct(private array $mRules = array()) {}
 
