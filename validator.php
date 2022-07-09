@@ -42,6 +42,16 @@ class Validator {
 	*/
 	public function __construct(private array $mRules = array()) {}
 
+	// Overrides the current validation rules.
+	public function setRules(array $rules): void {
+		$this->mRules = $rules;
+	}
+
+	// Returns the current validation rules.
+	public function getRules(): array {
+		return $this->mRules;
+	}
+
 	/*
 	Validates a username against the configured regular expression;
 	if no regexp is configured, the following is used: "/.+/i".
