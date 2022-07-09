@@ -15,6 +15,7 @@ declare(strict_types = 1);
 function printErrorMessage(Throwable $e): void {
 	echo("<table><tr><td style=\"color: red\"><strong>Error!</strong></td><td><pre><code>");
 	echo($e->getMessage());
+	echo("<br>(" . $e->getFile() . " : " . $e->getLine() . ")");
 	echo("</code></pre></td></tr></table>");
 }
 
