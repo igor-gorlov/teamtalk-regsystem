@@ -45,6 +45,10 @@ class UserInfo {
 			$error = true;
 			$errorMessage .= "\tPassword\n";
 		}
+		if(!$validator->isValidNickname($nickname)) {
+			$error = true;
+			$errorMessage .= "\tNickname\n";
+		}
 		if($error) {
 			throw new InvalidArgumentException($errorMessage);
 		}
