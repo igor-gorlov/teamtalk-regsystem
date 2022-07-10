@@ -111,7 +111,8 @@ if(isset($_GET["server"])) {
 else {
 	$serverName = "default";
 }
-$serverTitle = $config->get("servers.$serverName.title");
+$server = $config->getServerInfo($serverName);
+$systemAccount = $config->getSystemAccountInfo($serverName);
 $newAccount = null;
 try {
 	$newAccount = userInfoFromUrl($config);
@@ -125,8 +126,8 @@ catch(Exception $e) {
 }
 
 // Establish connection.
-$connection = new Tt5Session($serverName, $config);
+$connection = new Tt5Session($server, $systemAccount);
 
 // Create a new account.
 $newUsername = $connection->createAccount($newAccount);
-echo("Successfully created a new account named $newUsername on $serverTitle!");
+echo("Successfully created a new account named $newUsername on $server->title!");
