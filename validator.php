@@ -58,7 +58,10 @@ class Validator {
 
 	If an error occurres during validation process, the method throws RuntimeException.
 	*/
-	public function isValidUsername(string $str): bool {
+	public function isValidUsername(mixed $entity): bool {
+		if(!is_string($entity)) {
+			return false;
+		}
 		$regexp = "";
 		if(!array_key_exists("username", $this->mRules)) {
 			$regexp = "/.+/i";
@@ -66,7 +69,7 @@ class Validator {
 		else {
 			$regexp = $this->mRules["username"];
 		}
-		$result = @preg_match($regexp, $str);
+		$result = @preg_match($regexp, $entity);
 		if($result === false) {
 			throw new RuntimeException("Unable to validate a username");
 		}
@@ -79,7 +82,10 @@ class Validator {
 
 	If an error occurres during validation process, the method throws RuntimeException.
 	*/
-	public function isValidPassword(string $str): bool {
+	public function isValidPassword(mixed $entity): bool {
+		if(!is_string($entity)) {
+			return false;
+		}
 		$regexp = "";
 		if(!array_key_exists("password", $this->mRules)) {
 			$regexp = "/.+/i";
@@ -87,7 +93,7 @@ class Validator {
 		else {
 			$regexp = $this->mRules["password"];
 		}
-		$result = @preg_match($regexp, $str);
+		$result = @preg_match($regexp, $entity);
 		if($result === false) {
 			throw new RuntimeException("Unable to validate a password");
 		}
