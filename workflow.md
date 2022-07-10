@@ -14,3 +14,5 @@ themselves include _helper_ scripts. Usually, root scripts are **never** include
 -   Use only **`require_once`** to include PHP scripts.
 -   All validation methods must **not** restrict type of their input entity with type declarations; use `mixed`
     declaration, but check the actual type of the entity inside method body.
+-   Do **not** pass a `Configurator` instance itself to any function (including but not limiting to other constructors);
+    instead, provide only **data** retrieved from a `Configurator` object.
