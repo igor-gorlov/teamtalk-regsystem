@@ -15,6 +15,7 @@ require_once "init.php";
 
 require_once "configurator.php";
 require_once "server.php";
+require_once "validator.php";
 
 
 // Is thrown when one or more URL parameters needed for some task are missing.
@@ -25,13 +26,13 @@ class BadQueryStringException extends RuntimeException {
 }
 
 /*
-Tries to construct an instance of UserInfo class using the given configuration manager
-and the parameters passed via the URL query string.
+Tries to construct an instance of UserInfo class from the parameters passed via the URL query string;
+The given Validator object is used to ensure correctness of those parameters.
 
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete;
 Throws RuntimeException if the user information is invalid.
 */
-function userInfoFromUrl(Configurator $config): UserInfo {
+function userInfoFromUrl(Validator $validator): UserInfo {
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
 	if(!isset($_GET["name"])) {
@@ -45,7 +46,7 @@ function userInfoFromUrl(Configurator $config): UserInfo {
 	if($error) {
 		throw new BadQueryStringException($errorMessage);
 	}
-	return new UserInfo($config, $_GET["name"], $_GET["password"]);
+	return new UserInfo($validator, $_GET["name"], $_GET["password"]);
 }
 
 
@@ -75,18 +76,14 @@ function endRegistrationPage(): void {
 	ob_end_flush();
 }
 
-/*
-Prints the account creation form using the given Configurator instance.
-Throws InvalidArgumentException in case of a configuration error.
-*/
-function showRegistrationForm(Configurator $cfg): void {
-	$servers = $cfg->get("servers");
+// Prints the account creation form. Requires an array of ServerInfo objects representing the managed servers.
+function showRegistrationForm(array $servers): void {
 	ob_start();
 	echo("<form method=\"GET\" action=\"reg.php\">");
 	echo("<div><label for=\"server\">Select a server you would like to register on:</label><br>");
 	echo("<select id=\"server\" name=\"server\">");
-	foreach($servers as $name => $server) {
-		echo("<option value=\"$name\">" . $server["title"] . "</option>");
+	foreach($servers as $server) {
+		echo("<option value=\"$server->name\">$server->title</option>");
 	}
 	echo("</select></div>");
 	echo("<div><label for=\"name\">Enter your username:</label><br>");
@@ -104,6 +101,10 @@ register_shutdown_function("endRegistrationPage");
 
 // Configure the essential options.
 $config = new Configurator("config.json");
+$validator = new Validator;
+if($config->exists("validation")) {
+	$validator->setRules($config->get("validation"));
+}
 $serverName = "";
 if(isset($_GET["server"])) {
 	$serverName = $_GET["server"];
@@ -111,22 +112,23 @@ if(isset($_GET["server"])) {
 else {
 	$serverName = "default";
 }
-$serverTitle = $config->get("servers.$serverName.title");
+$server = $config->getServerInfo($serverName);
+$systemAccount = $config->getSystemAccountInfo($serverName);
 $newAccount = null;
 try {
-	$newAccount = userInfoFromUrl($config);
+	$newAccount = userInfoFromUrl($validator);
 }
 catch(Exception $e) {
 	if(!isset($_GET["form"])) {
-		showRegistrationForm($config);
+		showRegistrationForm($config->getAllServersInfo());
 		exit();
 	}
 	throw $e;
 }
 
 // Establish connection.
-$connection = new Tt5Session($serverName, $config);
+$connection = new Tt5Session($server, $systemAccount);
 
 // Create a new account.
 $newUsername = $connection->createAccount($newAccount);
-echo("Successfully created a new account named $newUsername on $serverTitle!");
+echo("Successfully created a new account named $newUsername on $server->title!");

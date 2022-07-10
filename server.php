@@ -29,14 +29,13 @@ class ServerInfo {
 class UserInfo {
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
 	public function __construct(
-		private readonly Configurator $mConfig,
+		Validator $validator,
 		public readonly string $username,
 		public readonly string $password,
 		public readonly string $nickname = ""
 	) {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
-		$validator = new Validator($mConfig->get("validation"));
 		if(!$validator->isValidUsername($username)) {
 			$error = true;
 			$errorMessage .= "\tUsername\n";
@@ -83,8 +82,8 @@ class AccountAlreadyExistsException extends RuntimeException {
 
 // Is thrown when an attempt to establish connection with the TeamTalk 5 server fails.
 class ServerUnavailableException extends RuntimeException {
-	public function __construct(string $address, int $port) {
-		parent::__construct("Unable to connect to $address:$port");
+	public function __construct(ServerInfo $server) {
+		parent::__construct("Unable to connect to $server->host:$server->port");
 	}
 }
 
@@ -101,26 +100,20 @@ class Tt5Session {
 	private int $mLastId; // a counter used to compute command identifiers.
 
 	/*
-	Establishes connection to the TeamTalk 5 server pointed-to by the given name
-	and performs authorization under the configured system account.
+	Establishes connection to a TeamTalk 5 server and performs authorization under the given account.
+	For most of the operations to succeed, the account must have admin rights.
 
-	Throws InvalidArgumentException if the name is unknown;
-	throws ServerUnavailableException if cannot connect to a well-known server for some reason;
+	Throws ServerUnavailableException if cannot connect to the server for some reason;
 	throws InvalidCommandException in case of other problems.
 	*/
-	public function __construct(public readonly string $serverName, private readonly Configurator $mConfig) {
+	public function __construct(public readonly ServerInfo $server, public readonly UserInfo $account) {
 		$this->mLastId = 0;
-		// Retrieve server information.
-		if(!$mConfig->exists("servers.$serverName")) {
-			throw new InvalidArgumentException("Unknown server \"$serverName\"");
-		}
-		$serverData = $mConfig->get("servers.$serverName");
 		// Connect to the server.
-		$this->mSocket = @fsockopen($serverData["host"], $serverData["port"]);
+		$this->mSocket = @fsockopen($server->host, $server->port);
 		if($this->mSocket === false) {
-			throw new ServerUnavailableException($serverData["host"], $serverData["port"]);
+			throw new ServerUnavailableException($server);
 		}
-		// Login under the system account.
+		// Login under the admin account.
 		$this->mLogin();
 	}
 
@@ -286,11 +279,8 @@ class Tt5Session {
 	Throws CommandFailedException on error.
 	*/
 	public function mLogin(): void {
-		$username = $this->mConfig->get("servers.$this->serverName.systemAccount.username");
-		$password = $this->mConfig->get("servers.$this->serverName.systemAccount.password");
-		$nickname = $this->mConfig->get("servers.$this->serverName.systemAccount.nickname");
 		$this->executeCommand(
-			"login username=\"$username\" password=\"$password\" nickname=\"$nickname\" protocol=\"5.0\""
+			"login username=\"{$this->account->username}\" password=\"{$this->account->password}\" nickname=\"{$this->account->nickname}\" protocol=\"5.0\""
 		);
 	}
 
