@@ -100,4 +100,9 @@ class Validator {
 		return boolval($result);
 	}
 
+	// Validates a nickname.
+	public function isValidNickname(mixed $entity): bool {
+		return is_string($entity);
+	}
+
 }
