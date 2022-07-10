@@ -29,14 +29,13 @@ class ServerInfo {
 class UserInfo {
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
 	public function __construct(
-		private readonly Configurator $mConfig,
+		Validator $validator,
 		public readonly string $username,
 		public readonly string $password,
 		public readonly string $nickname = ""
 	) {
 		$error = false;
 		$errorMessage = "The following user properties are invalid:\n";
-		$validator = new Validator($mConfig->get("validation"));
 		if(!$validator->isValidUsername($username)) {
 			$error = true;
 			$errorMessage .= "\tUsername\n";

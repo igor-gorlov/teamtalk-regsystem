@@ -248,20 +248,21 @@ class Configurator {
 			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
 		}
 		$data = $this->get("servers.$serverName.systemAccount");
-		$validator = new Validator($this->get("validation"));
-		if(
-			!$validator->isValidUsername($data["username"]) or
-			!$validator->isValidPassword($data["password"]) or
-			!is_string($data["nickname"])
-		) {
+		$validator = new Validator;
+		if($this->exists("validation")) {
+			$validator->setRules($this->get("validation"));
+		}
+		try {
+			return new UserInfo(
+				validator: $validator,
+				username: $data["username"],
+				password: $data["password"],
+				nickname: $data["nickname"]
+			);
+		}
+		catch(InvalidArgumentException) {
 			throw new InvalidConfigException("The system account for managed server \"$serverName\" is configured incorrectly");
 		}
-		return new UserInfo(
-			mConfig: $this,
-			username: $data["username"],
-			password: $data["password"],
-			nickname: $data["nickname"]
-		);
 	}
 
 	/*
