@@ -15,6 +15,7 @@ require_once "init.php";
 
 require_once "configurator.php";
 require_once "server.php";
+require_once "validator.php";
 
 
 // Is thrown when one or more URL parameters needed for some task are missing.
@@ -25,13 +26,13 @@ class BadQueryStringException extends RuntimeException {
 }
 
 /*
-Tries to construct an instance of UserInfo class using the given configuration manager
-and the parameters passed via the URL query string.
+Tries to construct an instance of UserInfo class from the parameters passed via the URL query string;
+The given Validator object is used to ensure correctness of those parameters.
 
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete;
 Throws RuntimeException if the user information is invalid.
 */
-function userInfoFromUrl(Configurator $config): UserInfo {
+function userInfoFromUrl(Validator $validator): UserInfo {
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
 	if(!isset($_GET["name"])) {
@@ -45,7 +46,7 @@ function userInfoFromUrl(Configurator $config): UserInfo {
 	if($error) {
 		throw new BadQueryStringException($errorMessage);
 	}
-	return new UserInfo($config, $_GET["name"], $_GET["password"]);
+	return new UserInfo($validator, $_GET["name"], $_GET["password"]);
 }
 
 
@@ -104,6 +105,10 @@ register_shutdown_function("endRegistrationPage");
 
 // Configure the essential options.
 $config = new Configurator("config.json");
+$validator = new Validator;
+if($config->exists("validation")) {
+	$validator->setRules($config->get("validation"));
+}
 $serverName = "";
 if(isset($_GET["server"])) {
 	$serverName = $_GET["server"];
@@ -115,7 +120,7 @@ $server = $config->getServerInfo($serverName);
 $systemAccount = $config->getSystemAccountInfo($serverName);
 $newAccount = null;
 try {
-	$newAccount = userInfoFromUrl($config);
+	$newAccount = userInfoFromUrl($validator);
 }
 catch(Exception $e) {
 	if(!isset($_GET["form"])) {
