@@ -76,18 +76,14 @@ function endRegistrationPage(): void {
 	ob_end_flush();
 }
 
-/*
-Prints the account creation form using the given Configurator instance.
-Throws InvalidArgumentException in case of a configuration error.
-*/
-function showRegistrationForm(Configurator $cfg): void {
-	$servers = $cfg->get("servers");
+// Prints the account creation form. Requires an array of ServerInfo objects representing the managed servers.
+function showRegistrationForm(array $servers): void {
 	ob_start();
 	echo("<form method=\"GET\" action=\"reg.php\">");
 	echo("<div><label for=\"server\">Select a server you would like to register on:</label><br>");
 	echo("<select id=\"server\" name=\"server\">");
-	foreach($servers as $name => $server) {
-		echo("<option value=\"$name\">" . $server["title"] . "</option>");
+	foreach($servers as $server) {
+		echo("<option value=\"$server->name\">$server->title</option>");
 	}
 	echo("</select></div>");
 	echo("<div><label for=\"name\">Enter your username:</label><br>");
@@ -124,7 +120,7 @@ try {
 }
 catch(Exception $e) {
 	if(!isset($_GET["form"])) {
-		showRegistrationForm($config);
+		showRegistrationForm($config->getAllServersInfo());
 		exit();
 	}
 	throw $e;
