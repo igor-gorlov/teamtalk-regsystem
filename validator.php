@@ -110,4 +110,9 @@ class Validator {
 		return is_string($entity);
 	}
 
+	// Validates a TeamTalk 5 server port.
+	public function isValidPort(mixed $entity): bool {
+		return is_int($entity) and $entity >= 0 and $entity <= 65535;
+	}
+	
 }
