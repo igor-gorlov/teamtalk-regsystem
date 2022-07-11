@@ -105,4 +105,9 @@ class Validator {
 		return is_string($entity);
 	}
 
+	// Validates a TeamTalk 5 server host.
+	public function isValidHost(mixed $entity): bool {
+		return is_string($entity);
+	}
+
 }
