@@ -207,7 +207,12 @@ class Configurator {
 			throw new InvalidArgumentException("No server named \"$name\" is configured");
 		}
 		$data = $this->get("servers.$name");
+		$validator = new Validator;
+		if($this->exists("validation")) {
+			$validator->setRules($this->get("validation"));
+		}
 		return new ServerInfo(
+			validator: $validator,
 			name: $name,
 			title: $data["title"],
 			host: $data["host"],
