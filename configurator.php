@@ -11,6 +11,7 @@ Gives the ability to load, review, manipulate and store program settings.
 declare(strict_types = 1);
 
 
+require_once "json.php";
 require_once "server.php";
 
 
@@ -24,18 +25,25 @@ class InvalidConfigException extends RuntimeException {
 // Provides an interface to configuration.
 class Configurator {
 
+	private Json $mSource;
+
+	// Loads configuration from the given source.
+	public function __construct(Json $source) {
+		$this->mSource = $source;
+	}
+
 	/*
 	Returns a ServerInfo instance which describes the managed server pointed-to by the given name.
 	Throws InvalidArgumentException if there is no server with such name.
 	*/
 	public function getServerInfo(string $name): ServerInfo {
-		if(!$this->exists("servers.$name")) {
+		if(!$this->mSource->exists("servers.$name")) {
 			throw new InvalidArgumentException("No server named \"$name\" is configured");
 		}
-		$data = $this->get("servers.$name");
+		$data = $this->mSource->get("servers.$name");
 		$validator = new Validator;
-		if($this->exists("validation")) {
-			$validator->setRules($this->get("validation"));
+		if($this->mSource->exists("validation")) {
+			$validator->setRules($this->mSource->get("validation"));
 		}
 		return new ServerInfo(
 			validator: $validator,
@@ -52,10 +60,10 @@ class Configurator {
 	the returned array is empty.
 	*/
 	public function getAllServersInfo(): array {
-		if(!$this->exists("servers")) {
+		if(!$this->mSource->exists("servers")) {
 			return array();
 		}
-		$names = array_keys($this->get("servers"));
+		$names = array_keys($this->mSource->get("servers"));
 		$result = array();
 		foreach($names as $name) {
 			$result[] = $this->getServerInfo($name);
@@ -72,16 +80,16 @@ class Configurator {
 	or is not configured for this server at all.
 	*/
 	public function getSystemAccountInfo(string $serverName): UserInfo {
-		if(!$this->exists("servers.$serverName")) {
+		if(!$this->mSource->exists("servers.$serverName")) {
 			throw new InvalidArgumentException("No server named \"$serverName\" is configured");
 		}
-		if(!$this->exists("servers.$serverName.systemAccount")) {
+		if(!$this->mSource->exists("servers.$serverName.systemAccount")) {
 			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
 		}
-		$data = $this->get("servers.$serverName.systemAccount");
+		$data = $this->mSource->get("servers.$serverName.systemAccount");
 		$validator = new Validator;
-		if($this->exists("validation")) {
-			$validator->setRules($this->get("validation"));
+		if($this->mSource->exists("validation")) {
+			$validator->setRules($this->mSource->get("validation"));
 		}
 		try {
 			return new UserInfo(
