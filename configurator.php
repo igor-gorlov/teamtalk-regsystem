@@ -14,7 +14,7 @@ declare(strict_types = 1);
 require_once "server.php";
 
 
-// Is thrown on a problem with mandatory configuration entries.
+// Is thrown on a problem with configuration.
 class InvalidConfigException extends RuntimeException {
 	public function __construct(string $message) {
 		parent::__construct($message);
