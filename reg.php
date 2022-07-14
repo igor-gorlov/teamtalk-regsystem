@@ -14,6 +14,7 @@ declare(strict_types = 1);
 require_once "init.php";
 
 require_once "configurator.php";
+require_once "json.php";
 require_once "server.php";
 require_once "validator.php";
 
@@ -100,11 +101,9 @@ beginRegistrationPage();
 register_shutdown_function("endRegistrationPage");
 
 // Configure the essential options.
-$config = new Configurator("config.json");
-$validator = new Validator;
-if($config->exists("validation")) {
-	$validator->setRules($config->get("validation"));
-}
+$configJson = new Json("config.json");
+$config = new Configurator($configJson);
+$validator = new Validator($config->getValidationRules());
 $serverName = "";
 if(isset($_GET["server"])) {
 	$serverName = $_GET["server"];
