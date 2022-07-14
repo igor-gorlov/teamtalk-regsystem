@@ -33,6 +33,17 @@ class Configurator {
 	}
 
 	/*
+	Returns a set of validation rules (as required by Validator class).
+	If no validation rules are configured, or if `validation` JSON object is absent, an empty array is returned.
+	*/
+	public function getValidationRules(): array {
+		if(!$this->mSource->exists("validation") or count($this->mSource->get("validation")) == 0) {
+			return array();
+		}
+		return $this->mSource->get("validation");
+	}
+
+	/*
 	Returns a ServerInfo instance which describes the managed server pointed-to by the given name.
 	Throws InvalidArgumentException if there is no server with such name.
 	*/
