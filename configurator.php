@@ -22,14 +22,25 @@ class InvalidConfigException extends RuntimeException {
 	}
 }
 
-// Provides an interface to configuration.
+// Provides an interface to configuration. At most one instance of this class can exist at any moment.
 class Configurator {
+
+	public const MAX_NUMBER_OF_INSTANCIES = 1;
+
+	private static int $mNumberOfInstancies = 0;
 
 	private Json $mSource;
 
-	// Loads configuration from the given source.
+	/*
+	Loads configuration from the given source.
+	Throws BadMethodCallException if another object of type Configurator already exists.
+	*/
 	public function __construct(Json $source) {
+		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
+			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
+		}
 		$this->mSource = $source;
+		static::$mNumberOfInstancies++;
 	}
 
 	/*
@@ -113,6 +124,11 @@ class Configurator {
 		catch(InvalidArgumentException) {
 			throw new InvalidConfigException("The system account for managed server \"$serverName\" is configured incorrectly");
 		}
+	}
+
+	// Decrements the counter of instancies.
+	public function __destruct() {
+		static::$mNumberOfInstancies--;
 	}
 
 }
