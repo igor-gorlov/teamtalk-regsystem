@@ -114,5 +114,5 @@ class Validator {
 	public function isValidPort(mixed $entity): bool {
 		return is_int($entity) and $entity >= 0 and $entity <= 65535;
 	}
-	
+
 }
