@@ -53,11 +53,6 @@ class Json {
 		$this->mIsModified = false;
 	}
 
-	// Checks whether the given string is a valid JSON path.
-	public static function isValidPath(string $str): bool {
-		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $str));
-	}
-
 	/*
 	Checks existence of the JSON entry pointed-to by the given path.
 	Throws InvalidArgumentException if the path has incorrect format.
