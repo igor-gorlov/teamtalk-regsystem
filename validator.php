@@ -117,8 +117,16 @@ class Validator {
 
 	// Validates a JSON path.
 	public static function isValidJsonPath(mixed $entity): bool {
-		if(!is_string($entity)) {
+		if(!is_string($entity) and !is_array($entity)) {
 			return false;
+		}
+		if(is_array($entity)) {
+			foreach($entity as $i) {
+				if(!is_string($i) and !is_int($i)) {
+					return false;
+				}
+			}
+			return true;
 		}
 		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $entity));
 	}
