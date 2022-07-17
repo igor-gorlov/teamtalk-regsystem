@@ -39,6 +39,22 @@ class JsonPath {
 	public function __construct(string|array $notation) {
 	}
 
+	// Checks if the given entity is a valid JSON path notation.
+	public static function isValidNotation(mixed $entity): bool {
+		if(!is_string($entity) and !is_array($entity)) {
+			return false;
+		}
+		if(is_array($entity)) {
+			foreach($entity as $i) {
+				if(!is_string($i) and !is_int($i)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return boolval(preg_match("/^[a-z0-9_]+(\.[a-z0-9_]+)*\$/i", $entity));
+	}
+
 }
 
 // A generic container for JSON loaded from a file.
