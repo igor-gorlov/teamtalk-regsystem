@@ -128,7 +128,7 @@ class Validator {
 			}
 			return true;
 		}
-		return boolval(preg_match("/^[a-z0-9]+(\.[a-z0-9]+)*\$/i", $entity));
+		return boolval(preg_match("/^[a-z0-9_]+(\.[a-z0-9_]+)*\$/i", $entity));
 	}
 
 }
