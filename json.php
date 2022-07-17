@@ -19,6 +19,28 @@ class InvalidJsonException extends RuntimeException {
 	}
 }
 
+// Represents a valid path to a JSON entry.
+class JsonPath {
+
+	private array $mPath;
+
+	/*
+	A JsonPath instance can be constructed either from an array of strings (so-called "full notation")
+	or from a single string (referred to as "short notation").
+
+	Both these notations are designed to hold a set of JSON keys
+	that should be applied sequentially in order to reach some entry. Full notation is simply an array of keys;
+	short notation compresses keys into one single string where they are separated by dot characters (.).
+
+	Despite that the latter approach is very intuitive and seems to be more effective, it has important limitations:
+	only ASCII letters (A-Z, a-z), digits (0-9), and underscores (_) are allowed within a key
+	when short notation is used; while full notation sets no restrictions (except of those enforced by PHP).
+	*/
+	public function __construct(string|array $notation) {
+	}
+
+}
+
 // A generic container for JSON loaded from a file.
 class Json {
 
