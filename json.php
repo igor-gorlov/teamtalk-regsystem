@@ -105,6 +105,11 @@ class JsonPath {
 		return $code;
 	}
 
+	// Returns the underlying path in full notation.
+	public function getFullNotation(): array {
+		return $this->mPath;
+	}
+
 }
 
 // A generic container for JSON loaded from a file.
