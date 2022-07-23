@@ -110,6 +110,12 @@ class JsonPath {
 		return $this->mPath;
 	}
 
+	// Returns true if the underlying path can be represented in short notation; returns false otherwise.
+	public function hasShortNotation(): bool {
+		$short = implode(".", $this->mPath);
+		return static::isValidNotation($short);
+	}
+
 }
 
 // A generic container for JSON loaded from a file.
