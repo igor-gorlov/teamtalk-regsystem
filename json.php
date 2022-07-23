@@ -35,8 +35,17 @@ class JsonPath {
 	Despite that the latter approach is very intuitive and seems to be more effective, it has important limitations:
 	only ASCII letters (A-Z, a-z), digits (0-9), and underscores (_) are allowed within a key
 	when short notation is used; while full notation sets no restrictions (except of those enforced by PHP).
+
+	The constructor throws InvalidArgumentException if the given path is incorrect.
 	*/
 	public function __construct(string|array $notation) {
+		if(!static::isValidNotation($notation)) {
+			throw new InvalidArgumentException("Invalid JSON path");
+		}
+		if(!is_array($notation)) {
+			$notation = static::toFullNotation($notation);
+		}
+		$this->mPath = $notation;
 	}
 
 	// Checks if the given entity is a valid JSON path notation.
