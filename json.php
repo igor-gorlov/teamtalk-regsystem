@@ -55,6 +55,17 @@ class JsonPath {
 		return boolval(preg_match("/^[a-z0-9_]+(\.[a-z0-9_]+)*\$/i", $entity));
 	}
 
+	/*
+	Converts the given path in short notation to an equivalent path in full notation.
+	Throws InvalidArgumentException if the path is incorrect.
+	*/
+	public static function toFullNotation(string $path): array {
+		if(!static::isValidNotation($path)) {
+			throw new InvalidArgumentException("Invalid JSON path");
+		}
+		return explode(".", $path);
+	}
+
 }
 
 // A generic container for JSON loaded from a file.
@@ -104,17 +115,6 @@ class Json {
 		$lastKey = array_pop($keys);
 		$code = "return is_array(@\$this->mJson$indices) and array_key_exists(\"$lastKey\", \$this->mJson$indices);";
 		return eval($code);
-	}
-
-	/*
-	Splits a string representing a JSON path into individual keys.
-	Throws InvalidArgumentException if the path is incorrect.
-	*/
-	public static function splitPath(string $path): array {
-		if(!static::isValidPath($path)) {
-			throw new InvalidArgumentException("Invalid JSON path");
-		}
-		return explode(".", $path);
 	}
 
 	/*
