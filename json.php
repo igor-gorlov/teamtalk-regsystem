@@ -181,16 +181,10 @@ class Json {
 		$this->mIsModified = false;
 	}
 
-	/*
-	Checks existence of the JSON entry pointed-to by the given path.
-	Throws InvalidArgumentException if the path has incorrect format.
-	*/
-	public function exists(string $path): bool {
-		if(!static::isValidPath($path)) {
-			throw new InvalidArgumentException("Invalid JSON path");
-		}
-		$indices = static::mTranslatePath($path, -1);
-		$keys = static::splitPath($path);
+	// Checks existence of the JSON entry pointed-to by the given path.
+	public function exists(JsonPath $path): bool {
+		$indices = $path->toIndices(-1);
+		$keys = $path->getFullNotation();
 		$lastKey = array_pop($keys);
 		$code = "return is_array(@\$this->mJson$indices) and array_key_exists(\"$lastKey\", \$this->mJson$indices);";
 		return eval($code);
@@ -198,13 +192,13 @@ class Json {
 
 	/*
 	Returns the value of the JSON entry pointed-to by the given path.
-	Throws InvalidArgumentException if the given path is incorrect.
+	Throws InvalidArgumentException when unable to find the requested entry.
 	*/
-	public function get(string $path): mixed {
-		$indices = static::mTranslatePath($path);
+	public function get(JsonPath $path): mixed {
 		if(!$this->exists($path)) {
-			throw new InvalidArgumentException("JSON entry \"$path\" does not exist");
+			throw new InvalidArgumentException("JSON entry $path does not exist");
 		}
+		$indices = $path->toIndices();
 		$code = "return \$this->mJson$indices;";
 		return eval($code);
 	}
@@ -215,19 +209,15 @@ class Json {
 
 	If the requested entry does not exist, the method will try to create it silently;
 	InvalidJsonException will be thrown on failure.
-	
-	An incorrect JSON path given to this method results in InvalidArgumentException being thrown.
 	*/
-	public function set(string $path, object|array|string|int|float|bool|null $value): mixed {
-		$code = "return \$this->mJson" . static::mTranslatePath($path) . " = \$value;";
+	public function set(JsonPath $path, object|array|string|int|float|bool|null $value): mixed {
+		$code = "return \$this->mJson" . $path->toIndices() . "= \$value;";
 		$assigned = null;
 		try {
 			$assigned = eval($code);
 		}
 		catch(Error) {
-			throw new InvalidJsonException(
-				"Unable to set JSON entry \"$path\": this path cannot be created"
-			);
+			throw new InvalidJsonException("Unable to set JSON entry $path: this path cannot be created");
 		}
 		$this->mIsModified = true;
 		return $assigned;
@@ -235,17 +225,13 @@ class Json {
 
 	/*
 	Deletes the entry pointed-to by the given path, returns the deleted value.
-
-	If the requested entry does not exist, throws InvalidJsonException;
-	but if the passed string cannot be used as a path at all, this function throws InvalidArgumentException.
+	If the requested entry does not exist, throws InvalidJsonException.
 	*/
-	public function unset(string $path): mixed {
+	public function unset(JsonPath $path): mixed {
 		if(!$this->exists($path)) {
-			throw new InvalidJsonException(
-				"Unable to remove JSON entry \"$path\": this path does not exist"
-			);
+			throw new InvalidJsonException("Unable to remove JSON entry $path: this path does not exist");
 		}
-		$access = "\$this->mJson" . static::mTranslatePath($path);
+		$access = "\$this->mJson" . $path->toIndices();
 		$deleted = eval("return $access;");
 		eval("unset($access);");
 		$this->mIsModified = true;
