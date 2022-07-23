@@ -116,6 +116,17 @@ class JsonPath {
 		return static::isValidNotation($short);
 	}
 
+	/*
+	Returns the underlying path in short notation.
+	Throws BadMethodCallException if the path cannot be represented such way.
+	*/
+	public function getShortNotation(): string {
+		if(!$this->hasShortNotation()) {
+			throw new BadMethodCallException("This JSON path cannot be represented in short notation");
+		}
+		return implode(".", $this->mPath);
+	}
+
 }
 
 // A generic container for JSON loaded from a file.
