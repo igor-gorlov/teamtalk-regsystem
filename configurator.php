@@ -48,10 +48,13 @@ class Configurator {
 	If no validation rules are configured, or if `validation` JSON object is absent, an empty array is returned.
 	*/
 	public function getValidationRules(): array {
-		if(!$this->mSource->exists("validation") or count($this->mSource->get("validation")) == 0) {
+		if(
+			!$this->mSource->exists(new JsonPath("validation")) or
+			count($this->mSource->get(new JsonPath("validation"))) == 0
+		) {
 			return array();
 		}
-		return $this->mSource->get("validation");
+		return $this->mSource->get(new JsonPath("validation"));
 	}
 
 	/*
@@ -59,13 +62,13 @@ class Configurator {
 	Throws InvalidArgumentException if there is no server with such name.
 	*/
 	public function getServerInfo(string $name): ServerInfo {
-		if(!$this->mSource->exists("servers.$name")) {
+		if(!$this->mSource->exists(new JsonPath("servers.$name"))) {
 			throw new InvalidArgumentException("No server named \"$name\" is configured");
 		}
-		$data = $this->mSource->get("servers.$name");
+		$data = $this->mSource->get(new JsonPath("servers.$name"));
 		$validator = new Validator;
-		if($this->mSource->exists("validation")) {
-			$validator->setRules($this->mSource->get("validation"));
+		if($this->mSource->exists(new JsonPath("validation"))) {
+			$validator->setRules($this->mSource->get(new JsonPath("validation")));
 		}
 		return new ServerInfo(
 			validator: $validator,
@@ -82,10 +85,10 @@ class Configurator {
 	the returned array is empty.
 	*/
 	public function getAllServersInfo(): array {
-		if(!$this->mSource->exists("servers")) {
+		if(!$this->mSource->exists(new JsonPath("servers"))) {
 			return array();
 		}
-		$names = array_keys($this->mSource->get("servers"));
+		$names = array_keys($this->mSource->get(new JsonPath("servers")));
 		$result = array();
 		foreach($names as $name) {
 			$result[] = $this->getServerInfo($name);
@@ -102,16 +105,16 @@ class Configurator {
 	or is not configured for this server at all.
 	*/
 	public function getSystemAccountInfo(string $serverName): UserInfo {
-		if(!$this->mSource->exists("servers.$serverName")) {
+		if(!$this->mSource->exists(new JsonPath("servers.$serverName"))) {
 			throw new InvalidArgumentException("No server named \"$serverName\" is configured");
 		}
-		if(!$this->mSource->exists("servers.$serverName.systemAccount")) {
+		if(!$this->mSource->exists(new JsonPath("servers.$serverName.systemAccount"))) {
 			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
 		}
-		$data = $this->mSource->get("servers.$serverName.systemAccount");
+		$data = $this->mSource->get(new JsonPath("servers.$serverName.systemAccount"));
 		$validator = new Validator;
-		if($this->mSource->exists("validation")) {
-			$validator->setRules($this->mSource->get("validation"));
+		if($this->mSource->exists(new JsonPath("validation"))) {
+			$validator->setRules($this->mSource->get(new JsonPath("validation")));
 		}
 		try {
 			return new UserInfo(
