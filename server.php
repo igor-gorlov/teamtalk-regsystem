@@ -318,7 +318,7 @@ class Tt5Session {
 			throw new AccountAlreadyExistsException($acc->username);
 		}
 		$this->executeCommand(
-			"newaccount username=\"$acc->username\" password=\"$acc->password\" usertype=1"
+			"newaccount username=\"$acc->username\" password=\"$acc->password\" usertype=1 userrights=$acc->rights"
 		);
 		return $acc->username;
 	}
