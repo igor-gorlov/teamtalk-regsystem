@@ -65,17 +65,10 @@ class JsonPath {
 	}
 
 	/*
-	/*
-	Converts the current instance to a human-readable string.
-
-	Short notation is the most convenient way to stringify a JSON path;
-	but if the path cannot be represented in short notation, each key is enclosed into double quotes ("..."),
+	Converts the current instance to a human-readable string: each key is enclosed into double quotes ("..."),
 	and arrows (->) are placed between them as separators.
 	*/
 	public function __toString() {
-		if($this->hasShortNotation()) {
-			return $this->getShortNotation();
-		}
 		$keys = $this->mPath;
 		foreach($keys as &$key) {
 			$key = "\"$key\"";
