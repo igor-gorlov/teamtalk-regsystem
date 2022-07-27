@@ -31,7 +31,7 @@ class JsonPath {
 
 	/*
 	Converts the underlying path to a sequence of array indices.
-	For example, short notation "servers.default.host" is translated to "[\"servers\"][\"default\"][\"host\"]".
+	For example, array("servers", "default", "host") is translated to "[\"servers\"][\"default\"][\"host\"]".
 
 	The optional argument $offset determins how many indices should be trimmed from the final output.
 	If the value is positive, first $offset indices are skipped;
