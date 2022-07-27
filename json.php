@@ -94,12 +94,6 @@ class JsonPath {
 		return $this->mPath;
 	}
 
-	// Returns true if the underlying path can be represented in short notation; returns false otherwise.
-	public function hasShortNotation(): bool {
-		$short = implode(".", $this->mPath);
-		return static::isValidNotation($short);
-	}
-
 	/*
 	Returns the underlying path in short notation.
 	Throws BadMethodCallException if the path cannot be represented such way.
