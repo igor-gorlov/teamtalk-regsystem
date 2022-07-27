@@ -30,17 +30,6 @@ class JsonPath {
 	}
 
 	/*
-	Converts the given path in short notation to an equivalent path in full notation.
-	Throws InvalidArgumentException if the path is incorrect.
-	*/
-	public static function toFullNotation(string $path): array {
-		if(!static::isValidNotation($path)) {
-			throw new InvalidArgumentException("Invalid JSON path");
-		}
-		return explode(".", $path);
-	}
-
-	/*
 	Converts the underlying path to a sequence of array indices.
 	For example, short notation "servers.default.host" is translated to "[\"servers\"][\"default\"][\"host\"]".
 
