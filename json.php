@@ -59,8 +59,8 @@ class JsonPath {
 		return $code;
 	}
 
-	// Returns the underlying path in full notation.
-	public function getFullNotation(): array {
+	// Returns the underlying path as an array of JSON keys.
+	public function getKeys(): array {
 		return $this->mPath;
 	}
 
@@ -122,7 +122,7 @@ class Json {
 	// Checks existence of the JSON entry pointed-to by the given path.
 	public function exists(JsonPath $path): bool {
 		$indices = $path->toIndices(-1);
-		$keys = $path->getFullNotation();
+		$keys = $path->getKeys();
 		$lastKey = array_pop($keys);
 		$code = "return is_array(@\$this->mJson$indices) and array_key_exists(\"$lastKey\", \$this->mJson$indices);";
 		return eval($code);
