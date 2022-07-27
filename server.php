@@ -41,6 +41,13 @@ class ServerInfo {
 	}
 }
 
+// TeamTalk 5 user type.
+enum UserType: int {
+	case NONE = 0;
+	case DEFAULT = 1;
+	case ADMIN = 2;
+}
+
 // Encapsulates TeamTalk 5 user information.
 class UserInfo {
 
@@ -81,6 +88,7 @@ class UserInfo {
 		public readonly string $username,
 		public readonly string $password,
 		public readonly string $nickname = "",
+		public readonly UserType $type = UserType::DEFAULT,
 		public readonly int $rights = self::RIGHT_DEFAULT
 	) {
 		$error = false;
@@ -318,7 +326,8 @@ class Tt5Session {
 			throw new AccountAlreadyExistsException($acc->username);
 		}
 		$this->executeCommand(
-			"newaccount username=\"$acc->username\" password=\"$acc->password\" usertype=1 userrights=$acc->rights"
+			"newaccount username=\"$acc->username\" password=\"$acc->password\"" .
+			" usertype={$acc->type->value} userrights=$acc->rights"
 		);
 		return $acc->username;
 	}
