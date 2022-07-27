@@ -88,6 +88,7 @@ class UserInfo {
 		public readonly string $username,
 		public readonly string $password,
 		public readonly string $nickname = "",
+		public readonly UserType $type = UserType::DEFAULT,
 		public readonly int $rights = self::RIGHT_DEFAULT
 	) {
 		$error = false;
