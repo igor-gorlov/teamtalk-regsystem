@@ -48,22 +48,6 @@ class JsonPath {
 		$this->mPath = $notation;
 	}
 
-	// Checks if the given entity is a valid JSON path notation.
-	public static function isValidNotation(mixed $entity): bool {
-		if(!is_string($entity) and !is_array($entity)) {
-			return false;
-		}
-		if(is_array($entity)) {
-			foreach($entity as $i) {
-				if(!is_string($i) and !is_int($i)) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return boolval(preg_match("/^[a-z0-9_]+(\.[a-z0-9_]+)*\$/i", $entity));
-	}
-
 	/*
 	Converts the given path in short notation to an equivalent path in full notation.
 	Throws InvalidArgumentException if the path is incorrect.
