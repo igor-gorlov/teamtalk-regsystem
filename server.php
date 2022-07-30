@@ -85,6 +85,7 @@ class UserInfo {
 	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
 	public function __construct(
 		Validator $validator,
+		public readonly ServerInfo $server,
 		public readonly string $username,
 		public readonly string $password,
 		public readonly string $nickname = "",
