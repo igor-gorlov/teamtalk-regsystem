@@ -26,6 +26,12 @@ class BadQueryStringException extends RuntimeException {
 	}
 }
 
+
+// Extracts a server name from the query string. If there seems to be no server name within URL, returns "default".
+function serverNameFromUrl(): string {
+	return isset($_GET["server"]) ? $_GET["server"] : "default";
+}
+
 /*
 Tries to construct an instance of UserInfo class from the parameters passed via the URL query string;
 The given Validator object is used to ensure correctness of those parameters.
@@ -104,13 +110,7 @@ register_shutdown_function("endRegistrationPage");
 $configJson = new Json("config.json");
 $config = new Configurator($configJson);
 $validator = new Validator($config->getValidationRules());
-$serverName = "";
-if(isset($_GET["server"])) {
-	$serverName = $_GET["server"];
-}
-else {
-	$serverName = "default";
-}
+$serverName = serverNameFromUrl();
 $server = $config->getServerInfo($serverName);
 $systemAccount = $config->getSystemAccountInfo($serverName);
 $newAccount = null;
