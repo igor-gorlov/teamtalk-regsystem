@@ -100,7 +100,7 @@ class Configurator {
 	Returns a UserInfo object representing the system account
 	which belongs to the managed server pointed-to by the given name.
 
-	Throws InvalidArgumentException if there is no server with such name;
+	Throws InvalidArgumentException if there is no server with such name or when this server is configured incorrectly;
 	throws InvalidConfigException if a system account is configured incorrectly
 	or is not configured for this server at all.
 	*/
@@ -111,17 +111,23 @@ class Configurator {
 		if(!$this->mSource->exists(new JsonPath("servers", $serverName, "systemAccount"))) {
 			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
 		}
-		$data = $this->mSource->get(new JsonPath("servers", $serverName, "systemAccount"));
+		$data = $this->mSource->get(new JsonPath("servers", $serverName));
 		$validator = new Validator;
 		if($this->mSource->exists(new JsonPath("validation"))) {
 			$validator->setRules($this->mSource->get(new JsonPath("validation")));
 		}
+		$server = new ServerInfo(
+			validator: $validator,
+			host: $data["host"],
+			port: $data["port"]
+		);
 		try {
 			return new UserInfo(
 				validator: $validator,
-				username: $data["username"],
-				password: $data["password"],
-				nickname: $data["nickname"]
+				server: $server,
+				username: $data["systemAccount"]["username"],
+				password: $data["systemAccount"]["password"],
+				nickname: $data["systemAccount"]["nickname"]
 			);
 		}
 		catch(InvalidArgumentException) {
