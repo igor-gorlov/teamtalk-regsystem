@@ -164,12 +164,12 @@ class Tt5Session {
 	Throws ServerUnavailableException if cannot connect to the server for some reason;
 	throws InvalidCommandException in case of other problems.
 	*/
-	public function __construct(public readonly ServerInfo $server, public readonly UserInfo $account) {
+	public function __construct(public readonly UserInfo $account) {
 		$this->mLastId = 0;
 		// Connect to the server.
-		$this->mSocket = @fsockopen($server->host, $server->port);
+		$this->mSocket = @fsockopen($account->server->host, $account->server->port);
 		if($this->mSocket === false) {
-			throw new ServerUnavailableException($server);
+			throw new ServerUnavailableException($account->server);
 		}
 		// Login under the admin account.
 		$this->mLogin();
