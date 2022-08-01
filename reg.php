@@ -36,10 +36,24 @@ function serverNameFromUrl(): string {
 Tries to construct an instance of UserInfo class from the parameters passed via the URL query string;
 The given Validator object is used to ensure correctness of those parameters.
 
+In addition to the validator, this function also accepts an array of ServerInfo objects
+to search the server name extracted from URL in it.
+
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete;
 Throws RuntimeException if the user information is invalid.
 */
-function userInfoFromUrl(Validator $validator): UserInfo {
+function userInfoFromUrl(Validator $validator, array $serverList): UserInfo {
+	$server = null;
+	$serverName = serverNameFromUrl();
+	foreach($serverList as $i) {
+		if($i->name === $serverName) {
+			$server = $i;
+			break;
+		}
+	}
+	if($server === null) {
+		throw new RuntimeException("No managed server named \"$serverName\" is configured");
+	}
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
 	if(!isset($_GET["name"])) {
