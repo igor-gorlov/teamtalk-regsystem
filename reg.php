@@ -67,7 +67,7 @@ function userInfoFromUrl(Validator $validator, array $serverList): UserInfo {
 	if($error) {
 		throw new BadQueryStringException($errorMessage);
 	}
-	return new UserInfo($validator, $_GET["name"], $_GET["password"]);
+	return new UserInfo($validator, $server, $_GET["name"], $_GET["password"]);
 }
 
 
@@ -124,12 +124,9 @@ register_shutdown_function("endRegistrationPage");
 $configJson = new Json("config.json");
 $config = new Configurator($configJson);
 $validator = new Validator($config->getValidationRules());
-$serverName = serverNameFromUrl();
-$server = $config->getServerInfo($serverName);
-$systemAccount = $config->getSystemAccountInfo($serverName);
 $newAccount = null;
 try {
-	$newAccount = userInfoFromUrl($validator);
+	$newAccount = userInfoFromUrl($validator, $config->getAllServersInfo());
 }
 catch(Exception $e) {
 	if(!isset($_GET["form"])) {
@@ -138,10 +135,11 @@ catch(Exception $e) {
 	}
 	throw $e;
 }
+$systemAccount = $config->getSystemAccountInfo($newAccount->server->name);
 
 // Establish connection.
-$connection = new Tt5Session($server, $systemAccount);
+$connection = new Tt5Session($systemAccount);
 
 // Create a new account.
-$newUsername = $connection->createAccount($newAccount);
-echo("Successfully created a new account named $newUsername on $server->title!");
+$connection->createAccount($newAccount);
+echo("Successfully created a new account named $newAccount->username on {$newAccount->server->title}!");
