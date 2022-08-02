@@ -110,6 +110,7 @@ class UserInfo {
 			throw new InvalidArgumentException($errorMessage);
 		}
 	}
+
 }
 
 // Represents a single command.
