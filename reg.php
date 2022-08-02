@@ -36,10 +36,24 @@ function serverNameFromUrl(): string {
 Tries to construct an instance of UserInfo class from the parameters passed via the URL query string;
 The given Validator object is used to ensure correctness of those parameters.
 
+In addition to the validator, this function also accepts an array of ServerInfo objects
+to search the server name extracted from URL in it.
+
 Throws BadQueryStringException if the actual set of required fields within the URL is incomplete;
 Throws RuntimeException if the user information is invalid.
 */
-function userInfoFromUrl(Validator $validator): UserInfo {
+function userInfoFromUrl(Validator $validator, array $serverList): UserInfo {
+	$server = null;
+	$serverName = serverNameFromUrl();
+	foreach($serverList as $i) {
+		if($i->name === $serverName) {
+			$server = $i;
+			break;
+		}
+	}
+	if($server === null) {
+		throw new RuntimeException("No managed server named \"$serverName\" is configured");
+	}
 	$error = false;
 	$errorMessage = "The following URL parameters are not provided:\n";
 	if(!isset($_GET["name"])) {
@@ -53,7 +67,7 @@ function userInfoFromUrl(Validator $validator): UserInfo {
 	if($error) {
 		throw new BadQueryStringException($errorMessage);
 	}
-	return new UserInfo($validator, $_GET["name"], $_GET["password"]);
+	return new UserInfo($validator, $server, $_GET["name"], $_GET["password"]);
 }
 
 
@@ -110,12 +124,9 @@ register_shutdown_function("endRegistrationPage");
 $configJson = new Json("config.json");
 $config = new Configurator($configJson);
 $validator = new Validator($config->getValidationRules());
-$serverName = serverNameFromUrl();
-$server = $config->getServerInfo($serverName);
-$systemAccount = $config->getSystemAccountInfo($serverName);
 $newAccount = null;
 try {
-	$newAccount = userInfoFromUrl($validator);
+	$newAccount = userInfoFromUrl($validator, $config->getAllServersInfo());
 }
 catch(Exception $e) {
 	if(!isset($_GET["form"])) {
@@ -124,10 +135,11 @@ catch(Exception $e) {
 	}
 	throw $e;
 }
+$systemAccount = $config->getSystemAccountInfo($newAccount->server->name);
 
 // Establish connection.
-$connection = new Tt5Session($server, $systemAccount);
+$connection = new Tt5Session($systemAccount);
 
 // Create a new account.
-$newUsername = $connection->createAccount($newAccount);
-echo("Successfully created a new account named $newUsername on $server->title!");
+$connection->createAccount($newAccount);
+echo("Successfully created a new account named $newAccount->username on {$newAccount->server->title}!");
