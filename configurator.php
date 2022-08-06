@@ -66,10 +66,7 @@ class Configurator {
 			throw new InvalidArgumentException("No server named \"$name\" is configured");
 		}
 		$data = $this->mSource->get(new JsonPath("servers", $name));
-		$validator = new Validator;
-		if($this->mSource->exists(new JsonPath("validation"))) {
-			$validator->setRules($this->mSource->get(new JsonPath("validation")));
-		}
+		$validator = new Validator($this->getValidationRules());
 		return new ServerInfo(
 			validator: $validator,
 			name: $name,
@@ -112,10 +109,7 @@ class Configurator {
 			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
 		}
 		$data = $this->mSource->get(new JsonPath("servers", $serverName));
-		$validator = new Validator;
-		if($this->mSource->exists(new JsonPath("validation"))) {
-			$validator->setRules($this->mSource->get(new JsonPath("validation")));
-		}
+		$validator = new Validator($this->getValidationRules());
 		$server = new ServerInfo(
 			validator: $validator,
 			host: $data["host"],
