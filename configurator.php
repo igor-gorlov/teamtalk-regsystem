@@ -116,7 +116,8 @@ class Configurator {
 				server: $this->getServerInfo($serverName),
 				username: $data["systemAccount"]["username"],
 				password: $data["systemAccount"]["password"],
-				nickname: $data["systemAccount"]["nickname"]
+				nickname: $data["systemAccount"]["nickname"],
+				type: UserType::ADMIN
 			);
 		}
 		catch(InvalidArgumentException) {
