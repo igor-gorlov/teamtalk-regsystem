@@ -115,8 +115,10 @@ class UserInfo {
 
 // Represents a single command.
 class Command {
-	public string $name;
-	public array $params;
+	public function __construct(
+		public string $name,
+		public array $params = array()
+	) {}
 }
 
 // Is thrown when a command yields an error.
@@ -199,11 +201,10 @@ class Tt5Session {
 	This function expects the input to be a syntactically correct TeamTalk 5 command; no validation is performed.
 	*/
 	public static function parseCommand(string $command): Command {
-		$result = new Command;
 		$matches = array(); // a reusable array to store preg_match results in.
 		// Extract the name.
 		preg_match("/^([a-z]+\b)(\s*)/i", $command, $matches);
-		$result->name = $matches[1];
+		$result = new Command($matches[1]);
 		$offset = strlen($matches[0]);
 		// Parse the parameters.
 		while($offset != strlen($command)) {
