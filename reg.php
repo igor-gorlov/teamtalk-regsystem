@@ -138,7 +138,7 @@ catch(Exception $e) {
 $systemAccount = $config->getSystemAccountInfo($newAccount->server->name);
 
 // Establish connection.
-$connection = new Tt5Session($systemAccount);
+$connection = new Tt5Session($validator, $systemAccount);
 
 // Create a new account.
 $connection->createAccount($newAccount);
