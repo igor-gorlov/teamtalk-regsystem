@@ -110,15 +110,10 @@ class Configurator {
 		}
 		$data = $this->mSource->get(new JsonPath("servers", $serverName));
 		$validator = new Validator($this->getValidationRules());
-		$server = new ServerInfo(
-			validator: $validator,
-			host: $data["host"],
-			port: $data["port"]
-		);
 		try {
 			return new UserInfo(
 				validator: $validator,
-				server: $server,
+				server: $this->getServerInfo($serverName),
 				username: $data["systemAccount"]["username"],
 				password: $data["systemAccount"]["password"],
 				nickname: $data["systemAccount"]["nickname"]
