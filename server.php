@@ -167,7 +167,7 @@ class Tt5Session {
 	Throws ServerUnavailableException if cannot connect to the server for some reason;
 	throws InvalidCommandException in case of other problems.
 	*/
-	public function __construct(public readonly UserInfo $account) {
+	public function __construct(public readonly Validator $validator, public readonly UserInfo $account) {
 		$this->mLastId = 0;
 		// Connect to the server.
 		$this->mSocket = @fsockopen($account->server->host, $account->server->port);
@@ -305,6 +305,26 @@ class Tt5Session {
 			case ReplyMode::AS_ARRAY:
 				return $respondingCommands;
 		}
+	}
+
+	/*
+	Returns an array of UserInfo objects representing all accounts that exist on the server.
+	Throws CommandFailedException or InvalidArgumentException on error.
+	*/
+	public function getAllAccounts(): array {
+		$result = array();
+		$reply = $this->executeCommand("listaccounts");
+		for($i = 0; $reply[$i]->name == "useraccount"; $i++) {
+			$result[] = new UserInfo(
+				validator: $this->validator,
+				server: $this->account->server,
+				username: $reply[$i]->params["username"],
+				password: $reply[$i]->params["password"],
+				type: UserType::from($reply[$i]->params["usertype"]),
+				rights: $reply[$i]->params["userrights"]
+			);
+		}
+		return $result;
 	}
 
 	// Returns true if an account with the given name exists; otherwise returns false.
