@@ -327,6 +327,18 @@ class Tt5Session {
 		return $result;
 	}
 
+	/*
+	Searches accounts using the given callback function, returns a sequentially indexed array of UserInfo instancies.
+
+	The callback takes a UserInfo object, returns true if this account must be included in the search results,
+	returns false if it must be ignored.
+	*/
+	public function findAccounts(callable $callback): array {
+		$allAccounts = $this->getAllAccounts();
+		$resultWithGaps = array_filter($allAccounts, $callback);
+		return array_values($resultWithGaps);
+	}
+
 	// Returns true if an account with the given name exists; otherwise returns false.
 	public function accountExists(string $name): bool {
 		$reply = $this->executeCommand("listaccounts");
