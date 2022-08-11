@@ -339,6 +339,23 @@ class Tt5Session {
 		return array_values($resultWithGaps);
 	}
 
+	/*
+	Returns the first account which satisfies the condition defined by the given callback;
+	if nothing was found, returns null.
+
+	The callback takes a UserInfo object, returns true if this account is what we are looking for,
+	returns false if it must be ignored.
+	*/
+	public function findAccount(callable $callback): UserInfo|null {
+		$allAccounts = $this->getAllAccounts();
+		foreach($allAccounts as $account) {
+			if($callback($account)) {
+				return $account;
+			}
+		}
+		return null;
+	}
+
 	// Returns true if an account with the given name exists; otherwise returns false.
 	public function accountExists(string $name): bool {
 		$reply = $this->executeCommand("listaccounts");
