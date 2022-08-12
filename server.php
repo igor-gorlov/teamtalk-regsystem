@@ -331,15 +331,9 @@ class Tt5Session {
 	}
 
 	// Returns true if an account with the given name exists; otherwise returns false.
-	public function accountExists(string $name): bool {
-		$reply = $this->executeCommand("listaccounts");
-		for($i = 0; $reply[$i]->name == "useraccount"; $i++) {
-			$username = $reply[$i]->params["username"];
-			if($username == $name) {
-				return true;
-			}
-		}
-		return false;
+	public function accountExists(string $username): bool {
+		$result = $this->findAccount(fn(UserInfo $account): bool => $account->username == $username);
+		return $result === null ? false : true;
 	}
 
 	/*
