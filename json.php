@@ -12,12 +12,8 @@ Built on top of the standard PHP functions related to JSON and filesystem.
 declare(strict_types = 1);
 
 
-// Is thrown on a problem with JSON.
-class InvalidJsonException extends RuntimeException {
-	public function __construct(string $message) {
-		parent::__construct($message);
-	}
-}
+require_once "error.php";
+
 
 // Represents a valid path to a JSON entry.
 class JsonPath {

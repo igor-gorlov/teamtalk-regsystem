@@ -18,14 +18,6 @@ require_once "server.php";
 require_once "validator.php";
 
 
-// Is thrown when one or more URL parameters needed for some task are missing.
-class BadQueryStringException extends RuntimeException {
-	public function __construct(string $message) {
-		parent::__construct($message);
-	}
-}
-
-
 // Extracts a server name from the query string. If there seems to be no server name within URL, returns "default".
 function serverNameFromUrl(): string {
 	return isset($_GET["server"]) ? $_GET["server"] : "default";

@@ -11,16 +11,10 @@ Gives the ability to load, review, manipulate and store program settings.
 declare(strict_types = 1);
 
 
+require_once "error.php";
 require_once "json.php";
 require_once "server.php";
 
-
-// Is thrown on a problem with configuration.
-class InvalidConfigException extends RuntimeException {
-	public function __construct(string $message) {
-		parent::__construct($message);
-	}
-}
 
 // Provides an interface to configuration. At most one instance of this class can exist at any moment.
 class Configurator {

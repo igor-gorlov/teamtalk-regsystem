@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 
 require_once "configurator.php";
+require_once "error.php";
 require_once "validator.php";
 
 
@@ -119,33 +120,6 @@ class Command {
 		public string $name,
 		public array $params = array()
 	) {}
-}
-
-// Is thrown when a command yields an error.
-class CommandFailedException extends RuntimeException {
-	public function __construct(string $command, ?array $reply = null) {
-		$message = "The following command failed:\n$command";
-		if($reply != null) {
-			$errorCode = $reply[array_key_last($reply)]->params["number"];
-			$serverMessage = $reply[array_key_last($reply)]->params["message"];
-			$message .= "\nThe server returned error code $errorCode and said:\n$serverMessage\n";
-		}
-		parent::__construct($message);
-	}
-}
-
-// Is thrown when attempting to register an account that already exists.
-class AccountAlreadyExistsException extends RuntimeException {
-	public function __construct(string $username) {
-		parent::__construct("Unable to create account named $username because this username is already taken");
-	}
-}
-
-// Is thrown when an attempt to establish connection with the TeamTalk 5 server fails.
-class ServerUnavailableException extends RuntimeException {
-	public function __construct(ServerInfo $server) {
-		parent::__construct("Unable to connect to $server->host:$server->port");
-	}
 }
 
 // Possible representation types for command responses.
