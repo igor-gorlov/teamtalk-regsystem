@@ -129,6 +129,6 @@ catch(Exception $e) {
 $systemAccount = $config->getSystemAccountInfo($newAccount->server->name);
 
 // Create a new account.
-$registrator = new AccountManager($validator, new Tt5Session($validator, $systemAccount));
+$registrator = new AccountManager($validator, new Tt5Session($systemAccount));
 $registrator->createAccount($newAccount);
 echo("Successfully created a new account named $newAccount->username on {$newAccount->server->title}!");
