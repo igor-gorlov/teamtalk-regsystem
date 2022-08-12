@@ -121,8 +121,7 @@ beginRegistrationPage();
 register_shutdown_function("endRegistrationPage");
 
 // Configure the essential options.
-$configJson = new Json("config.json");
-$config = new Configurator($configJson);
+$config = new Configurator(new Json("config.json"));
 $validator = new Validator($config->getValidationRules());
 $newAccount = null;
 try {
