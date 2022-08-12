@@ -20,6 +20,3 @@ function printErrorMessage(Throwable $e): void {
 	echo("</code></pre></td></tr></table>");
 	ob_end_flush();
 }
-
-
-set_exception_handler("printErrorMessage");

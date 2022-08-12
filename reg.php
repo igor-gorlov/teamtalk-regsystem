@@ -117,6 +117,7 @@ function showRegistrationForm(array $servers): void {
 
 
 // Set up GUI.
+set_exception_handler("printErrorMessage");
 beginRegistrationPage();
 register_shutdown_function("endRegistrationPage");
 
