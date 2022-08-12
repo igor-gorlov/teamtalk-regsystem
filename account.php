@@ -11,6 +11,10 @@ Various operations on TeamTalk 5 accounts.
 declare(strict_types = 1);
 
 
+require_once "error.php";
+require_once "server.php";
+
+
 // TeamTalk 5 user type.
 enum UserType: int {
 	case NONE = 0;
@@ -79,6 +83,84 @@ class UserInfo {
 		if($error) {
 			throw new InvalidArgumentException($errorMessage);
 		}
+	}
+
+}
+
+// A high-level interface for viewing and manipulating accounts.
+class AccountManager {
+
+	public function __construct(public readonly Validator $validator, private Tt5Session $mSession) {}
+
+	/*
+	Returns an array of UserInfo objects representing all accounts that exist on the server.
+	Throws CommandFailedException or InvalidArgumentException on error.
+	*/
+	public function getAllAccounts(): array {
+		$result = array();
+		$reply = $this->mSession->executeCommand("listaccounts");
+		for($i = 0; $reply[$i]->name == "useraccount"; $i++) {
+			$result[] = new UserInfo(
+				validator: $this->validator,
+				server: $this->mSession->account->server,
+				username: $reply[$i]->params["username"],
+				password: $reply[$i]->params["password"],
+				type: UserType::from($reply[$i]->params["usertype"]),
+				rights: $reply[$i]->params["userrights"]
+			);
+		}
+		return $result;
+	}
+
+	/*
+	Searches accounts using the given callback function, returns a sequentially indexed array of UserInfo instancies.
+
+	The callback takes a UserInfo object, returns true if this account must be included in the search results,
+	returns false if it must be ignored.
+	*/
+	public function findAccounts(callable $callback): array {
+		$allAccounts = $this->getAllAccounts();
+		$resultWithGaps = array_filter($allAccounts, $callback);
+		return array_values($resultWithGaps);
+	}
+
+	/*
+	Returns the first account which satisfies the condition defined by the given callback;
+	if nothing was found, returns null.
+
+	The callback takes a UserInfo object, returns true if this account is what we are looking for,
+	returns false if it must be ignored.
+	*/
+	public function findAccount(callable $callback): UserInfo|null {
+		$allAccounts = $this->getAllAccounts();
+		foreach($allAccounts as $account) {
+			if($callback($account)) {
+				return $account;
+			}
+		}
+		return null;
+	}
+
+	// Returns true if an account with the given name exists; otherwise returns false.
+	public function accountExists(string $username): bool {
+		$result = $this->findAccount(fn(UserInfo $account): bool => $account->username == $username);
+		return $result === null ? false : true;
+	}
+
+	/*
+	Creates a new account of "default" type with the given name and password, returns its username.
+	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
+	may throw CommandFailedException in case of other problems.
+	*/
+	public function createAccount(UserInfo $acc): string {
+		if($this->accountExists($acc->username)) {
+			throw new AccountAlreadyExistsException($acc->username);
+		}
+		$this->mSession->executeCommand(
+			"newaccount username=\"$acc->username\" password=\"$acc->password\"" .
+			" usertype={$acc->type->value} userrights=$acc->rights"
+		);
+		return $acc->username;
 	}
 
 }
