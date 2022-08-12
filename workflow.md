@@ -16,5 +16,3 @@ themselves include _helper_ scripts. Usually, root scripts are **never** include
     declaration, but check the actual type of the entity inside method body.
 -   Do **not** pass a `Configurator` instance itself to any function (including but not limiting to other constructors);
     instead, provide only **data** retrieved from a `Configurator` object.
--   `init.php` must be the **very first** file required by any root script (that is, the line `require_once "init.php";`
-    must go before all other includes); helper scripts must **not** require `init.php`.

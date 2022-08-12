@@ -2,7 +2,7 @@
 
 
 /*
-Executes initial commands. Should be run on program startup, before any other code.
+A collection of error handling utilities.
 
 © Igor Gorlov, 2022.
 */
@@ -20,6 +20,3 @@ function printErrorMessage(Throwable $e): void {
 	echo("</code></pre></td></tr></table>");
 	ob_end_flush();
 }
-
-
-set_exception_handler("printErrorMessage");

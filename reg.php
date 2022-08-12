@@ -11,9 +11,8 @@ This script accepts user information and creates a new TeamTalk 5 account from i
 declare(strict_types = 1);
 
 
-require_once "init.php";
-
 require_once "configurator.php";
+require_once "error.php";
 require_once "json.php";
 require_once "server.php";
 require_once "validator.php";
@@ -117,6 +116,7 @@ function showRegistrationForm(array $servers): void {
 
 
 // Set up GUI.
+set_exception_handler("printErrorMessage");
 beginRegistrationPage();
 register_shutdown_function("endRegistrationPage");
 
