@@ -2,7 +2,7 @@
 
 
 /*
-Executes initial commands. Should be run on program startup, before any other code.
+A collection of error handling utilities.
 
 © Igor Gorlov, 2022.
 */
