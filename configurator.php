@@ -27,11 +27,15 @@ class Configurator {
 
 	/*
 	Loads configuration from the given source.
-	Throws BadMethodCallException if another object of type Configurator already exists.
+	Throws BadMethodCallException if another object of type Configurator already exists;
+	throws InvalidArgumentException if the given JSON structure is not suitable for configuration purposes.
 	*/
 	public function __construct(Json $source) {
 		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
+		}
+		if(!Validator::isValidConfiguration($source)) {
+			throw new InvalidArgumentException("Invalid configuration file \"$source->filename\"");
 		}
 		$this->mSource = $source;
 		static::$mNumberOfInstancies++;
