@@ -90,7 +90,7 @@ class Json {
 	If $autosave optional argument is set to true,
 	the updated information will be stored back to the file on destruction of the current JSON instance.
 	*/
-	public function __construct(string $filename, public readonly bool $autosave = true) {
+	public function __construct(public readonly string $filename, public readonly bool $autosave = true) {
 		$file = fopen($filename, "r+");
 		if($file === false) {
 			throw new RuntimeException("Unable to open JSON file \"$filename\"");
