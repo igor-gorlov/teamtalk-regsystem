@@ -53,6 +53,50 @@ class Validator {
 	}
 
 	/*
+	Checks whether the given data structure can be safely used as a configuration source.
+
+	Note that this method only tests the entity for presence of mandatory entries and validates their types,
+	but values themselves are never taken into account.
+	For example, if an address of a managed server contains forbidden characters,
+	the function considers this property valid because it is accessible using the correct path
+	("servers" -> "<server name>" -> "systemAccount" -> "host") and has string type.
+	*/
+	public static function isValidConfiguration(mixed $entity): bool {
+		if(!$entity instanceof Json or !$entity->exists(new JsonPath("servers"))) {
+			return false;
+		}
+		$servers = $entity->get(new JsonPath("servers"));
+		if(!is_array($servers)) {
+			return false;
+		}
+		foreach($servers as $server) {
+			if(
+				!isset($server["title"]) or
+				!is_string($server["title"]) or
+				!isset($server["host"]) or
+				!is_string($server["host"]) or
+				!isset($server["port"]) or
+				!is_int($server["port"])
+			) {
+				return false;
+			}
+			$account = $server["systemAccount"];
+			if(
+				!is_array($account) or
+				!isset($account["username"]) or
+				!is_string($account["username"]) or
+				!isset($account["password"]) or
+				!is_string($account["password"]) or
+				!isset($account["nickname"]) or
+				!is_string($account["nickname"])
+			) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/*
 	Validates a username against the configured regular expression;
 	if no regexp is configured, the following is used: "/.+/i".
 
