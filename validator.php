@@ -60,6 +60,10 @@ class Validator {
 	For example, if an address of a managed server contains forbidden characters,
 	the function considers this property valid because it is accessible using the correct path
 	("servers" -> "<server name>" -> "systemAccount" -> "host") and has string type.
+
+	The validation algorithm is hardcoded by design, it does not respect any rules.
+	The only (but solid) reason for this method to be non-static is
+	the possibility to substitute another implementation on the caller side (for example, via an interface).
 	*/
 	public function isValidConfiguration(mixed $entity): bool {
 		if(!$entity instanceof Json or !$entity->exists(new JsonPath("servers"))) {
