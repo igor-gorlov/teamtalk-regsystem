@@ -55,7 +55,7 @@ class Validator {
 	/*
 	Checks whether the given data structure can be safely used as a configuration source.
 
-	Note that this method only tests the entity for presence of mandatory entries and validates their types,
+	Note that this method only tests the entity for presence of specific entries and validates entities' types,
 	but values themselves are never taken into account.
 	For example, if an address of a managed server contains forbidden characters,
 	the function considers this property valid because it is accessible using the correct path
