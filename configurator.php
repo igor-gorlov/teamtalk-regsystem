@@ -39,7 +39,7 @@ class Configurator {
 		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
 		}
-		if(!Validator::isValidConfiguration($source)) {
+		if(!$validator->isValidConfiguration($source)) {
 			throw new InvalidArgumentException("Invalid configuration file \"$source->filename\"");
 		}
 		$this->mSource = $source;

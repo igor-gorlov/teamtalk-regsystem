@@ -61,7 +61,7 @@ class Validator {
 	the function considers this property valid because it is accessible using the correct path
 	("servers" -> "<server name>" -> "systemAccount" -> "host") and has string type.
 	*/
-	public static function isValidConfiguration(mixed $entity): bool {
+	public function isValidConfiguration(mixed $entity): bool {
 		if(!$entity instanceof Json or !$entity->exists(new JsonPath("servers"))) {
 			return false;
 		}
