@@ -82,13 +82,9 @@ class Configurator {
 
 	/*
 	Returns an array of ServerInfo objects describing all managed servers currently configured.
-	If there are no servers, or the configuration does not contain `servers` object at all,
-	the returned array is empty.
+	If there are no servers, the returned array is empty.
 	*/
 	public function getAllServersInfo(): array {
-		if(!$this->mSource->exists(new JsonPath("servers"))) {
-			return array();
-		}
 		$names = array_keys($this->mSource->get(new JsonPath("servers")));
 		$result = array();
 		foreach($names as $name) {
@@ -102,15 +98,11 @@ class Configurator {
 	which belongs to the managed server pointed-to by the given name.
 
 	Throws InvalidArgumentException if there is no server with such name;
-	throws InvalidConfigException if a system account is configured incorrectly
-	or is not configured for this server at all.
+	throws InvalidConfigException if a system account is configured incorrectly.
 	*/
 	public function getSystemAccountInfo(string $serverName): UserInfo {
 		if(!$this->mSource->exists(new JsonPath("servers", $serverName))) {
 			throw new InvalidArgumentException("No server named \"$serverName\" is configured");
-		}
-		if(!$this->mSource->exists(new JsonPath("servers", $serverName, "systemAccount"))) {
-			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
 		}
 		$data = $this->mSource->get(new JsonPath("servers", $serverName));
 		try {
