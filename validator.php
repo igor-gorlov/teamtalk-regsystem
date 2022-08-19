@@ -93,6 +93,9 @@ class Validator {
 				return false;
 			}
 		}
+		if($entity->exists(new JsonPath("validation")) and !is_array($entity->get(new JsonPath("validation")))) {
+			return false;
+		}
 		return true;
 	}
 
