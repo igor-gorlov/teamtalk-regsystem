@@ -21,16 +21,21 @@ class Configurator {
 
 	public const MAX_NUMBER_OF_INSTANCIES = 1;
 
+	public readonly Validator $validator;
+
 	private static int $mNumberOfInstancies = 0;
 
 	private Json $mSource;
 
 	/*
-	Loads configuration from the given source.
-	Throws BadMethodCallException if another object of type Configurator already exists;
+	Loads configuration from the given source;
+	throws BadMethodCallException if another object of type Configurator already exists,
 	throws InvalidArgumentException if the given JSON structure is not suitable for configuration purposes.
+
+	ATTENTION! The given Validator object is modified during construction of the Configurator instance:
+	it gets a set of rules found in the configuration source.
 	*/
-	public function __construct(Json $source) {
+	public function __construct(Validator $validator, Json $source) {
 		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
 		}
@@ -38,6 +43,8 @@ class Configurator {
 			throw new InvalidArgumentException("Invalid configuration file \"$source->filename\"");
 		}
 		$this->mSource = $source;
+		$validator->setRules($this->getValidationRules());
+		$this->validator = $validator;
 		static::$mNumberOfInstancies++;
 	}
 
@@ -64,9 +71,8 @@ class Configurator {
 			throw new InvalidArgumentException("No server named \"$name\" is configured");
 		}
 		$data = $this->mSource->get(new JsonPath("servers", $name));
-		$validator = new Validator($this->getValidationRules());
 		return new ServerInfo(
-			validator: $validator,
+			validator: $this->validator,
 			name: $name,
 			title: $data["title"],
 			host: $data["host"],
@@ -107,10 +113,9 @@ class Configurator {
 			throw new InvalidConfigException("No system account is configured for server named \"$serverName\"");
 		}
 		$data = $this->mSource->get(new JsonPath("servers", $serverName));
-		$validator = new Validator($this->getValidationRules());
 		try {
 			return new UserInfo(
-				validator: $validator,
+				validator: $this->validator,
 				server: $this->getServerInfo($serverName),
 				username: $data["systemAccount"]["username"],
 				password: $data["systemAccount"]["password"],
