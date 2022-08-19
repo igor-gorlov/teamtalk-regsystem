@@ -20,7 +20,7 @@ Mandatory ``servers`` Object
 This is a container for metadata of all TeamTalk 5 servers your Regsystem copy "knows" about;
 they are called :dfn:`managed servers`.
 
-Here, each key is a unique :dfn:`server name` mapped to an object
+Here, each top-level key is a unique :dfn:`server name` mapped to an object
 encapsulating information directly related to this particular server.
 
 Server information object itself has the following fields, which are all mandatory regardless of their nesting level:
