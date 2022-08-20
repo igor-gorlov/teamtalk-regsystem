@@ -119,9 +119,13 @@ class Json {
 
 	/*
 	Returns the value of the JSON entry pointed-to by the given path.
+	If no path is supplied, returns the whole underlying array.
 	Throws InvalidArgumentException when unable to find the requested entry.
 	*/
-	public function get(JsonPath $path): mixed {
+	public function get(JsonPath|null $path = null): mixed {
+		if($path === null) {
+			return $this->mJson;
+		}
 		if(!$this->exists($path)) {
 			throw new InvalidArgumentException("JSON entry $path does not exist");
 		}
