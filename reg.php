@@ -16,6 +16,7 @@ require_once "error.php";
 require_once "json.php";
 require_once "server.php";
 require_once "validator.php";
+require_once "ui.php";
 
 
 // Extracts a server name from the query string. If there seems to be no server name within URL, returns "default".
