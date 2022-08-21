@@ -20,11 +20,6 @@ require_once "validator.php";
 require_once "ui.php";
 
 
-// Extracts a server name from the query string. If there seems to be no server name within URL, returns "default".
-function serverNameFromUrl(): string {
-	return isset($_GET["server"]) ? $_GET["server"] : "default";
-}
-
 /*
 Tries to construct an instance of UserInfo class from the parameters passed via the URL query string;
 The given Validator object is used to ensure correctness of those parameters.

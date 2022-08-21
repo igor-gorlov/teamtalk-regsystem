@@ -85,6 +85,11 @@ class UserInfo {
 		}
 	}
 
+	// Extracts a server name from the URL query string. If there seems to be no server name within URL, returns "default".
+	private static function mServerNameFromUrl(): string {
+		return isset($_GET["server"]) ? $_GET["server"] : "default";
+	}
+
 }
 
 // A high-level interface for viewing and manipulating accounts.
