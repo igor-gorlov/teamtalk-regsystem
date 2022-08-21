@@ -13,50 +13,10 @@ declare(strict_types = 1);
 
 require_once "account.php";
 require_once "configurator.php";
-require_once "error.php";
 require_once "json.php";
 require_once "server.php";
 require_once "validator.php";
 require_once "ui.php";
-
-
-/*
-Tries to construct an instance of UserInfo class from the parameters passed via the URL query string;
-The given Validator object is used to ensure correctness of those parameters.
-
-In addition to the validator, this function also accepts an array of ServerInfo objects
-to search the server name extracted from URL in it.
-
-Throws BadQueryStringException if the actual set of required fields within the URL is incomplete;
-Throws RuntimeException if the user information is invalid.
-*/
-function userInfoFromUrl(Validator $validator, array $serverList): UserInfo {
-	$server = null;
-	$serverName = serverNameFromUrl();
-	foreach($serverList as $i) {
-		if($i->name === $serverName) {
-			$server = $i;
-			break;
-		}
-	}
-	if($server === null) {
-		throw new RuntimeException("No managed server named \"$serverName\" is configured");
-	}
-	$error = false;
-	$errorMessage = "The following URL parameters are not provided:\n";
-	if(!isset($_GET["name"])) {
-		$error = true;
-		$errorMessage .= "\tname\n";
-	}
-	if(!isset($_GET["password"])) {
-		$error = true;
-		$errorMessage .= "\tpassword\n";
-	}
-	if($error) {
-		throw new BadQueryStringException($errorMessage);
-	}
-	return new UserInfo($validator, $server, $_GET["name"], $_GET["password"]);
-}
 
 
 // Set up GUI.
@@ -69,7 +29,7 @@ $validator = new Validator;
 $config = new Configurator($validator, new Json("config.json"));
 $newAccount = null;
 try {
-	$newAccount = userInfoFromUrl($validator, $config->getAllServersInfo());
+	$newAccount = UserInfo::fromUrl($validator, $config->getAllServersInfo());
 }
 catch(Exception $e) {
 	if(!isset($_GET["form"])) {
