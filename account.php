@@ -110,7 +110,7 @@ class UserInfo {
 			}
 		}
 		if($server === null) {
-			throw new RuntimeException("No managed server named \"$serverName\" is configured");
+			throw new RuntimeException("Cannot find a server named \"$serverName\"");
 		}
 		$error = false;
 		$errorMessage = "The following URL parameters are not provided:\n";
