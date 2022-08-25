@@ -37,4 +37,18 @@ class LanguagePack {
 		$this->mSource = $source;
 	}
 
+	/*
+	Preprocesses the message pointed-to by the given identifier using the given array of arguments,
+	returns the resulting string.
+	
+	Throws InvalidArgumentException if there is no matching identifier in this language pack;
+	throws IntlException in case of other problems.
+	*/
+	public function getMessage(string $id, array $args = array()): string {
+		if(!$this->mSource->exists(new JsonPath($id))) {
+			throw new InvalidArgumentException("Cannot find a message with identifier \"$id\" in $this->locale language pack");
+		}
+		return MessageFormatter::formatMessage($this->locale, $this->mSource->get(new JsonPath($id)), $args);
+	}
+
 }
