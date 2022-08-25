@@ -1,0 +1,9 @@
+{
+	"regsystemTitleWithAuthor": "Система регистрации для TeamTalk от Игоря Горлова",
+	"registrationFormHeader": "Создать учётную запись TeamTalk",
+	"serverSelectionLabelInRegistrationForm": "Выберите сервер, на котором хотите зарегистрироваться:",
+	"usernameInputLabelInRegistrationForm": "Введите имя пользователя:",
+	"passwordInputLabelInRegistrationForm": "Введите пароль:",
+	"registrationFormSubmitionButton": "Готово!",
+	"registrationSucceeded": "На сервере {serverTitle} создана новая учётная запись с именем {username}!"
+}
