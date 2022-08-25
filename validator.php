@@ -104,6 +104,26 @@ class Validator {
 	}
 
 	/*
+	Checks whether the given data structure can be safely used as a localization source.
+
+	All keys and all values within the entity must be of string type
+	(that is, a valid localization source is internally analogous to a one-dimensional associative array).
+	Note that this method does not check other invariants (such as natural language grammar).
+	*/
+	public function isValidLocalization(mixed $entity): bool {
+		if(!$entity instanceof Json) {
+			return false;
+		}
+		$data = $entity->get();
+		foreach($data as $key => $value) {
+			if(!is_string($key) or !is_string($value)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/*
 	Validates a username against the configured regular expression;
 	if no regexp is configured, the following is used: "/.+/i".
 
