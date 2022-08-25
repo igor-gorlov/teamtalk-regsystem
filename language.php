@@ -15,6 +15,7 @@ the latter can be controlled directly from a script by calling ini_set() functio
 declare(strict_types = 1);
 
 
+require_once "error.php";
 require_once "json.php";
 require_once "validator.php";
 
@@ -22,19 +23,32 @@ require_once "validator.php";
 // Represents a single language pack.
 class LanguagePack {
 
+	public readonly string $locale;
+
 	private Json $mSource;
 
 	/*
-	Accepts a standard locale string and a Json instance which contains messages
-	translated to the language pointed-to by the locale.
-
-	Throws InvalidArgumentException if the Json object cannot be used as a localization source.
+	Accepts a standard locale string and loads the corresponding language file.
+	If there is no language file for the given locale, tries to find a translation for "en";
+	throws UnknownLocaleException on failure.
 	*/
-	public function __construct(public readonly Validator $validator, public readonly string $locale, Json $source) {
+	public function __construct(public readonly Validator $validator, string $locale) {
+		$source = null;
+		$locale = substr($locale, 0, 2);
+		if(!file_exists("lang/$locale.json")) {
+			if(!file_exists("lang/en.json")) {
+				throw new UnknownLocaleException($locale);
+			}
+			$source = new Json("lang/en.json");
+		}
+		else {
+			$source = new Json("lang/$locale.json");
+		}
 		if(!$validator->isValidLocalization($source)) {
 			throw new InvalidArgumentException("Invalid localization data");
 		}
 		$this->mSource = $source;
+		$this->locale = $locale;
 	}
 
 	/*
