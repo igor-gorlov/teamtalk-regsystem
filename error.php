@@ -58,3 +58,10 @@ class InvalidConfigException extends RuntimeException {
 		parent::__construct($message);
 	}
 }
+
+// Is thrown when a language file for a specific locale cannot be found.
+class UnknownLocaleException extends RuntimeException {
+	public function __construct(string $locale) {
+		parent::__construct("There is no language file for locale \"$locale\"");
+	}
+}
