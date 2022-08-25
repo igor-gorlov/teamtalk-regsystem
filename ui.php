@@ -11,22 +11,23 @@ Interaction with end-users.
 declare(strict_types = 1);
 
 
+require_once "language.php";
 require_once "server.php";
 
 
 /*
-Turns on output buffering and prints the header of the registration page.
+Turns on output buffering and prints the header of the registration page using the given language pack.
 
 From Regsystem's perspective, a "header of a page" is the part of HTML code that precedes main contents of this page;
 not to be confused with <header>, <h1>, or other HTML elements.
 */
-function beginRegistrationPage(): void {
+function beginRegistrationPage(LanguagePack $langpack): void {
 	ob_start();
-	echo("<!DOCTYPE html><html lang=\"en\">");
+	echo("<!DOCTYPE html><html lang=\"$langpack->locale\">");
 	echo("<head><meta charset=\"UTF-8\" />");
-	echo("<title>TeamTalk Registration System by Igor Gorlov</title></head>");
+	echo("<title>"  . $langpack->getMessage("regsystemTitleWithAuthor") . "</title></head>");
 	echo("<body><h1 style=\"text-align: center; text-decoration: underline; font-weight: bold\">");
-	echo("Register a New TeamTalk Account</h1>");
+	echo($langpack->getMessage("registrationFormHeader") . "</h1>");
 }
 
 /*
@@ -40,21 +41,33 @@ function endRegistrationPage(): void {
 	ob_end_flush();
 }
 
-// Prints the account creation form. Requires an array of ServerInfo objects representing the managed servers.
-function showRegistrationForm(array $servers): void {
+/*
+Prints the account creation form.
+Requires a langpack and an array of ServerInfo objects representing the managed servers.
+*/
+function showRegistrationForm(LanguagePack $langpack, array $servers): void {
 	ob_start();
 	echo("<form method=\"GET\" action=\"reg.php\">");
-	echo("<div><label for=\"server\">Select a server you would like to register on:</label><br>");
+	echo(
+		"<div><label for=\"server\">" .
+		$langpack->getMessage("serverSelectionLabelInRegistrationForm") . "</label><br>"
+	);
 	echo("<select id=\"server\" name=\"server\">");
 	foreach($servers as $server) {
 		echo("<option value=\"$server->name\">$server->title</option>");
 	}
 	echo("</select></div>");
-	echo("<div><label for=\"name\">Enter your username:</label><br>");
+	echo("<div><label for=\"name\">" . $langpack->getMessage("usernameInputLabelInRegistrationForm") . "</label><br>");
 	echo("<input id=\"name\" type=\"text\" name=\"name\"></div>");
-	echo("<div><label for=\"password\">Enter your password:</label><br>");
+	echo(
+		"<div><label for=\"password\">" .
+		$langpack->getMessage("passwordInputLabelInRegistrationForm") . "</label><br>"
+	);
 	echo("<input id=\"password\" type=\"password\" name=\"password\"></div>");
-	echo("<div><button type=\"submit\" name=\"form\" value=\"1\">Register now!</button></div>");
+	echo(
+		"<div><button type=\"submit\" name=\"form\" value=\"1\">" .
+		$langpack->getMessage("registrationFormSubmitionButton") . "</button></div>"
+	);
 	ob_end_flush();
 }
 
