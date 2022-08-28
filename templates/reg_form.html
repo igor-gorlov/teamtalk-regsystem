@@ -1,0 +1,32 @@
+{#
+	Registration form template.
+
+	© Igor Gorlov, 2022.
+#}
+
+
+{% extends "reg.html" %}
+
+{% block content %}
+	<form method="GET" action="../reg.php">
+		<div>
+			<label for="server">{{ langpack.getMessage("serverSelectionLabelInRegistrationForm") }}</label><br>
+			<select id="server" name="server">
+				{% for server in servers %}
+					<option value="{{ server.name }}">{{ server.title }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div>
+			<label for="name">{{ langpack.getMessage("usernameInputLabelInRegistrationForm") }}</label><br>
+			<input id="name" type="text" name="name">
+		</div>
+		<div>
+			<label for="password">{{ langpack.getMessage("passwordInputLabelInRegistrationForm") }}</label><br>
+			<input id="password" type="password" name="password">
+		</div>
+		<div>
+			<button type="submit" name="form" value="1">{{ langpack.getMessage("registrationFormSubmitionButton") }}</button>
+		</div>
+	</form>
+{% endblock %}
