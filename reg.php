@@ -11,6 +11,8 @@ This script accepts user information and creates a new TeamTalk 5 account from i
 declare(strict_types = 1);
 
 
+require_once "vendor/autoload.php";
+
 require_once "account.php";
 require_once "configurator.php";
 require_once "json.php";

@@ -11,6 +11,9 @@ A collection of error handling utilities.
 declare(strict_types = 1);
 
 
+require_once "vendor/autoload.php";
+
+
 // Is thrown when a command yields an error.
 class CommandFailedException extends RuntimeException {
 	public function __construct(string $command, ?array $reply = null) {

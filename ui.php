@@ -11,6 +11,8 @@ Interaction with end-users.
 declare(strict_types = 1);
 
 
+require_once "vendor/autoload.php";
+
 require_once "language.php";
 require_once "server.php";
 

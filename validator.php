@@ -11,6 +11,9 @@ Unreliable data can be safely verified using algorithms defined in this file.
 declare(strict_types = 1);
 
 
+require_once "vendor/autoload.php";
+
+
 /*
 A generic class that validates everything.
 
