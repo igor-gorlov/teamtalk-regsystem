@@ -1,6 +1,6 @@
 {
 	"regsystemTitleWithAuthor": "Система регистрации для TeamTalk от Игоря Горлова",
-	"registrationFormHeader": "Создать учётную запись TeamTalk",
+	"registrationPageHeader": "Создать учётную запись TeamTalk",
 	"serverSelectionLabelInRegistrationForm": "Выберите сервер, на котором хотите зарегистрироваться:",
 	"usernameInputLabelInRegistrationForm": "Введите имя пользователя:",
 	"passwordInputLabelInRegistrationForm": "Введите пароль:",
