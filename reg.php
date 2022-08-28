@@ -22,6 +22,7 @@ require_once "ui.php";
 
 // Set up GUI.
 set_exception_handler("printErrorMessage");
+ini_set("intl.use_exceptions", true);
 $validator = new Validator;
 $locale = Locale::acceptFromHttp($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 $langpack = new LanguagePack($validator, $locale);
