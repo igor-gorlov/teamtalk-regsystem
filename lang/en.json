@@ -5,5 +5,6 @@
 	"usernameInputLabelInRegistrationForm": "Enter your username:",
 	"passwordInputLabelInRegistrationForm": "Enter your password:",
 	"registrationFormSubmitionButton": "Register now!",
-	"registrationSucceeded": "Successfully created a new account named {username} on {serverTitle}!"
+	"registrationSucceeded": "Successfully created a new account named {username} on {serverTitle}!",
+	"registrationFailedCauseAccountExists": "Unable to register a new account called {username}: this username already belongs to someone else on {serverTitle}."
 }
