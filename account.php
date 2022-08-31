@@ -99,12 +99,14 @@ class UserInfo {
 	In addition to the validator, this function also accepts an array of ServerInfo objects
 	to search the server name extracted from URL in it.
 
-	Throws BadQueryStringException if the actual set of required fields within the URL is incomplete;
-	Throws RuntimeException if the user information is invalid.
+	Throws BadQueryStringException when cannot collect all required information.
 	*/
 	public static function fromUrl(Validator $validator, array $serverList): static {
+		$username = @$_GET["name"];
+		$password = @$_GET["password"];
 		$server = null;
 		$serverName = static::mServerNameFromUrl();
+		$error = 0;
 		foreach($serverList as $i) {
 			if($i->name === $serverName) {
 				$server = $i;
@@ -112,22 +114,22 @@ class UserInfo {
 			}
 		}
 		if($server === null) {
-			throw new RuntimeException("Cannot find a server named \"$serverName\"");
+			$error |= BadQueryStringException::INVALID_SERVER;
 		}
-		$error = false;
-		$errorMessage = "The following URL parameters are not provided:\n";
-		if(!isset($_GET["name"])) {
-			$error = true;
-			$errorMessage .= "\tname\n";
+		if(!$validator->isValidUsername($username)) {
+			$error |= BadQueryStringException::INVALID_NAME;
 		}
-		if(!isset($_GET["password"])) {
-			$error = true;
-			$errorMessage .= "\tpassword\n";
+		if(!$validator->isValidPassword($password)) {
+			$error |= BadQueryStringException::INVALID_PASSWORD;
 		}
 		if($error) {
-			throw new BadQueryStringException($errorMessage);
+			throw new BadQueryStringException($error);
 		}
-		return new UserInfo($validator, $server, $_GET["name"], $_GET["password"]);
+		/*
+		We pass a validator to UserInfo's constructor just to meat the formal requirements;
+		actual validation was performed above.
+		*/
+		return new UserInfo($validator, $server, $username, $password);
 	}
 
 }
