@@ -7,5 +7,6 @@
 	"registrationFormSubmitionButton": "Register now!",
 	"registrationSucceeded": "Successfully created a new account named {username} on {serverTitle}!",
 	"registrationFailedCauseAccountExists": "Unable to register a new account called {username}: this username already belongs to someone else on {serverTitle}.",
-	"invalidRegistrationParamsList": "You have made mistakes in the following fields:"
+	"invalidRegistrationParamsList": "You have made mistakes in the following fields:",
+	"unknownInternalError": "Unknown internal error!"
 }
