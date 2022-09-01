@@ -1,0 +1,14 @@
+{#
+	Displays information about registration results (success or failure).
+
+	© Igor Gorlov, 2022.
+#}
+
+
+{% extends "reg.html" %}
+
+{% block content %}
+	{% if succeeded %}
+		{{ langpack.getMessage("registrationSucceeded", {"username": newAccount.username, "serverTitle": newAccount.server.title}) }}
+	{% endif %}
+{% endblock %}
