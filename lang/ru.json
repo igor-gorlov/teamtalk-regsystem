@@ -8,5 +8,6 @@
 	"registrationSucceeded": "На сервере {serverTitle} создана новая учётная запись с именем {username}!",
 	"registrationFailedCauseAccountExists": "Невозможно зарегистрировать нового пользователя, так как на сервере {serverTitle} уже существует учётная запись под именем {username}.",
 	"invalidRegistrationParamsList": "Следующие поля регистрационной формы заполнены с ошибками:",
+	"invalidUsernameInRegistrationForm": "Имя пользователя",
 	"unknownInternalError": "Неизвестная внутренняя ошибка!"
 }
