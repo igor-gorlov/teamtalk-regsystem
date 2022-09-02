@@ -25,28 +25,50 @@ require_once "ui.php";
 // Set up GUI.
 set_exception_handler("printErrorMessage");
 ini_set("intl.use_exceptions", true);
+$view = new \Twig\Environment(new \Twig\Loader\FilesystemLoader("templates/"));
 $validator = new Validator;
 $locale = Locale::acceptFromHttp($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 $langpack = new LanguagePack($validator, $locale);
-beginRegistrationPage($langpack);
-register_shutdown_function("endRegistrationPage");
 
 // Configure the essential options.
 $config = new Configurator($validator, new Json("config.json"));
+$allServers = $config->getAllServersInfo();
 $newAccount = null;
 try {
-	$newAccount = UserInfo::fromUrl($validator, $config->getAllServersInfo());
+	$newAccount = UserInfo::fromUrl($validator, $allServers);
 }
-catch(Exception $e) {
+catch(BadQueryStringException $e) {
 	if(!isset($_GET["form"])) {
-		showRegistrationForm($langpack, $config->getAllServersInfo());
+		echo $view->render("reg_form.html", array(
+			"langpack" => $langpack,
+			"servers" => $allServers
+		));
 		exit();
 	}
-	throw $e;
+	echo $view->render("reg_results.html", array(
+		"langpack" => $langpack,
+		"succeeded" => false,
+		"invalidUrlParams" => $e->invalidUrlParams
+	));
+	exit();
 }
 $systemAccount = $config->getSystemAccountInfo($newAccount->server->name);
 
 // Create a new account.
 $registrator = new AccountManager($validator, new Tt5Session($systemAccount));
-$registrator->createAccount($newAccount);
-echo($langpack->getMessage("registrationSucceeded", array("username" => $newAccount->username, "serverTitle" => $newAccount->server->title)));
+try {
+	$registrator->createAccount($newAccount);
+}
+catch(AccountAlreadyExistsException) {
+	echo $view->render("reg_results.html", array(
+		"langpack" => $langpack,
+		"succeeded" => false,
+		"newAccount" => $newAccount
+	));
+	exit();
+}
+echo $view->render("reg_results.html", array(
+	"langpack" => $langpack,
+	"succeeded" => true,
+	"newAccount" => $newAccount
+));
