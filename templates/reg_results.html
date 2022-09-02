@@ -24,5 +24,7 @@
 				{% endif %}
 			</ul>
 		{% endif %}
+	{% elseif newAccount is defined %}
+		{{ langpack.getMessage("registrationFailedCauseAccountExists", {"username": newAccount.username, "serverTitle": newAccount.server.title}) }}
 	{% endif %}
 {% endblock %}
