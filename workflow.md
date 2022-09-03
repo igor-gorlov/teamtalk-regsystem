@@ -6,6 +6,11 @@ There are two types of PHP source files in the project: an end-user directly cal
 themselves include _helper_ scripts. Usually, root scripts are **never** included anywhere, and helper ones are
 **never** executed directly.
 
+## Project Structure
+
+-   Store templates of webpages in `/templates/` subdirectory.
+-   Store CSS stylesheets in `/styles/` subdirectory.
+
 ## General Rules
 
 -   Don't forget to update copyright records at the top of the source files whenever needed.
