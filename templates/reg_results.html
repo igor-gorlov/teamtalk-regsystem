@@ -20,6 +20,7 @@
 				constant("BadQueryStringException::INVALID_SERVER")
 		%}
 			<p style="color: red">{{ langpack.getMessage("unknownInternalError") }}</p>
+			<a href="../reg.php">{{ langpack.getMessage("tryAgain") }}</a>
 		{% else %}
 			<p>{{ langpack.getMessage("invalidRegistrationParamsList") }}</p>
 			<ul class="no-markers">
@@ -36,11 +37,13 @@
 					<li>{{ langpack.getMessage("invalidPasswordInRegistrationForm") }}</li>
 				{% endif %}
 			</ul>
+			<a href="../reg.php">{{ langpack.getMessage("tryAgain") }}</a>
 		{% endif %}
 	{% elseif newAccount is defined %}
 		<p>{{ langpack.getMessage(
 			"registrationFailedCauseAccountExists",
 			{"username": newAccount.username, "serverTitle": newAccount.server.title}
 		) }}</p>
+		<a href="../reg.php">{{ langpack.getMessage("tryAgain") }}</a>
 	{% endif %}
 {% endblock %}
