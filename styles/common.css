@@ -1,0 +1,52 @@
+/*
+The common stylesheet used on all Regsystem webpages.
+
+© Igor Gorlov, 2022.
+*/
+
+
+* {
+	hyphens: none;
+	font-family: "Times New Roman", serif;
+}
+
+code, code *,
+pre, pre * {
+	font-family: Consolas, monospace;
+}
+
+h1 {
+	text-align: center;
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+h2, h3, h4, h5, h6 {
+	text-align: center;
+}
+
+strong {
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+dt, dfn {
+	font-style: italic;
+	white-space: nowrap;
+}
+
+a {
+	text-decoration: blue;
+}
+
+nav ul, nav ol {
+	list-style-type: none;
+}
+
+.non-breaking {
+	white-space: nowrap;
+}
+
+ul.no-markers, ol.no-markers {
+	list-style-type: none;
+}

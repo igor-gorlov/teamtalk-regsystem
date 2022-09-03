@@ -12,6 +12,8 @@ Built on top of the standard PHP functions related to JSON and filesystem.
 declare(strict_types = 1);
 
 
+require_once "vendor/autoload.php";
+
 require_once "error.php";
 
 

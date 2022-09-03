@@ -15,6 +15,8 @@ the latter can be controlled directly from a script by calling ini_set() functio
 declare(strict_types = 1);
 
 
+require_once "vendor/autoload.php";
+
 require_once "error.php";
 require_once "json.php";
 require_once "validator.php";

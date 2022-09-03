@@ -11,6 +11,8 @@ Gives the ability to load, review, manipulate and store program settings.
 declare(strict_types = 1);
 
 
+require_once "vendor/autoload.php";
+
 require_once "error.php";
 require_once "json.php";
 require_once "server.php";

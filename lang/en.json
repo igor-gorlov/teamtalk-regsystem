@@ -1,9 +1,15 @@
 {
 	"regsystemTitleWithAuthor": "TeamTalk Registration System by Igor Gorlov",
-	"registrationFormHeader": "Register a New TeamTalk Account",
+	"registrationPageHeader": "Register a New TeamTalk Account",
 	"serverSelectionLabelInRegistrationForm": "Select a server you would like to register on:",
 	"usernameInputLabelInRegistrationForm": "Enter your username:",
 	"passwordInputLabelInRegistrationForm": "Enter your password:",
 	"registrationFormSubmitionButton": "Register now!",
-	"registrationSucceeded": "Successfully created a new account named {username} on {serverTitle}!"
+	"registrationSucceeded": "Successfully created a new account named {username} on {serverTitle}!",
+	"registrationFailedCauseAccountExists": "Unable to register a new account called {username}: this username already belongs to someone else on {serverTitle}.",
+	"invalidRegistrationParamsList": "You have made mistakes in the following fields:",
+	"invalidUsernameInRegistrationForm": "Username",
+	"invalidPasswordInRegistrationForm": "Password",
+	"unknownInternalError": "Unknown internal error!",
+	"tryAgain": "Try again"
 }
