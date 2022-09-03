@@ -10,5 +10,6 @@
 	"invalidRegistrationParamsList": "You have made mistakes in the following fields:",
 	"invalidUsernameInRegistrationForm": "Username",
 	"invalidPasswordInRegistrationForm": "Password",
-	"unknownInternalError": "Unknown internal error!"
+	"unknownInternalError": "Unknown internal error!",
+	"tryAgain": "Try again"
 }

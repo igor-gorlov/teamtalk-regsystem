@@ -10,5 +10,6 @@
 	"invalidRegistrationParamsList": "Следующие поля регистрационной формы заполнены с ошибками:",
 	"invalidUsernameInRegistrationForm": "Имя пользователя",
 	"invalidPasswordInRegistrationForm": "Пароль",
-	"unknownInternalError": "Неизвестная внутренняя ошибка!"
+	"unknownInternalError": "Неизвестная внутренняя ошибка!",
+	"tryAgain": "Попробовать ещё раз"
 }
