@@ -9,19 +9,19 @@
 
 {% block content %}
 	{% if succeeded %}
-		{{ langpack.getMessage(
+		<p>{{ langpack.getMessage(
 			"registrationSucceeded",
 			{"username": newAccount.username, "serverTitle": newAccount.server.title}
-		) }}
+		) }}</p>
 	{% elseif invalidUrlParams is defined %}
 		{% if
 			invalidUrlParams == constant("BadQueryStringException::INVALID_UNKNOWN") or
 			(invalidUrlParams b-and constant("BadQueryStringException::INVALID_SERVER")) ==
 				constant("BadQueryStringException::INVALID_SERVER")
 		%}
-			<div style="color: red">{{ langpack.getMessage("unknownInternalError") }}</div>
+			<p style="color: red">{{ langpack.getMessage("unknownInternalError") }}</p>
 		{% else %}
-			{{ langpack.getMessage("invalidRegistrationParamsList") }}
+			<p>{{ langpack.getMessage("invalidRegistrationParamsList") }}</p>
 			<ul class="no-markers">
 				{% if
 					(invalidUrlParams b-and constant("BadQueryStringException::INVALID_NAME")) ==
@@ -38,9 +38,9 @@
 			</ul>
 		{% endif %}
 	{% elseif newAccount is defined %}
-		{{ langpack.getMessage(
+		<p>{{ langpack.getMessage(
 			"registrationFailedCauseAccountExists",
 			{"username": newAccount.username, "serverTitle": newAccount.server.title}
-		) }}
+		) }}</p>
 	{% endif %}
 {% endblock %}
