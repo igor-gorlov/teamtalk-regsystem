@@ -1,6 +1,13 @@
 {#
 	Displays information about registration results (success or failure).
 
+	Unconditionally requires a langpack and a success indicator (boolean `succeeded`).
+	If the procedure is completed without any problems,
+	or failed because another account with the same username already exists,
+	an object of type UserInfo which represents the newly-created account has to be additionally passed;
+	If registration fails due to invalid URL parameters,
+	the template additionally requires a bitmask of those erroneous parameters.
+
 	© Igor Gorlov, 2022.
 #}
 
