@@ -25,7 +25,7 @@ enum UserType: int {
 }
 
 // Encapsulates TeamTalk 5 user information.
-class UserInfo {
+class UserInfo implements JsonSerializable {
 
 	// TeamTalk 5 user rights.
 	const RIGHT_NONE = 0x00000000;
@@ -130,6 +130,18 @@ class UserInfo {
 		actual validation was performed above.
 		*/
 		return new UserInfo($validator, $server, $username, $password);
+	}
+
+	// Converts a UserInfo instance to an associative array which can be safely used by json_encode().
+	public function jsonSerialize(): array {
+		return array(
+			"serverName" => $this->server->name,
+			"username" => $this->username,
+			"password" => $this->password,
+			"nickname" => $this->nickname,
+			"type" => $this->type->value,
+			"rights" => $this->rights
+		);
 	}
 
 }
