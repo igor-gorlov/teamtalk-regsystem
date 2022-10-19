@@ -245,4 +245,15 @@ class AccountManager {
 		return $queue;
 	}
 
+	/*
+	Generates a new premoderation key.
+
+	A premoderation key is a sequence of 32 random characters (0-9, a-z, A-Z, -, _),
+	which pretends to be unique and crypto-resistant.
+	It is used to identify a delayed account and to authorize actions with that account.
+	*/
+	private static function mGetPremodKey(): string {
+		return sodium_bin2base64(random_bytes(24), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+	}
+
 }
