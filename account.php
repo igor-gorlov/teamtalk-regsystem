@@ -256,4 +256,23 @@ class AccountManager {
 		return sodium_bin2base64(random_bytes(24), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 	}
 
+	/*
+	Checks whether an account with the given username is waiting for premoderation on the current server;
+	may throw RuntimeException.
+	*/
+	public function isDelayed(string $username): bool {
+		if(!file_exists("premod.json")) {
+			return false;
+		}
+		$json = new Json("premod.json");
+		$assoc = $json->get();
+		foreach($assoc as $i) {
+			$serverName = $this->mSession->account->server->name;
+			if($i["serverName"] === $serverName and $i["username"] === $username) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
