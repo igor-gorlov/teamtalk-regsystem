@@ -222,4 +222,27 @@ class AccountManager {
 		return $acc->username;
 	}
 
+	/*
+	Parses premod.json and returns it as a Json instance with autosaving disabled.
+	If premod.json does not exist, the function creates that file.
+
+	Throws RuntimeException in case of any problems.
+	*/
+	private static function mPreparePremodQueue(): Json {
+		$queue = null;
+		if(file_exists("premod.json")) {
+			$queue = new Json("premod.json", false);
+		}
+		else {
+			$file = @fopen("premod.json", "x+"); // create premod.json
+			if($file === false) {
+				throw new RuntimeException("Unable to create a premoderation file");
+			}
+			fwrite($file, "{}\n"); // add an empty JSON object to the created file
+			fclose($file);
+			$queue = new Json("premod.json", false);
+		}
+		return $queue;
+	}
+
 }
