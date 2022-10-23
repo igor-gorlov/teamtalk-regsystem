@@ -208,10 +208,18 @@ class AccountManager {
 
 	/*
 	Creates a new account of "default" type with the given name and password, returns its username.
+
+	If the optional parameter $checkPremod is true (this is the default value)
+	and the premoderation queue contains an account named $acc->username,
+	AccountAlreadyExistsException is thrown.
+
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
 	may throw CommandFailedException in case of other problems.
 	*/
-	public function createAccount(UserInfo $acc): string {
+	public function createAccount(UserInfo $acc, bool $checkPremod = true): string {
+		if($checkPremod and $this->isDelayed($acc->username)) {
+			throw new AccountAlreadyExistsException($acc->username);
+		}
 		if($this->accountExists($acc->username)) {
 			throw new AccountAlreadyExistsException($acc->username);
 		}
