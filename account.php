@@ -195,7 +195,7 @@ class AccountManager {
 	}
 
 	/*
-	Creates a new account of "default" type with the given name and password, returns its username.
+	Creates a new account on the current server, returns its username.
 	Throws AccountAlreadyExistsException if the name had previously been allocated on the server;
 	may throw CommandFailedException in case of other problems.
 	*/
