@@ -275,4 +275,22 @@ class AccountManager {
 		return false;
 	}
 
+	/*
+	Adds the given account to the premoderation queue and returns a unique key assigned to this new item.
+	The queue is stored in file named premod.json, which is silently created if does not already exist.
+
+	Throws AccountAlreadyExistsException if the username is unavailable;
+	throws RuntimeException in case of other problems.
+	*/
+	public function delayAccount(UserInfo $acc): string {
+		if($this->accountExists($acc->username)) {
+			throw new AccountAlreadyExistsException($acc->username);
+		}
+		$queue = self::mPreparePremodQueue();
+		$key = self::mGetPremodKey();
+		$queue->set(new JsonPath($key), $acc);
+		$queue->save();
+		return $key;
+	}
+
 }
