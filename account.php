@@ -301,4 +301,38 @@ class AccountManager {
 		return $key;
 	}
 
+	/*
+	Registers the delayed account (pointed-to by the given key) on the current TeamTalk 5 server,
+	removes it from the premoderation queue, and returns its username.
+
+	Throws InvalidArgumentException if there is no delayed account with this key;
+	throws RuntimeException when it is impossible to construct a UserInfo object from the data stored in premod.json;
+	throws AccountAlreadyExistsException if the name had previously been allocated on the server;
+	may throw CommandFailedException in case of other problems.
+	*/
+	public function acceptAccount(string $key, Validator $validator): string {
+		$queue = new Json("premod.json");
+		if(!$queue->exists(new JsonPath($key))) {
+			throw new InvalidArgumentException("Invalid premoderation key");
+		}
+		$assoc = $queue->get(new JsonPath($key));
+		$account = null;
+		try {
+			$account = new UserInfo(
+				validator: $validator,
+				server: $this->mSession->account->server,
+				username: $assoc["username"],
+				password: $assoc["password"],
+				type: UserType::from($assoc["type"]),
+				rights: $assoc["rights"]
+			);
+		}
+		catch(InvalidArgumentException) {
+			throw new RuntimeException("Corrupted premoderation queue");
+		}
+		$newUsername = $this->createAccount($account, false);
+		$queue->unset(new JsonPath($key));
+		return $newUsername;
+	}
+
 }
