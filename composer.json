@@ -1,6 +1,7 @@
 {
     "require": {
         "twig/twig": "^3.4",
-        "symfony/twig-bridge": "^6.1"
+        "symfony/twig-bridge": "^6.1",
+        "symfony/mailer": "^6.1"
     }
 }
