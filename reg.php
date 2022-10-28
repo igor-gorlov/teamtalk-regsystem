@@ -22,10 +22,13 @@ require_once "validator.php";
 require_once "ui.php";
 
 
+use Twig\Environment as TwigEnvironment;
+use Twig\Loader\FilesystemLoader as TwigFilesystemLoader;
+
 // Set up GUI.
 set_exception_handler("printErrorMessage");
 ini_set("intl.use_exceptions", true);
-$view = new \Twig\Environment(new \Twig\Loader\FilesystemLoader("templates/"));
+$view = new TwigEnvironment(new TwigFilesystemLoader("templates/"));
 $validator = new Validator;
 $locale = Locale::acceptFromHttp($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 $langpack = new LanguagePack($validator, $locale);
