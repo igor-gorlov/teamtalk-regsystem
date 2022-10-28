@@ -3,6 +3,7 @@ Configuring
 
 The system is controlled by settings (more formally, :dfn:`configuration entries`)
 from :file:`config.json` file located within the root folder.
+It is impossible to launch Regsystem without a file with this name, so you have to create one first of all.
 
 There are :dfn:`mandatory` and :dfn:`optional` entries.
 All mandatory entries **must** be present in the configuration file.
