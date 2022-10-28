@@ -207,7 +207,7 @@ class AccountManager {
 	}
 
 	/*
-	Creates a new account of "default" type with the given name and password, returns its username.
+	Creates a new account on the current server, returns its username.
 
 	If the optional parameter $checkPremod is true (this is the default value)
 	and the premoderation queue contains an account named $acc->username,
