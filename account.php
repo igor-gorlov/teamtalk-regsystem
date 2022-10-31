@@ -335,7 +335,7 @@ class AccountManager {
 	throws AccountAlreadyExistsException if the name had previously been allocated on the server;
 	may throw CommandFailedException in case of other problems.
 	*/
-	public function acceptAccount(string $key, Validator $validator): string {
+	public function acceptAccount(string $key): string {
 		$queue = new Json("premod.json");
 		if(!$queue->exists(new JsonPath($key))) {
 			throw new InvalidArgumentException("Invalid premoderation key");
@@ -344,7 +344,7 @@ class AccountManager {
 		$account = null;
 		try {
 			$account = new UserInfo(
-				validator: $validator,
+				validator: $this->validator,
 				server: $this->mSession->account->server,
 				username: $assoc["username"],
 				password: $assoc["password"],
