@@ -200,8 +200,8 @@ class AccountManager {
 		return null;
 	}
 
-	// Returns true if an account with the given name exists; otherwise returns false.
-	public function accountExists(string $username): bool {
+	// Returns true if an account with the given name exists on the current server; otherwise returns false.
+	public function isRegistered(string $username): bool {
 		$result = $this->findAccount(fn(UserInfo $account): bool => $account->username == $username);
 		return $result === null ? false : true;
 	}
@@ -220,7 +220,7 @@ class AccountManager {
 		if($checkPremod and $this->isDelayed($acc->username)) {
 			throw new AccountAlreadyExistsException($acc->username);
 		}
-		if($this->accountExists($acc->username)) {
+		if($this->isRegistered($acc->username)) {
 			throw new AccountAlreadyExistsException($acc->username);
 		}
 		$this->mSession->executeCommand(
@@ -321,7 +321,7 @@ class AccountManager {
 	throws RuntimeException in case of other problems.
 	*/
 	public function delayAccount(UserInfo $acc): string {
-		if($this->isDelayed($acc->username) or $this->accountExists($acc->username)) {
+		if($this->isDelayed($acc->username) or $this->isRegistered($acc->username)) {
 			throw new AccountAlreadyExistsException($acc->username);
 		}
 		$queue = self::mPreparePremodQueue();
