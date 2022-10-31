@@ -269,14 +269,9 @@ class AccountManager {
 	may throw RuntimeException.
 	*/
 	public function isDelayed(string $username): bool {
-		if(!file_exists("premod.json")) {
-			return false;
-		}
-		$json = new Json("premod.json");
-		$assoc = $json->get();
-		foreach($assoc as $i) {
-			$serverName = $this->mSession->account->server->name;
-			if($i["serverName"] === $serverName and $i["username"] === $username) {
+		$accounts = self::getDelayedAccountsFrom(array($this->mSession->account->server), $this->validator);
+		foreach($accounts as $account) {
+			if($account->username == $username) {
 				return true;
 			}
 		}
