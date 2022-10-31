@@ -321,7 +321,7 @@ class AccountManager {
 	throws RuntimeException in case of other problems.
 	*/
 	public function delayAccount(UserInfo $acc): string {
-		if($this->accountExists($acc->username)) {
+		if($this->isDelayed($acc->username) or $this->accountExists($acc->username)) {
 			throw new AccountAlreadyExistsException($acc->username);
 		}
 		$queue = self::mPreparePremodQueue();
