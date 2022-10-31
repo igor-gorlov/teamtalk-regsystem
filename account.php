@@ -284,6 +284,36 @@ class AccountManager {
 	}
 
 	/*
+	Returns an associative array, where keys are regular premoderation keys
+	and values are UserInfo objects representing the corresponding accounts delayed for the given servers.
+	*/
+	public static function getDelayedAccountsFrom(array $servers, Validator $validator): array {
+		if(!file_exists("premod.json")) {
+			return array();
+		}
+		$result = array();
+		$json = new Json("premod.json");
+		$assoc = $json->get();
+		foreach($assoc as $key => $item) {
+			// Determine if there is a server with the required name.
+			$server = null;
+			foreach($servers as $i) {
+				if($i->name == $item["serverName"]) {
+					$server = $i;
+				}
+			}
+			if($server === null) {
+				continue;
+			}
+			// Construct a UserInfo object and add it to the resulting array.
+			extract($item);
+			$account = new UserInfo($validator, $server, $username, $password, "", UserType::from($type), $rights);
+			$result[$key] = $account;
+		}
+		return $result;
+	}
+
+	/*
 	Adds the given account to the premoderation queue and returns a unique key assigned to this new item.
 	The queue is stored in file named premod.json, which is silently created if does not already exist.
 
