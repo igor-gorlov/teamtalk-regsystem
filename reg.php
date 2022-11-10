@@ -43,7 +43,7 @@ if(isset($_GET["form"])) {
 		$newAccount = UserInfo::fromUrl($validator, $allServers);
 	}
 	catch(BadQueryStringException $e) {
-		echo $view->render("reg_results.html", array(
+		echo $view->render("reg/results.html", array(
 			"langpack" => $langpack,
 			"succeeded" => false,
 			"invalidUrlParams" => $e->invalidUrlParams
@@ -56,14 +56,14 @@ if(isset($_GET["form"])) {
 		$registrator->createAccount($newAccount);
 	}
 	catch(AccountAlreadyExistsException) {
-		echo $view->render("reg_results.html", array(
+		echo $view->render("reg/results.html", array(
 			"langpack" => $langpack,
 			"succeeded" => false,
 			"newAccount" => $newAccount
 		));
 		exit();
 	}
-	echo $view->render("reg_results.html", array(
+	echo $view->render("reg/results.html", array(
 		"langpack" => $langpack,
 		"succeeded" => true,
 		"newAccount" => $newAccount
@@ -72,7 +72,7 @@ if(isset($_GET["form"])) {
 
 // Display a registration form.
 else {
-	echo $view->render("reg_form.html", array(
+	echo $view->render("reg/form.html", array(
 		"langpack" => $langpack,
 		"servers" => $allServers
 	));
