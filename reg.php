@@ -43,9 +43,8 @@ if(isset($_GET["form"])) {
 		$newAccount = UserInfo::fromUrl($validator, $allServers);
 	}
 	catch(BadQueryStringException $e) {
-		echo $view->render("reg/results.html", array(
+		echo $view->render("reg/results/error_invalid_url.html", array(
 			"langpack" => $langpack,
-			"succeeded" => false,
 			"invalidUrlParams" => $e->invalidUrlParams
 		));
 		exit();
@@ -56,16 +55,14 @@ if(isset($_GET["form"])) {
 		$registrator->createAccount($newAccount);
 	}
 	catch(AccountAlreadyExistsException) {
-		echo $view->render("reg/results.html", array(
+		echo $view->render("reg/results/error_account_exists.html", array(
 			"langpack" => $langpack,
-			"succeeded" => false,
 			"newAccount" => $newAccount
 		));
 		exit();
 	}
-	echo $view->render("reg/results.html", array(
+	echo $view->render("reg/results/successful_reg.html", array(
 		"langpack" => $langpack,
-		"succeeded" => true,
 		"newAccount" => $newAccount
 	));
 }

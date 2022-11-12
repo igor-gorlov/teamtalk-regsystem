@@ -1,0 +1,19 @@
+{#
+	Is displayed when direct registration succeedes.
+
+	Parameters:
+		* LanguagePack $langpack;
+		* UserInfo $newAccount: the newly-created account.
+
+	© Igor Gorlov, 2022.
+#}
+
+
+{% extends "reg/reg.html" %}
+
+{% block content %}
+	<p>{{ langpack.getMessage(
+		"registrationSucceeded",
+		{"username": newAccount.username, "serverTitle": newAccount.server.title}
+	) }}</p>
+{% endblock %}
