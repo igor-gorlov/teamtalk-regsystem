@@ -82,6 +82,11 @@ class Configurator {
 		);
 	}
 
+	// Returns true when premoderation for the given server is enabled, otherwise returns false.
+	public function isPremoderatedServer(string $serverName): bool {
+		return $this->mSource->get(new JsonPath($serverName, "premod", "enabled"));
+	}
+
 	/*
 	Returns an array of ServerInfo objects describing all managed servers currently configured.
 	If there are no servers, the returned array is empty.
