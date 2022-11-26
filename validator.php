@@ -76,6 +76,7 @@ class Validator {
 		$assoc = $entity->get();
 		$servers = @$assoc["servers"];
 		$validation = @$assoc["validation"];
+		$smtp = @$assoc["smtp"];
 		// Check managed servers
 		if(!is_array($servers)) {
 			return false;
@@ -102,6 +103,14 @@ class Validator {
 		}
 		// Check validation settings
 		if(!is_array($validation) and $validation !== null) {
+			return false;
+		}
+		// Check SMTP settings
+		if(
+			!is_array($smtp) or
+			!is_string(@$smtp["username"]) or
+			!is_string(@$smtp["password"])
+		) {
 			return false;
 		}
 		// If execution reaches this line, the validation is passed.
