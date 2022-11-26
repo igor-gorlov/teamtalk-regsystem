@@ -69,10 +69,14 @@ class Validator {
 	the possibility to substitute another implementation on the caller side (for example, via an interface).
 	*/
 	public function isValidConfiguration(mixed $entity): bool {
-		if(!$entity instanceof Json or !$entity->exists(new JsonPath("servers"))) {
+		if(!$entity instanceof Json) {
 			return false;
 		}
-		$servers = $entity->get(new JsonPath("servers"));
+		// Prepare data
+		$assoc = $entity->get();
+		$servers = @$assoc["servers"];
+		$validation = @$assoc["validation"];
+		// Check managed servers
 		if(!is_array($servers)) {
 			return false;
 		}
@@ -96,9 +100,11 @@ class Validator {
 				return false;
 			}
 		}
-		if($entity->exists(new JsonPath("validation")) and !is_array($entity->get(new JsonPath("validation")))) {
+		// Check validation settings
+		if(!is_array($validation) and $validation !== null) {
 			return false;
 		}
+		// If execution reaches this line, the validation is passed.
 		return true;
 	}
 
