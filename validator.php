@@ -87,7 +87,7 @@ class Validator {
 			) {
 				return false;
 			}
-			$account = $server["systemAccount"];
+			$account = @$server["systemAccount"];
 			if(
 				!is_array($account) or
 				!isset($account["username"]) or
