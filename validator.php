@@ -78,6 +78,7 @@ class Validator {
 		}
 		foreach($servers as $server) {
 			$account = @$server["systemAccount"];
+			$premod = @$server["premod"];
 			if(
 				// Basic server properties
 				!is_string(@$server["title"]) or
@@ -87,7 +88,10 @@ class Validator {
 				!is_array($account) or
 				!is_string(@$account["username"]) or
 				!is_string(@$account["password"]) or
-				!is_string(@$account["nickname"])
+				!is_string(@$account["nickname"]) or
+				// Premoderation settings
+				!is_array($premod) or
+				!is_bool(@$premod["enabled"])
 			) {
 				return false;
 			}
