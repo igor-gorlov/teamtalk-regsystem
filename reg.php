@@ -27,6 +27,8 @@ use Twig\Loader\FilesystemLoader as TwigFilesystemLoader;
 
 set_exception_handler("printErrorMessage");
 ini_set("intl.use_exceptions", true);
+ob_start();
+register_shutdown_function("ob_end_flush");
 
 // Prepare common services needed for all operations.
 $view = new TwigEnvironment(new TwigFilesystemLoader("templates/"));
