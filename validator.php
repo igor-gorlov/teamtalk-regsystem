@@ -77,18 +77,16 @@ class Validator {
 			return false;
 		}
 		foreach($servers as $server) {
+			$account = @$server["systemAccount"];
 			if(
+				// Basic server properties
 				!isset($server["title"]) or
 				!is_string($server["title"]) or
 				!isset($server["host"]) or
 				!is_string($server["host"]) or
 				!isset($server["port"]) or
-				!is_int($server["port"])
-			) {
-				return false;
-			}
-			$account = @$server["systemAccount"];
-			if(
+				!is_int($server["port"]) or
+				// System account
 				!is_array($account) or
 				!isset($account["username"]) or
 				!is_string($account["username"]) or
