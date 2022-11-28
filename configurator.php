@@ -32,7 +32,7 @@ class Configurator {
 	/*
 	Loads configuration from the given source;
 	throws BadMethodCallException if another object of type Configurator already exists,
-	throws InvalidArgumentException if the given JSON structure is not suitable for configuration purposes.
+	throws InvalidConfigException if the given JSON structure is not suitable for configuration purposes.
 
 	ATTENTION! The given Validator object is modified during construction of the Configurator instance:
 	it gets a set of rules found in the configuration source.
@@ -42,7 +42,7 @@ class Configurator {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
 		}
 		if(!static::isValidConfiguration($source)) {
-			throw new InvalidArgumentException("Invalid configuration file \"$source->filename\"");
+			throw new InvalidConfigException($source->filename);
 		}
 		$this->mSource = $source;
 		$validator->setRules($this->getValidationRules());
