@@ -80,8 +80,8 @@ class InvalidJsonException extends RuntimeException {
 
 // Is thrown on a problem with configuration.
 class InvalidConfigException extends RuntimeException {
-	public function __construct(string $filename) {
-		parent::__construct("Invalid configuration file \"$filename\"");
+	public function __construct(string $filename, string $description = "unknown error") {
+		parent::__construct("Invalid configuration file \"$filename\": $description");
 	}
 }
 
