@@ -126,7 +126,7 @@ class Configurator {
 	}
 
 	/*
-	Checks whether the given data structure can be safely used as a configuration source.
+	Checks whether the given Json instance can be safely used as a configuration source.
 
 	Note that this method only tests the entity for presence of specific entries and validates entities' types,
 	but values themselves are never taken into account.
@@ -134,12 +134,9 @@ class Configurator {
 	the function considers this property valid because it is accessible using the correct path
 	("servers" -> "<server name>" -> "systemAccount" -> "host") and has string type.
 	*/
-	public static function validate(mixed $entity): bool {
-		if(!$entity instanceof Json) {
-			return false;
-		}
+	public static function validate(Json $source): bool {
 		// Prepare data
-		$assoc = $entity->get();
+		$assoc = $source->get();
 		$servers = @$assoc["servers"];
 		$validation = @$assoc["validation"];
 		$smtp = @$assoc["smtp"];
