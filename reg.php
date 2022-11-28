@@ -35,7 +35,7 @@ $view = new TwigEnvironment(new TwigFilesystemLoader("templates/"));
 $validator = new Validator;
 $locale = Locale::acceptFromHttp($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 $langpack = new LanguagePack($validator, $locale);
-$config = new Configurator($validator, new Json("config.json"));
+$config = new Configurator(new Json("config.json"));
 $allServers = $config->getAllServersInfo();
 
 // Try to create a new account directly from its properties passed via URL.

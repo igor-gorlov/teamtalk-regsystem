@@ -23,8 +23,6 @@ class Configurator {
 
 	public const MAX_NUMBER_OF_INSTANCIES = 1;
 
-	public readonly Validator $validator;
-
 	private static int $mNumberOfInstancies = 0;
 
 	private Json $mSource;
@@ -33,11 +31,8 @@ class Configurator {
 	Loads configuration from the given source;
 	throws BadMethodCallException if another object of type Configurator already exists,
 	throws InvalidConfigException if the given JSON structure is not suitable for configuration purposes.
-
-	ATTENTION! The given Validator object is modified during construction of the Configurator instance:
-	it gets a set of rules found in the configuration source.
 	*/
-	public function __construct(Validator $validator, Json $source) {
+	public function __construct(Json $source) {
 		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
 		}
@@ -45,8 +40,6 @@ class Configurator {
 			throw new InvalidConfigException($source->filename);
 		}
 		$this->mSource = $source;
-		$validator->setRules($this->getValidationRules());
-		$this->validator = $validator;
 		static::$mNumberOfInstancies++;
 	}
 
