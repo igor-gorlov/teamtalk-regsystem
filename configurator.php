@@ -41,7 +41,7 @@ class Configurator {
 		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
 		}
-		if(!$validator->isValidConfiguration($source)) {
+		if(!$this->isValidConfiguration($source)) {
 			throw new InvalidArgumentException("Invalid configuration file \"$source->filename\"");
 		}
 		$this->mSource = $source;
@@ -130,6 +130,80 @@ class Configurator {
 	// Decrements the counter of instancies.
 	public function __destruct() {
 		static::$mNumberOfInstancies--;
+	}
+
+	/*
+	Checks whether the given data structure can be safely used as a configuration source.
+
+	Note that this method only tests the entity for presence of specific entries and validates entities' types,
+	but values themselves are never taken into account.
+	For example, if an address of a managed server contains forbidden characters,
+	the function considers this property valid because it is accessible using the correct path
+	("servers" -> "<server name>" -> "systemAccount" -> "host") and has string type.
+	*/
+	public function isValidConfiguration(mixed $entity): bool {
+		if(!$entity instanceof Json) {
+			return false;
+		}
+		// Prepare data
+		$assoc = $entity->get();
+		$servers = @$assoc["servers"];
+		$validation = @$assoc["validation"];
+		$smtp = @$assoc["smtp"];
+		// Check managed servers
+		if(!is_array($servers)) {
+			return false;
+		}
+		foreach($servers as $server) {
+			$account = @$server["systemAccount"];
+			$premod = @$server["premod"];
+			$moderators = @$premod["moderators"];
+			if(
+				// Basic server properties
+				!is_string(@$server["title"]) or
+				!is_string(@$server["host"]) or
+				!is_int(@$server["port"]) or
+				// System account
+				!is_array($account) or
+				!is_string(@$account["username"]) or
+				!is_string(@$account["password"]) or
+				!is_string(@$account["nickname"]) or
+				// Basic premoderation settings
+				!is_array($premod) or
+				!is_bool(@$premod["enabled"])
+			) {
+				return false;
+			}
+			// Check moderators if necessary
+			if($premod["enabled"]) {
+				if(!is_array($moderators)) {
+					return false;
+				}
+				foreach($moderators as $moderator) {
+					if(
+						!is_array($moderator) or
+						!is_string(@$moderator["email"]) or
+						!is_string(@$moderator["locale"])
+					) {
+						return false;
+					}
+				}
+			}
+		}
+		// Check validation settings
+		if(!is_array($validation) and $validation !== null) {
+			return false;
+		}
+		// Check SMTP settings
+		if(
+			!is_array($smtp) or
+			!is_string(@$smtp["username"]) or
+			!is_string(@$smtp["password"])
+		) {
+			return false;
+		}
+		// If execution reaches this line, the validation is passed.
+		return true;
 	}
 
 }
