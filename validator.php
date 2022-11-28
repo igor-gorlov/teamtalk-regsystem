@@ -84,6 +84,7 @@ class Validator {
 		foreach($servers as $server) {
 			$account = @$server["systemAccount"];
 			$premod = @$server["premod"];
+			$moderators = @$premod["moderators"];
 			if(
 				// Basic server properties
 				!is_string(@$server["title"]) or
@@ -94,11 +95,26 @@ class Validator {
 				!is_string(@$account["username"]) or
 				!is_string(@$account["password"]) or
 				!is_string(@$account["nickname"]) or
-				// Premoderation settings
+				// Basic premoderation settings
 				!is_array($premod) or
 				!is_bool(@$premod["enabled"])
 			) {
 				return false;
+			}
+			// Check moderators if necessary
+			if($premod["enabled"]) {
+				if(!is_array($moderators)) {
+					return false;
+				}
+				foreach($moderators as $moderator) {
+					if(
+						!is_array($moderator) or
+						!is_string(@$moderator["email"]) or
+						!is_string(@$moderator["locale"])
+					) {
+						return false;
+					}
+				}
 			}
 		}
 		// Check validation settings
