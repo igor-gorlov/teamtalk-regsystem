@@ -41,7 +41,7 @@ class Configurator {
 		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
 		}
-		if(!$this->isValidConfiguration($source)) {
+		if(!static::isValidConfiguration($source)) {
 			throw new InvalidArgumentException("Invalid configuration file \"$source->filename\"");
 		}
 		$this->mSource = $source;
@@ -141,7 +141,7 @@ class Configurator {
 	the function considers this property valid because it is accessible using the correct path
 	("servers" -> "<server name>" -> "systemAccount" -> "host") and has string type.
 	*/
-	public function isValidConfiguration(mixed $entity): bool {
+	public static function isValidConfiguration(mixed $entity): bool {
 		if(!$entity instanceof Json) {
 			return false;
 		}
