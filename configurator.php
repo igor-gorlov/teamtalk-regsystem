@@ -127,12 +127,6 @@ class Configurator {
 
 	/*
 	Checks whether the given Json instance can be safely used as a configuration source.
-
-	Note that this method only tests the entity for presence of specific entries and validates entities' types,
-	but values themselves are never taken into account.
-	For example, if an address of a managed server contains forbidden characters,
-	the function considers this property valid because it is accessible using the correct path
-	("servers" -> "<server name>" -> "systemAccount" -> "host") and has string type.
 	*/
 	public static function validate(Json $source): bool {
 		// Prepare data
