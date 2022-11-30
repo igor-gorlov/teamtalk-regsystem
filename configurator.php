@@ -36,9 +36,7 @@ class Configurator {
 		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
 		}
-		if(!static::validate($source)) {
-			throw new InvalidConfigException($source->filename);
-		}
+		static::validate($source);
 		$this->mSource = $source;
 		static::$mNumberOfInstancies++;
 	}
@@ -125,10 +123,8 @@ class Configurator {
 		static::$mNumberOfInstancies--;
 	}
 
-	/*
-	Checks whether the given Json instance can be safely used as a configuration source.
-	*/
-	public static function validate(Json $source): bool {
+	// Throws InvalidConfigException if the given Json instance cannot be used as a configuration source.
+	public static function validate(Json $source): void {
 		// Prepare data
 		$assoc = $source->get();
 		$servers = @$assoc["servers"];
@@ -136,9 +132,9 @@ class Configurator {
 		$smtp = @$assoc["smtp"];
 		// Check managed servers
 		if(!is_array($servers)) {
-			return false;
+			throw new InvalidConfigException($source->filename, "there are no managed servers");
 		}
-		foreach($servers as $server) {
+		foreach($servers as $serverName => $server) {
 			$account = @$server["systemAccount"];
 			$premod = @$server["premod"];
 			$moderators = @$premod["moderators"];
@@ -156,12 +152,12 @@ class Configurator {
 				!is_array($premod) or
 				!is_bool(@$premod["enabled"])
 			) {
-				return false;
+				throw new InvalidConfigException($source->filename, "something is bad about one of managed servers");
 			}
 			// Check moderators if necessary
 			if($premod["enabled"]) {
 				if(!is_array($moderators)) {
-					return false;
+					throw new InvalidConfigException($source->filename, "the server \"$serverName\" is moderated, but no moderators is configured for it");
 				}
 				foreach($moderators as $moderator) {
 					if(
@@ -169,14 +165,14 @@ class Configurator {
 						!is_string(@$moderator["email"]) or
 						!is_string(@$moderator["locale"])
 					) {
-						return false;
+						throw new InvalidConfigException($source->filename, "one of moderators for the server \"$serverName\" is invalid");
 					}
 				}
 			}
 		}
 		// Check validation settings
 		if(!is_array($validation) and $validation !== null) {
-			return false;
+			throw new InvalidConfigException($source->filename, "validation rules must be encapsulated into a JSON object");
 		}
 		// Check SMTP settings
 		if(
@@ -184,10 +180,8 @@ class Configurator {
 			!is_string(@$smtp["username"]) or
 			!is_string(@$smtp["password"])
 		) {
-			return false;
+			throw new InvalidConfigException($source->filename, "something is wrong with SMTP settings");
 		}
-		// If execution reaches this line, the validation is passed.
-		return true;
 	}
 
 }
