@@ -35,7 +35,7 @@ $view = new TwigEnvironment(new TwigFilesystemLoader("templates/"));
 $validator = new Validator;
 $locale = Locale::acceptFromHttp($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 $langpack = new LanguagePack($validator, $locale);
-$config = new Configurator($validator, new Json("config.json"));
+$config = new Configurator(new Json("config.json"));
 $allServers = $config->getAllServersInfo();
 
 // Try to create a new account directly from its properties passed via URL.
@@ -45,9 +45,8 @@ if(isset($_GET["form"])) {
 		$newAccount = UserInfo::fromUrl($validator, $allServers);
 	}
 	catch(BadQueryStringException $e) {
-		echo $view->render("reg_results.html", array(
+		echo $view->render("reg/results/error_invalid_url.html", array(
 			"langpack" => $langpack,
-			"succeeded" => false,
 			"invalidUrlParams" => $e->invalidUrlParams
 		));
 		exit();
@@ -58,23 +57,21 @@ if(isset($_GET["form"])) {
 		$registrator->createAccount($newAccount);
 	}
 	catch(AccountAlreadyExistsException) {
-		echo $view->render("reg_results.html", array(
+		echo $view->render("reg/results/error_account_exists.html", array(
 			"langpack" => $langpack,
-			"succeeded" => false,
 			"newAccount" => $newAccount
 		));
 		exit();
 	}
-	echo $view->render("reg_results.html", array(
+	echo $view->render("reg/results/successful_reg.html", array(
 		"langpack" => $langpack,
-		"succeeded" => true,
 		"newAccount" => $newAccount
 	));
 }
 
 // Display a registration form.
 else {
-	echo $view->render("reg_form.html", array(
+	echo $view->render("reg/form.html", array(
 		"langpack" => $langpack,
 		"servers" => $allServers
 	));

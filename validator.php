@@ -56,55 +56,6 @@ class Validator {
 	}
 
 	/*
-	Checks whether the given data structure can be safely used as a configuration source.
-
-	Note that this method only tests the entity for presence of specific entries and validates entities' types,
-	but values themselves are never taken into account.
-	For example, if an address of a managed server contains forbidden characters,
-	the function considers this property valid because it is accessible using the correct path
-	("servers" -> "<server name>" -> "systemAccount" -> "host") and has string type.
-
-	The validation algorithm is hardcoded by design, it does not respect any rules.
-	The only (but solid) reason for this method to be non-static is
-	the possibility to substitute another implementation on the caller side (for example, via an interface).
-	*/
-	public function isValidConfiguration(mixed $entity): bool {
-		if(!$entity instanceof Json) {
-			return false;
-		}
-		// Prepare data
-		$assoc = $entity->get();
-		$servers = @$assoc["servers"];
-		$validation = @$assoc["validation"];
-		// Check managed servers
-		if(!is_array($servers)) {
-			return false;
-		}
-		foreach($servers as $server) {
-			$account = @$server["systemAccount"];
-			if(
-				// Basic server properties
-				!is_string(@$server["title"]) or
-				!is_string(@$server["host"]) or
-				!is_int(@$server["port"]) or
-				// System account
-				!is_array($account) or
-				!is_string(@$account["username"]) or
-				!is_string(@$account["password"]) or
-				!is_string(@$account["nickname"])
-			) {
-				return false;
-			}
-		}
-		// Check validation settings
-		if(!is_array($validation) and $validation !== null) {
-			return false;
-		}
-		// If execution reaches this line, the validation is passed.
-		return true;
-	}
-
-	/*
 	Checks whether the given data structure can be safely used as a localization source.
 
 	All keys and all values within the entity must be of string type

@@ -23,8 +23,6 @@ class Configurator {
 
 	public const MAX_NUMBER_OF_INSTANCIES = 1;
 
-	public readonly Validator $validator;
-
 	private static int $mNumberOfInstancies = 0;
 
 	private Json $mSource;
@@ -32,21 +30,14 @@ class Configurator {
 	/*
 	Loads configuration from the given source;
 	throws BadMethodCallException if another object of type Configurator already exists,
-	throws InvalidArgumentException if the given JSON structure is not suitable for configuration purposes.
-
-	ATTENTION! The given Validator object is modified during construction of the Configurator instance:
-	it gets a set of rules found in the configuration source.
+	throws InvalidConfigException if the given JSON structure is not suitable for configuration purposes.
 	*/
-	public function __construct(Validator $validator, Json $source) {
+	public function __construct(Json $source) {
 		if(static::$mNumberOfInstancies == static::MAX_NUMBER_OF_INSTANCIES) {
 			throw new BadMethodCallException("Unable to construct a Configurator object: the maximum number of instancies is " . static::MAX_NUMBER_OF_INSTANCIES);
 		}
-		if(!$validator->isValidConfiguration($source)) {
-			throw new InvalidArgumentException("Invalid configuration file \"$source->filename\"");
-		}
+		static::validate($source);
 		$this->mSource = $source;
-		$validator->setRules($this->getValidationRules());
-		$this->validator = $validator;
 		static::$mNumberOfInstancies++;
 	}
 
@@ -80,6 +71,11 @@ class Configurator {
 			host: $data["host"],
 			port: $data["port"]
 		);
+	}
+
+	// Returns true when premoderation for the given server is enabled, otherwise returns false.
+	public function isPremoderatedServer(string $serverName): bool {
+		return $this->mSource->get(new JsonPath($serverName, "premod", "enabled"));
 	}
 
 	/*
@@ -125,6 +121,67 @@ class Configurator {
 	// Decrements the counter of instancies.
 	public function __destruct() {
 		static::$mNumberOfInstancies--;
+	}
+
+	// Throws InvalidConfigException if the given Json instance cannot be used as a configuration source.
+	public static function validate(Json $source): void {
+		// Prepare data
+		$assoc = $source->get();
+		$servers = @$assoc["servers"];
+		$validation = @$assoc["validation"];
+		$smtp = @$assoc["smtp"];
+		// Check managed servers
+		if(!is_array($servers)) {
+			throw new InvalidConfigException($source->filename, "there are no managed servers");
+		}
+		foreach($servers as $serverName => $server) {
+			$account = @$server["systemAccount"];
+			$premod = @$server["premod"];
+			$moderators = @$premod["moderators"];
+			if(
+				// Basic server properties
+				!is_string(@$server["title"]) or
+				!is_string(@$server["host"]) or
+				!is_int(@$server["port"]) or
+				// System account
+				!is_array($account) or
+				!is_string(@$account["username"]) or
+				!is_string(@$account["password"]) or
+				!is_string(@$account["nickname"]) or
+				// Basic premoderation settings
+				!is_array($premod) or
+				!is_bool(@$premod["enabled"])
+			) {
+				throw new InvalidConfigException($source->filename, "something is bad about one of managed servers");
+			}
+			// Check moderators if necessary
+			if($premod["enabled"]) {
+				if(!is_array($moderators)) {
+					throw new InvalidConfigException($source->filename, "the server \"$serverName\" is moderated, but no moderators is configured for it");
+				}
+				foreach($moderators as $moderator) {
+					if(
+						!is_array($moderator) or
+						!is_string(@$moderator["email"]) or
+						!is_string(@$moderator["locale"])
+					) {
+						throw new InvalidConfigException($source->filename, "one of moderators for the server \"$serverName\" is invalid");
+					}
+				}
+			}
+		}
+		// Check validation settings
+		if(!is_array($validation) and $validation !== null) {
+			throw new InvalidConfigException($source->filename, "validation rules must be encapsulated into a JSON object");
+		}
+		// Check SMTP settings
+		if(
+			!is_array($smtp) or
+			!is_string(@$smtp["username"]) or
+			!is_string(@$smtp["password"])
+		) {
+			throw new InvalidConfigException($source->filename, "something is wrong with SMTP settings");
+		}
 	}
 
 }
