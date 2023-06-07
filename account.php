@@ -122,7 +122,7 @@ class UserInfo implements JsonSerializable {
 // A high-level interface for viewing and manipulating accounts.
 class AccountManager {
 
-	public function __construct(public readonly Validator $validator, private Tt5Session $mSession) {}
+	public function __construct(private Tt5Session $mSession) {}
 
 	/*
 	Returns an array of UserInfo objects representing all accounts that exist on the server.
@@ -133,7 +133,6 @@ class AccountManager {
 		$reply = $this->mSession->executeCommand("listaccounts");
 		for($i = 0; $reply[$i]->name == "useraccount"; $i++) {
 			$result[] = new UserInfo(
-				validator: $this->validator,
 				server: $this->mSession->account->server,
 				username: $reply[$i]->params["username"],
 				password: $reply[$i]->params["password"],
@@ -242,7 +241,7 @@ class AccountManager {
 	may throw RuntimeException.
 	*/
 	public function isDelayed(string $username): bool {
-		$accounts = self::getDelayedAccountsFrom(array($this->mSession->account->server), $this->validator);
+		$accounts = self::getDelayedAccountsFrom(array($this->mSession->account->server));
 		foreach($accounts as $account) {
 			if($account->username == $username) {
 				return true;
@@ -255,7 +254,7 @@ class AccountManager {
 	Returns an associative array, where keys are regular premoderation keys
 	and values are UserInfo objects representing the corresponding accounts delayed for the given servers.
 	*/
-	public static function getDelayedAccountsFrom(array $servers, Validator $validator): array {
+	public static function getDelayedAccountsFrom(array $servers): array {
 		if(!file_exists("premod.json")) {
 			return array();
 		}
@@ -275,7 +274,7 @@ class AccountManager {
 			}
 			// Construct a UserInfo object and add it to the resulting array.
 			extract($item);
-			$account = new UserInfo($validator, $server, $username, $password, "", UserType::from($type), $rights);
+			$account = new UserInfo($server, $username, $password, "", UserType::from($type), $rights);
 			$result[$key] = $account;
 		}
 		return $result;
@@ -317,7 +316,6 @@ class AccountManager {
 		$account = null;
 		try {
 			$account = new UserInfo(
-				validator: $this->validator,
 				server: $this->mSession->account->server,
 				username: $assoc["username"],
 				password: $assoc["password"],
