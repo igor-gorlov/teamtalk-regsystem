@@ -18,7 +18,6 @@ require_once "configurator.php";
 require_once "json.php";
 require_once "language.php";
 require_once "server.php";
-require_once "validator.php";
 require_once "ui.php";
 
 
@@ -32,9 +31,8 @@ register_shutdown_function("ob_end_flush");
 
 // Prepare common services needed for all operations.
 $view = new TwigEnvironment(new TwigFilesystemLoader("templates/"));
-$validator = new Validator;
 $locale = Locale::acceptFromHttp($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-$langpack = new LanguagePack($validator, $locale);
+$langpack = new LanguagePack($locale);
 $config = new Configurator(new Json("config.json"));
 $allServers = $config->getAllServersInfo();
 
@@ -42,7 +40,7 @@ $allServers = $config->getAllServersInfo();
 if(isset($_GET["form"])) {
 	$newAccount = null;
 	try {
-		$newAccount = UserInfo::fromUrl($validator, $allServers);
+		$newAccount = UserInfo::fromUrl($allServers);
 	}
 	catch(BadQueryStringException $e) {
 		echo $view->render("reg/results/error_invalid_url.html", array(
@@ -52,7 +50,7 @@ if(isset($_GET["form"])) {
 		exit();
 	}
 	$systemAccount = $config->getSystemAccountInfo($newAccount->server->name);
-	$registrator = new AccountManager($validator, new Tt5Session($systemAccount));
+	$registrator = new AccountManager(new Tt5Session($systemAccount));
 	try {
 		$registrator->createAccount($newAccount);
 	}
