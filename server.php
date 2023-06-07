@@ -24,7 +24,8 @@ class ServerInfo {
 		public readonly string $host,
 		public readonly int $port,
 		public readonly string $name = "",
-		public readonly string $title = ""
+		public readonly string $title = "",
+		public readonly bool $isPremoderated = true
 	) {}
 }
 
