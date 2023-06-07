@@ -16,33 +16,16 @@ require_once "vendor/autoload.php";
 require_once "account.php";
 require_once "configurator.php";
 require_once "error.php";
-require_once "validator.php";
 
 
 // Encapsulates TeamTalk 5 server information.
 class ServerInfo {
-	// Throws InvalidArgumentException if one or more of the passed values are invalid.
 	public function __construct(
-		Validator $validator,
 		public readonly string $host,
 		public readonly int $port,
 		public readonly string $name = "",
 		public readonly string $title = ""
-	) {
-		$error = false;
-		$errorMessage = "The following server properties are invalid:\n";
-		if(!$validator->isValidHost($host)) {
-			$error = true;
-			$errorMessage .= "\tHost\n";
-		}
-		if(!$validator->isValidPort($port)) {
-			$error = true;
-			$errorMessage .= "\tPort\n";
-		}
-		if($error) {
-			throw new InvalidArgumentException($errorMessage);
-		}
-	}
+	) {}
 }
 
 // Represents a single command.
