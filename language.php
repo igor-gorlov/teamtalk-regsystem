@@ -19,7 +19,6 @@ require_once "vendor/autoload.php";
 
 require_once "error.php";
 require_once "json.php";
-require_once "validator.php";
 
 
 // Represents a single language pack.
@@ -34,7 +33,7 @@ class LanguagePack {
 	If there is no language file for the given locale, tries to find a translation for "en";
 	throws UnknownLocaleException on failure.
 	*/
-	public function __construct(public readonly Validator $validator, string $locale) {
+	public function __construct(string $locale) {
 		$source = null;
 		$locale = substr($locale, 0, 2);
 		if(!file_exists("lang/$locale.json")) {
@@ -45,9 +44,6 @@ class LanguagePack {
 		}
 		else {
 			$source = new Json("lang/$locale.json");
-		}
-		if(!$validator->isValidLocalization($source)) {
-			throw new InvalidArgumentException("Invalid localization data");
 		}
 		$this->mSource = $source;
 		$this->locale = $locale;
