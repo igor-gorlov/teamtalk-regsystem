@@ -58,34 +58,14 @@ class UserInfo implements JsonSerializable {
 		self::RIGHT_TRANSMIT_MEDIA_FILE;
 	const RIGHT_ADMIN = 0x001fffff; // All flags in one.
 
-	// Throws InvalidArgumentException if one or more of the passed values do not comply to the requirements.
 	public function __construct(
-		public readonly Validator $validator,
 		public readonly ServerInfo $server,
 		public readonly string $username,
 		public readonly string $password,
 		public readonly string $nickname = "",
 		public readonly UserType $type = UserType::DEFAULT,
 		public readonly int $rights = self::RIGHT_DEFAULT
-	) {
-		$error = false;
-		$errorMessage = "The following user properties are invalid:\n";
-		if(!$validator->isValidUsername($username)) {
-			$error = true;
-			$errorMessage .= "\tUsername\n";
-		}
-		if(!$validator->isValidPassword($password)) {
-			$error = true;
-			$errorMessage .= "\tPassword\n";
-		}
-		if(!$validator->isValidNickname($nickname)) {
-			$error = true;
-			$errorMessage .= "\tNickname\n";
-		}
-		if($error) {
-			throw new InvalidArgumentException($errorMessage);
-		}
-	}
+	) {}
 
 	// Extracts a server name from the URL query string. If there seems to be no server name within URL, returns "default".
 	private static function mServerNameFromUrl(): string {
@@ -93,15 +73,12 @@ class UserInfo implements JsonSerializable {
 	}
 
 	/*
-	Tries to construct an instance of UserInfo class from the parameters passed via the URL query string;
-	The given Validator object is used to ensure correctness of those parameters.
-
-	In addition to the validator, this function also accepts an array of ServerInfo objects
-	to search the server name extracted from URL in it.
+	Tries to construct an instance of UserInfo class from the parameters passed via the URL query string.
+	This function also accepts an array of ServerInfo objects to search the server name extracted from URL in it.
 
 	Throws BadQueryStringException when cannot collect all required information.
 	*/
-	public static function fromUrl(Validator $validator, array $serverList): static {
+	public static function fromUrl(array $serverList): static {
 		$username = @$_GET["name"];
 		$password = @$_GET["password"];
 		$server = null;
@@ -116,20 +93,16 @@ class UserInfo implements JsonSerializable {
 		if($server === null) {
 			$error |= BadQueryStringException::INVALID_SERVER;
 		}
-		if(!$validator->isValidUsername($username)) {
+		if(!$username) {
 			$error |= BadQueryStringException::INVALID_NAME;
 		}
-		if(!$validator->isValidPassword($password)) {
+		if(!$password) {
 			$error |= BadQueryStringException::INVALID_PASSWORD;
 		}
 		if($error) {
 			throw new BadQueryStringException($error);
 		}
-		/*
-		We pass a validator to UserInfo's constructor just to meat the formal requirements;
-		actual validation was performed above.
-		*/
-		return new UserInfo($validator, $server, $username, $password);
+		return new UserInfo($server, $username, $password);
 	}
 
 	// Converts a UserInfo instance to an associative array which can be safely used by json_encode().
