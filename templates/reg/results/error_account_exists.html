@@ -1,0 +1,20 @@
+{#
+	Is displayed when an account with the same name as passed via URL already exists.
+
+	Parameters:
+		* LanguagePack $langpack;
+		* UserInfo $newAccount: the account that would have been created if no errors had been occurred.
+
+	© Igor Gorlov, 2022.
+#}
+
+
+{% extends "reg/reg.html" %}
+
+{% block content %}
+	<p>{{ langpack.getMessage(
+		"registrationFailedCauseAccountExists",
+		{"username": newAccount.username, "serverTitle": newAccount.server.title}
+	) }}</p>
+	<a href="../reg.php">{{ langpack.getMessage("tryAgain") }}</a>
+{% endblock %}
