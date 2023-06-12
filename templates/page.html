@@ -1,0 +1,22 @@
+{#
+	The skeleton which all Regsystem's webpages are based on.
+
+	© Igor Gorlov, 2022.
+#}
+
+
+<!DOCTYPE html>
+<html lang="{{ langpack.locale }}">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>{{ pageTitle }} &mdash; {{ langpack.getMessage("regsystemTitleWithAuthor") }}</title>
+		<link rel="stylesheet" href="../styles/common.css">
+	</head>
+
+	<body>
+		<h1>{{ pageTitle }}</h1>
+		{% block content %}{% endblock %}
+	</body>
+
+</html>

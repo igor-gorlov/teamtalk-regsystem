@@ -1,0 +1,14 @@
+{
+    "servers": {
+        "default": {
+            "title": "Local TeamTalk 5 Server",
+            "host": "localhost",
+            "port": 10333,
+            "systemAccount": {
+                "username": "regsystem",
+                "password": "qwerty123456",
+                "nickname": "Registration System by Igor Gorlov"
+            }
+        }
+    }
+}
