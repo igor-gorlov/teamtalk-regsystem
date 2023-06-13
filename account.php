@@ -67,25 +67,24 @@ class UserInfo implements JsonSerializable {
 		public readonly int $rights = self::RIGHT_DEFAULT
 	) {}
 
-	// Extracts a server name from the URL query string. If there seems to be no server name within URL, returns "default".
-	private static function mServerNameFromUrl(): string {
-		return isset($_GET["server"]) ? $_GET["server"] : "default";
-	}
-
 	/*
 	Tries to construct an instance of UserInfo class from the parameters passed via the URL query string.
-	This function also accepts an array of ServerInfo objects to search the server name extracted from URL in it.
+	This function also accepts an array of ServerInfo objects to search the address extracted from URL in it.
 
 	Throws BadQueryStringException when cannot collect all required information.
 	*/
 	public static function fromUrl(array $serverList): static {
+		$host = @$_GET["host"];
+		$port = @$_GET["port"];
 		$username = @$_GET["name"];
 		$password = @$_GET["password"];
 		$server = null;
-		$serverName = static::mServerNameFromUrl();
 		$error = 0;
 		foreach($serverList as $i) {
-			if($i->name === $serverName) {
+			if(
+				$i->address->host === $host and
+				$i->address->port === $port
+			) {
 				$server = $i;
 				break;
 			}
