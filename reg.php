@@ -49,7 +49,7 @@ if(isset($_GET["form"])) {
 		));
 		exit();
 	}
-	$systemAccount = $config->getSystemAccountInfo($newAccount->server->name);
+	$systemAccount = $config->getSystemAccountInfo($newAccount->server->address);
 	$registrator = new AccountManager(new Tt5Session($systemAccount));
 	try {
 		$registrator->createAccount($newAccount);
