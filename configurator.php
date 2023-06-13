@@ -74,26 +74,6 @@ class Configurator {
 		return $result;
 	}
 
-	/*
-	Returns a UserInfo object representing the system account
-	which belongs to the managed server with the given address.
-
-	Throws InvalidArgumentException if there is no such server.
-	*/
-	public function getSystemAccountInfo(Address $address): UserInfo {
-		if(!$this->mSource->exists(new JsonPath("servers", (string)$address))) {
-			throw new InvalidArgumentException("Unknown server \"$address\"");
-		}
-		$data = $this->mSource->get(new JsonPath("servers", (string)$address));
-		return new UserInfo(
-			server: $this->getServerInfo($address),
-			username: $data["systemAccount"]["username"],
-			password: $data["systemAccount"]["password"],
-			nickname: $data["systemAccount"]["nickname"],
-			type: UserType::ADMIN
-		);
-	}
-
 	// Decrements the counter of instancies.
 	public function __destruct() {
 		static::$mNumberOfInstancies--;
