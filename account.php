@@ -108,7 +108,7 @@ class UserInfo implements JsonSerializable {
 	// Converts a UserInfo instance to an associative array which can be safely used by json_encode().
 	public function jsonSerialize(): array {
 		return array(
-			"serverName" => $this->server->name,
+			"address" => (string)$this->server->address,
 			"username" => $this->username,
 			"password" => $this->password,
 			"nickname" => $this->nickname,
