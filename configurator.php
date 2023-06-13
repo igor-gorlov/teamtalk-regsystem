@@ -40,25 +40,22 @@ class Configurator {
 	}
 
 	/*
-	Returns a ServerInfo instance which describes the managed server pointed-to by the given name.
-	Throws InvalidArgumentException if there is no server with such name.
+	Returns a ServerInfo instance which describes the managed server pointed-to by the given address.
+	Throws InvalidArgumentException if there is no such server.
 	*/
-	public function getServerInfo(string $name): ServerInfo {
-		if(!$this->mSource->exists(new JsonPath("servers", $name))) {
-			throw new InvalidArgumentException("No server named \"$name\" is configured");
+	public function getServerInfo(Address $address): ServerInfo {
+		if(!$this->mSource->exists(new JsonPath("servers", (string)$address))) {
+			throw new InvalidArgumentException("Unknown server \"$address\"");
 		}
-		$data = $this->mSource->get(new JsonPath("servers", $name));
+		$data = $this->mSource->get(new JsonPath("servers", (string)$address));
 		return new ServerInfo(
-			name: $name,
-			title: $data["title"],
-			host: $data["host"],
-			port: $data["port"]
+			address: $address
 		);
 	}
 
-	// Returns true when premoderation for the given server is enabled, otherwise returns false.
-	public function isPremoderatedServer(string $serverName): bool {
-		return $this->mSource->get(new JsonPath($serverName, "premod", "enabled"));
+	// Returns true when premoderation for the server with the given address is enabled, otherwise returns false.
+	public function isPremoderatedServer(Address $address): bool {
+		return $this->mSource->get(new JsonPath((string)$address, "premod", "enabled"));
 	}
 
 	/*
@@ -66,27 +63,27 @@ class Configurator {
 	If there are no servers, the returned array is empty.
 	*/
 	public function getAllServersInfo(): array {
-		$names = array_keys($this->mSource->get(new JsonPath("servers")));
+		$addressesAsStrings = array_keys($this->mSource->get(new JsonPath("servers")));
 		$result = array();
-		foreach($names as $name) {
-			$result[] = $this->getServerInfo($name);
+		foreach($addressesAsStrings as $addressAsString) {
+			$result[] = $this->getServerInfo(Address::fromString($addressAsString));
 		}
 		return $result;
 	}
 
 	/*
 	Returns a UserInfo object representing the system account
-	which belongs to the managed server pointed-to by the given name.
+	which belongs to the managed server with the given address.
 
-	Throws InvalidArgumentException if there is no server with such name.
+	Throws InvalidArgumentException if there is no such server.
 	*/
-	public function getSystemAccountInfo(string $serverName): UserInfo {
-		if(!$this->mSource->exists(new JsonPath("servers", $serverName))) {
-			throw new InvalidArgumentException("No server named \"$serverName\" is configured");
+	public function getSystemAccountInfo(Address $address): UserInfo {
+		if(!$this->mSource->exists(new JsonPath("servers", (string)$address))) {
+			throw new InvalidArgumentException("Unknown server \"$address\"");
 		}
-		$data = $this->mSource->get(new JsonPath("servers", $serverName));
+		$data = $this->mSource->get(new JsonPath("servers", (string)$address));
 		return new UserInfo(
-			server: $this->getServerInfo($serverName),
+			server: $this->getServerInfo($address),
 			username: $data["systemAccount"]["username"],
 			password: $data["systemAccount"]["password"],
 			nickname: $data["systemAccount"]["nickname"],
