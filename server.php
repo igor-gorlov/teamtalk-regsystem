@@ -75,20 +75,19 @@ class Tt5Session {
 	private int $mLastId; // a counter used to compute command identifiers.
 
 	/*
-	Establishes connection to a TeamTalk 5 server and performs authorization under the given account.
-	For most of the operations to succeed, the account must have admin rights.
+	Establishes connection to the given TeamTalk 5 server and performs authorization under its system account.
 
 	Throws ServerUnavailableException if cannot connect to the server for some reason;
 	throws InvalidCommandException in case of other problems.
 	*/
-	public function __construct(public readonly UserInfo $account) {
+	public function __construct(public readonly ServerInfo $server) {
 		$this->mLastId = 0;
 		// Connect to the server.
-		$this->mSocket = @fsockopen($account->server->address->host, $account->server->address->port);
+		$this->mSocket = @fsockopen($server->address->host, $server->address->port);
 		if($this->mSocket === false) {
-			throw new ServerUnavailableException($account->server);
+			throw new ServerUnavailableException($server);
 		}
-		// Login under the admin account.
+		// Login under the system account.
 		$this->mLogin();
 	}
 
@@ -227,7 +226,8 @@ class Tt5Session {
 	*/
 	public function mLogin(): void {
 		$this->executeCommand(
-			"login username=\"{$this->account->username}\" password=\"{$this->account->password}\" nickname=\"{$this->account->nickname}\" protocol=\"5.0\""
+			"login username=\"{$this->server->systemUsername}\" password=\"{$this->server->systemPassword}\" " .
+			"nickname=\"{$this->server->systemNickname}\" protocol=\"5.0\""
 		);
 	}
 
