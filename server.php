@@ -18,6 +18,31 @@ require_once "configurator.php";
 require_once "error.php";
 
 
+// TeamTalk 5 server address.
+class Address implements Stringable {
+
+	public function __construct(
+		public readonly string $host,
+		public readonly int $port
+	) {}
+
+	// Constructs an instance of Address from a string of the form "host:port" without any validation.
+	public static function fromString(string $str): static {
+		$fragments = explode(":", $str);
+		return static(
+			host: $fragments[0],
+			port: (int)$fragments[1]
+		);
+	}
+
+	// Returns a string of the form "$host:$port".
+	public function __toString(): string
+	{
+		return "$this->host:$this->port";
+	}
+
+}
+
 // Encapsulates TeamTalk 5 server information.
 class ServerInfo {
 	public function __construct(
