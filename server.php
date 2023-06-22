@@ -47,6 +47,9 @@ class Address implements Stringable {
 class ServerInfo {
 	public function __construct(
 		public readonly Address $address,
+		public readonly string $systemUsername,
+		public readonly string $systemPassword,
+		public readonly string $systemNickname,
 		public readonly bool $isPremoderated = true
 	) {}
 }
