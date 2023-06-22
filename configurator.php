@@ -49,7 +49,10 @@ class Configurator {
 		}
 		$data = $this->mSource->get(new JsonPath("servers", (string)$address));
 		return new ServerInfo(
-			address: $address
+			address: $address,
+			systemUsername: $data["systemUsername"],
+			systemPassword: $data["systemPassword"],
+			systemNickname: $data["systemNickname"]
 		);
 	}
 
