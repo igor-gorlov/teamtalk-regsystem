@@ -3,7 +3,8 @@
         "localhost:10333": {
             "systemUsername": "regsystem",
             "systemPassword": "qwerty123456",
-            "systemNickname": "Registration System by Igor Gorlov"
+            "systemNickname": "Registration System by Igor Gorlov",
+            "isPremoderated": true
         }
     }
 }
