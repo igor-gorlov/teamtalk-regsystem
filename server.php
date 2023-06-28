@@ -18,13 +18,35 @@ require_once "configurator.php";
 require_once "error.php";
 
 
+// TeamTalk 5 server address.
+class Address implements Stringable {
+
+	public function __construct(
+		public readonly string $host,
+		public readonly int $port
+	) {}
+
+	// Constructs an instance of Address from a string of the form "host:port" without any validation.
+	public static function fromString(string $str): static {
+		$fragments = explode(":", $str);
+		return static(
+			host: $fragments[0],
+			port: (int)$fragments[1]
+		);
+	}
+
+	// Returns a string of the form "$host:$port".
+	public function __toString(): string
+	{
+		return "$this->host:$this->port";
+	}
+
+}
+
 // Encapsulates TeamTalk 5 server information.
 class ServerInfo {
 	public function __construct(
-		public readonly string $host,
-		public readonly int $port,
-		public readonly string $name = "",
-		public readonly string $title = "",
+		public readonly Address $address,
 		public readonly bool $isPremoderated = true
 	) {}
 }
@@ -59,7 +81,7 @@ class Tt5Session {
 	public function __construct(public readonly UserInfo $account) {
 		$this->mLastId = 0;
 		// Connect to the server.
-		$this->mSocket = @fsockopen($account->server->host, $account->server->port);
+		$this->mSocket = @fsockopen($account->server->address->host, $account->server->address->port);
 		if($this->mSocket === false) {
 			throw new ServerUnavailableException($account->server);
 		}
