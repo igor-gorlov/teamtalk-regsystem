@@ -46,8 +46,7 @@ class Address implements Stringable {
 // Encapsulates TeamTalk 5 server information.
 class ServerInfo {
 	public function __construct(
-		public readonly string $host,
-		public readonly int $port,
+		public readonly Address $address,
 		public readonly string $name = "",
 		public readonly string $title = "",
 		public readonly bool $isPremoderated = true
@@ -84,7 +83,7 @@ class Tt5Session {
 	public function __construct(public readonly UserInfo $account) {
 		$this->mLastId = 0;
 		// Connect to the server.
-		$this->mSocket = @fsockopen($account->server->host, $account->server->port);
+		$this->mSocket = @fsockopen($account->server->address->host, $account->server->address->port);
 		if($this->mSocket === false) {
 			throw new ServerUnavailableException($account->server);
 		}
