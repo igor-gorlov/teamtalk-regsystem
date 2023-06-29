@@ -52,7 +52,8 @@ class Configurator {
 			address: $address,
 			systemUsername: $data["systemUsername"],
 			systemPassword: $data["systemPassword"],
-			systemNickname: $data["systemNickname"]
+			systemNickname: $data["systemNickname"],
+			isPremoderated: $data["isPremoderated"]
 		);
 	}
 
