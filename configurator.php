@@ -52,13 +52,9 @@ class Configurator {
 			address: $address,
 			systemUsername: $data["systemUsername"],
 			systemPassword: $data["systemPassword"],
-			systemNickname: $data["systemNickname"]
+			systemNickname: $data["systemNickname"],
+			isPremoderated: $data["isPremoderated"]
 		);
-	}
-
-	// Returns true when premoderation for the server with the given address is enabled, otherwise returns false.
-	public function isPremoderatedServer(Address $address): bool {
-		return $this->mSource->get(new JsonPath((string)$address, "premod", "enabled"));
 	}
 
 	/*
