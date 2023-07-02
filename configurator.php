@@ -40,6 +40,26 @@ class Configurator {
 	}
 
 	/*
+	Returns an array of premoderators configured for the server pointed-to by the given address.
+	Throws InvalidArgumentException if there is no such server.
+	*/
+	private function mGetPremoderatorsFor(Address $address): array {
+		if(!$this->mSource->exists(new JsonPath("servers", (string)$address))) {
+			throw new InvalidArgumentException("Unknown server \"$address\"");
+		}
+		$list = $this->mSource->get(new JsonPath("servers", (string)$address, "premoderators"));
+		$result = array();
+		foreach($list as $item) {
+			$result[] = new premoderatorInfo(
+				name: $item["name"],
+				locale: $item["locale"],
+				email: $item["email"]
+			);
+		}
+		return $result;
+	}
+
+	/*
 	Returns a ServerInfo instance which describes the managed server pointed-to by the given address.
 	Throws InvalidArgumentException if there is no such server.
 	*/
