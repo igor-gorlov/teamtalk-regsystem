@@ -73,7 +73,8 @@ class Configurator {
 			systemUsername: $data["systemUsername"],
 			systemPassword: $data["systemPassword"],
 			systemNickname: $data["systemNickname"],
-			isPremoderated: $data["isPremoderated"]
+			isPremoderated: $data["isPremoderated"],
+			premoderators: $this->mGetPremoderatorsFor($address)
 		);
 	}
 
