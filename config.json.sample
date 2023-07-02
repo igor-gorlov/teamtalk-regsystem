@@ -1,14 +1,22 @@
 {
     "servers": {
-        "default": {
-            "title": "Local TeamTalk 5 Server",
-            "host": "localhost",
-            "port": 10333,
-            "systemAccount": {
-                "username": "regsystem",
-                "password": "qwerty123456",
-                "nickname": "Registration System by Igor Gorlov"
-            }
+        "localhost:10333": {
+            "systemUsername": "regsystem",
+            "systemPassword": "qwerty123456",
+            "systemNickname": "Registration System by Igor Gorlov",
+            "isPremoderated": true,
+            "premoderators": [
+                {
+                    "name": "Ivan",
+                    "locale": "ru",
+                    "email": "ivanov@admin.online"
+                },
+                {
+                    "name": "Elizabeth",
+                    "locale": "en",
+                    "email": "stop@spamming.me"
+                }
+            ]
         }
     }
 }

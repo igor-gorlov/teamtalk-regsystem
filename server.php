@@ -18,14 +18,49 @@ require_once "configurator.php";
 require_once "error.php";
 
 
+// TeamTalk 5 server address.
+class Address implements Stringable {
+
+	public function __construct(
+		public readonly string $host,
+		public readonly int $port
+	) {}
+
+	// Constructs an instance of Address from a string of the form "host:port" without any validation.
+	public static function fromString(string $str): static {
+		$fragments = explode(":", $str);
+		return static(
+			host: $fragments[0],
+			port: (int)$fragments[1]
+		);
+	}
+
+	// Returns a string of the form "$host:$port".
+	public function __toString(): string
+	{
+		return "$this->host:$this->port";
+	}
+
+}
+
+// Holds information needed to contact a premoderator.
+class premoderatorInfo {
+	public function __construct(
+		public readonly string $name,
+		public readonly string $email,
+		public readonly string $locale = "en"
+	) {}
+}
+
 // Encapsulates TeamTalk 5 server information.
 class ServerInfo {
 	public function __construct(
-		public readonly string $host,
-		public readonly int $port,
-		public readonly string $name = "",
-		public readonly string $title = "",
-		public readonly bool $isPremoderated = true
+		public readonly Address $address,
+		public readonly string $systemUsername,
+		public readonly string $systemPassword,
+		public readonly string $systemNickname,
+		public readonly bool $isPremoderated = true,
+		public readonly array $premoderators = array()
 	) {}
 }
 
@@ -50,20 +85,19 @@ class Tt5Session {
 	private int $mLastId; // a counter used to compute command identifiers.
 
 	/*
-	Establishes connection to a TeamTalk 5 server and performs authorization under the given account.
-	For most of the operations to succeed, the account must have admin rights.
+	Establishes connection to the given TeamTalk 5 server and performs authorization under its system account.
 
 	Throws ServerUnavailableException if cannot connect to the server for some reason;
 	throws InvalidCommandException in case of other problems.
 	*/
-	public function __construct(public readonly UserInfo $account) {
+	public function __construct(public readonly ServerInfo $server) {
 		$this->mLastId = 0;
 		// Connect to the server.
-		$this->mSocket = @fsockopen($account->server->host, $account->server->port);
+		$this->mSocket = @fsockopen($server->address->host, $server->address->port);
 		if($this->mSocket === false) {
-			throw new ServerUnavailableException($account->server);
+			throw new ServerUnavailableException($server);
 		}
-		// Login under the admin account.
+		// Login under the system account.
 		$this->mLogin();
 	}
 
@@ -202,7 +236,8 @@ class Tt5Session {
 	*/
 	public function mLogin(): void {
 		$this->executeCommand(
-			"login username=\"{$this->account->username}\" password=\"{$this->account->password}\" nickname=\"{$this->account->nickname}\" protocol=\"5.0\""
+			"login username=\"{$this->server->systemUsername}\" password=\"{$this->server->systemPassword}\" " .
+			"nickname=\"{$this->server->systemNickname}\" protocol=\"5.0\""
 		);
 	}
 
