@@ -4,7 +4,19 @@
             "systemUsername": "regsystem",
             "systemPassword": "qwerty123456",
             "systemNickname": "Registration System by Igor Gorlov",
-            "isPremoderated": true
+            "isPremoderated": true,
+            "premoderators": [
+                {
+                    "name": "Ivan",
+                    "locale": "ru",
+                    "email": "ivanov@admin.online"
+                },
+                {
+                    "name": "Elizabeth",
+                    "locale": "en",
+                    "email": "stop@spamming.me"
+                }
+            ]
         }
     }
 }

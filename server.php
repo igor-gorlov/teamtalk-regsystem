@@ -43,6 +43,15 @@ class Address implements Stringable {
 
 }
 
+// Holds information needed to contact a premoderator.
+class premoderatorInfo {
+	public function __construct(
+		public readonly string $name,
+		public readonly string $email,
+		public readonly string $locale = "en"
+	) {}
+}
+
 // Encapsulates TeamTalk 5 server information.
 class ServerInfo {
 	public function __construct(
@@ -50,7 +59,8 @@ class ServerInfo {
 		public readonly string $systemUsername,
 		public readonly string $systemPassword,
 		public readonly string $systemNickname,
-		public readonly bool $isPremoderated = true
+		public readonly bool $isPremoderated = true,
+		public readonly array $premoderators = array()
 	) {}
 }
 
